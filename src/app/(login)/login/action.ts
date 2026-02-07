@@ -106,8 +106,8 @@ export async function updateStaffProfile(formData: FormData, id: number) {
     // Forward the cookie from Express to the Browser
     cookieStore.set(name.trim(), value.trim(), {
       httpOnly: true,
-      secure: true, 
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       path: "/",
       maxAge: 20 * 60 * 60,
     });
