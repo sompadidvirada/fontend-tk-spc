@@ -51,6 +51,7 @@ export async function loginAction(
         secure: isProd,
         sameSite:isProd ? "none" : "lax",
         path: "/",
+        domain: ".treekoff.store",
         maxAge: 20 * 60 * 60,
       });
 
