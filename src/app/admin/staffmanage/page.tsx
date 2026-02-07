@@ -2,9 +2,11 @@ import { DataTableCompo } from "./(component)/Table";
 import Addstaff from "./(component)/Addstaff";
 import { getStaff } from "@/app/api/server/staff";
 import AddstaffBaristar from "./(component)/AddstaffBaristar";
+import { getAllBranch } from "@/app/api/server/branchs";
 
 const StaffManage = async () => {
   const staffData = await getStaff();
+  const branchs = await getAllBranch()
   return (
     <div className="mx-3 min-h-[80vh] pb-3 relative mt-3">
       {/* Header Section */}
@@ -25,12 +27,12 @@ const StaffManage = async () => {
           <div className="grid grid-cols-1  md:flex md:flex-row gap-3 h-6 md:h-10">
             <Addstaff />
 
-            <AddstaffBaristar />
+            <AddstaffBaristar branchs={branchs}/>
           </div>
         </div>
         <div className="px-5 mt-3">
           <div>
-            <DataTableCompo data={staffData} />
+            <DataTableCompo data={staffData} branchs={branchs}/>
           </div>
         </div>
       </>

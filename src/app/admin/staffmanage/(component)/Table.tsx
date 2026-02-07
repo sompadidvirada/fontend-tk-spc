@@ -19,7 +19,13 @@ import {
   DialogTitle,
   DialogHeader,
 } from "@/components/ui/dialog";
-import { ArrowUpDown, Loader2, MoreHorizontal, Search, Store } from "lucide-react";
+import {
+  ArrowUpDown,
+  Loader2,
+  MoreHorizontal,
+  Search,
+  Store,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -52,9 +58,12 @@ import EditRoleStaff from "./EditRoleStaff";
 import DeleteStaff from "./DeleteStaff";
 import SuspendStaff from "./SuspendStaff";
 import CheckPasswordStaff from "./CheckPasswordStaff";
+import EditBranchStaff from "./EditBranchStaff";
+import { Branch_type } from "../../tracksell/(component)/ParentTable";
 
 interface DataTableProps {
   data: Staff_Office[];
+  branchs: Branch_type[]
 }
 
 export type Staff_Office = {
@@ -64,6 +73,12 @@ export type Staff_Office = {
   image?: string;
   role: string;
   available: boolean;
+  branch: Branch_For_Staff;
+};
+
+type Branch_For_Staff = {
+  id: number;
+  name: string;
 };
 
 const ROLE_CONFIG: Record<string, { label: string; className: string }> = {
@@ -93,11 +108,12 @@ const ROLE_CONFIG: Record<string, { label: string; className: string }> = {
   },
 };
 
-export function DataTableCompo({ data }: DataTableProps) {
+export function DataTableCompo({ data,branchs }: DataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
+
   const [selectedViewImage, setSelectedViewImage] = React.useState<
     string | null
   >(null);
@@ -147,7 +163,7 @@ export function DataTableCompo({ data }: DataTableProps) {
     },
     {
       accessorKey: "name",
-      size:150,
+      size: 150,
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -174,7 +190,7 @@ export function DataTableCompo({ data }: DataTableProps) {
     },
     {
       accessorKey: "role",
-      
+
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -222,7 +238,7 @@ export function DataTableCompo({ data }: DataTableProps) {
     {
       accessorKey: "available",
       header: "ສະຖານະ",
-      size:110,
+      size: 110,
       cell: ({ row }) => (
         <Badge
           variant="outline"
@@ -247,16 +263,16 @@ export function DataTableCompo({ data }: DataTableProps) {
       ),
     },
     {
-      accessorKey: "branch",
+      accessorKey: "branch.name",
       header: "ປະຈຳສາຂາ",
-      cell: () => (
+      cell: ({ row }) => (
         <Badge
           variant="outline"
           className={`px-2 py-1 font-lao flex w-fit items-center gap-1 border-gray-200 bg-green-50`}
         >
           <>
             <Store className="h-3.5 w-3.5" />
-            ຍັງບໍ່ໄດ້ເລືອກສາຂາ
+            {row.getValue("branch_name") || "ບໍ່ມີສາຂາ"}
           </>
         </Badge>
       ),
@@ -282,6 +298,9 @@ export function DataTableCompo({ data }: DataTableProps) {
               {/* 1. Pass the staff data here */}
               <EditRoleStaff staff={staff} />
 
+              <DropdownMenuSeparator />
+
+              <EditBranchStaff staff={staff} branchs={branchs} />
               <DropdownMenuSeparator />
 
               {/* DELETE STAFF */}
@@ -393,7 +412,7 @@ export function DataTableCompo({ data }: DataTableProps) {
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   ))}
@@ -414,7 +433,7 @@ export function DataTableCompo({ data }: DataTableProps) {
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}

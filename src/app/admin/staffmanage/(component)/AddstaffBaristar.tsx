@@ -27,8 +27,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ChevronDownIcon, Coffee, UserRoundPlus, X } from "lucide-react";
-import React from "react";
+import {
+  Check,
+  ChevronDownIcon,
+  ChevronsUpDown,
+  Coffee,
+  UserRoundPlus,
+  X,
+} from "lucide-react";
+import React, { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -36,14 +43,26 @@ import { cn } from "@/lib/utils";
 import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
 import { createStaffBaristar } from "@/app/api/client/staff";
+import { Branch_type } from "../../tracksell/(component)/ParentTable";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 
-const AddstaffBaristar = () => {
+const AddstaffBaristar = ({ branchs }: { branchs: Branch_type[] }) => {
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [selectedImage, setSelectedImage] = React.useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
   const [isPending, startTransition] = React.useTransition();
   const router = useRouter();
+  const [selectedBranchId, setSelectedBranchId] = useState<string>("");
+  const [branchSearchOpen, setBranchSearchOpen] = useState(false);
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -67,6 +86,7 @@ const AddstaffBaristar = () => {
     // Manual appends for non-standard inputs
     if (date) formData.append("birthdate", date.toISOString());
     if (selectedImage) formData.append("image", selectedImage);
+    if (selectedBranchId) formData.append("branchId", selectedBranchId);
     startTransition(async () => {
       try {
         await createStaffBaristar(formData);
@@ -137,7 +157,6 @@ const AddstaffBaristar = () => {
               <Label htmlFor="name">ຊື່ພະນັກງານ</Label>
               <Input id="name" name="name" placeholder="ຊື່ພະນັກງານ" required />
             </div>
-
             <div className="grid gap-3">
               <Label htmlFor="phonenumber">ເບີໂທ</Label>
               <Input
@@ -147,7 +166,65 @@ const AddstaffBaristar = () => {
                 required
               />
             </div>
-
+            <div className="grid gap-3">
+              <Label>ສາຂາ</Label>
+              <Popover
+                open={branchSearchOpen}
+                onOpenChange={setBranchSearchOpen}
+              >
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={branchSearchOpen}
+                    className="w-full justify-between font-lao bg-white"
+                  >
+                    {selectedBranchId
+                      ? branchs.find(
+                          (b) => b.id.toString() === selectedBranchId,
+                        )?.name
+                      : "ເລືອກສາຂາ..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0 font-lao" align="start">
+                  <Command>
+                    <CommandInput placeholder="ຄົ້ນຫາສາຂາ..." />
+                    <CommandList>
+                      <CommandEmpty>ບໍ່ພົບຂໍ້ມູນສາຂາ.</CommandEmpty>
+                      <CommandGroup>
+                        {branchs.map((branch) => (
+                          <CommandItem
+                            key={branch.id}
+                            value={branch.name}
+                            onSelect={() => {
+                              setSelectedBranchId(branch.id.toString());
+                              setBranchSearchOpen(false);
+                            }}
+                            className="cursor-pointer"
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                selectedBranchId === branch.id.toString()
+                                  ? "opacity-100"
+                                  : "opacity-0",
+                              )}
+                            />
+                            <div className="flex flex-col">
+                              <span>{branch.name}</span>
+                              <span className="text-[10px] text-muted-foreground">
+                                {branch.province}
+                              </span>
+                            </div>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
             <div className="grid gap-3">
               <Label>ວັນເດືອນປິເກີດ</Label>
               <Popover>
@@ -167,7 +244,7 @@ const AddstaffBaristar = () => {
                     onSelect={setDate}
                     captionLayout="dropdown"
                     className={cn(
-                      "p-2 [--cell-size:--spacing(5)] text-sm"
+                      "p-2 [--cell-size:--spacing(5)] text-sm",
                       // your other classes
                     )}
                     classNames={{
@@ -178,7 +255,6 @@ const AddstaffBaristar = () => {
                 </PopoverContent>
               </Popover>
             </div>
-
             <div className="grid gap-3">
               <Label htmlFor="image">ຮູບພາບພະນັກງານ</Label>
 

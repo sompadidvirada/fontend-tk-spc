@@ -28,6 +28,12 @@ export const deleteStaff = async (id: { id: number }) => {
   });
 };
 
+export const updateBranchStaff = async (id: number, form: {branchId: number}) => {
+  return axios.put(`${URL}/managestaff/updatebranchstaff/${id}`, form, {
+    withCredentials: true
+  })
+}
+
 export const createStaffBaristar = async (form: FormData) => {
   return axios.post(`${URL}/managestaff/createstaffbaristar`, form, {
     withCredentials: true,
