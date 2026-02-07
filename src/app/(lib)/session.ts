@@ -31,17 +31,19 @@ export async function decrypt(session: string | undefined = "") {
   if (!session) return null;
 
   try {
-    // 2. Try to verify
     const { payload } = await jwtVerify(session, encodedKey, {
       algorithms: ["HS256"],
     });
     return payload;
-  } catch (error) {
-    // 3. Instead of letting the app crash, just log and return null
-    // This allows the middleware to handle the redirect properly
-    console.warn("Session verification failed (expired or invalid token)");
+  } catch (error: any) {
+    // Check CloudWatch for this specific message:
+    console.error("MIDDLEWARE DECRYPT ERROR:", {
+      message: error.message,
+      code: error.code, // e.g., ERR_JWT_SIGNATURE_VERIFICATION_FAILED
+      secretUsed: process.env.SESSION_SECRET
+        ? "SECRET_EXISTS"
+        : "SECRET_MISSING",
+    });
     return null;
   }
 }
-
-
