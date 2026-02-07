@@ -49,7 +49,7 @@ export async function loginAction(
       cookieStore.set(name.trim(), value.trim(), {
         httpOnly: true,
         secure: isProd,
-        sameSite: "lax",
+        sameSite:isProd ? "none" : "lax",
         path: "/",
         maxAge: 20 * 60 * 60,
       });
