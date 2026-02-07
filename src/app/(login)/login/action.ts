@@ -30,16 +30,14 @@ export async function loginAction(
 
   try {
     const response = await axios.post(
-      `https://api.treekoff.store/authentication/login`,
+      `${URL}/authentication/login`,
       {
         phoen_number: phone_number,
         password: password,
       },
       { withCredentials: true },
     );
-
     const cookieHeader = response.headers["set-cookie"];
-    console.log("COOKIES FROM BACKEND:", response);
 
     if (cookieHeader) {
       const cookieStore = await cookies();
@@ -51,7 +49,7 @@ export async function loginAction(
       cookieStore.set(name.trim(), value.trim(), {
         httpOnly: true,
         secure: isProd,
-        sameSite: isProd ? "none" : "lax",
+        sameSite: "lax",
         path: "/",
         maxAge: 20 * 60 * 60,
       });
@@ -108,8 +106,8 @@ export async function updateStaffProfile(formData: FormData, id: number) {
     // Forward the cookie from Express to the Browser
     cookieStore.set(name.trim(), value.trim(), {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: true, 
+      sameSite: "lax",
       path: "/",
       maxAge: 20 * 60 * 60,
     });

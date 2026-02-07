@@ -6,19 +6,15 @@ export const config = {
   matcher: ["/admin/:path*", "/staffoffice/:path*", "/staffbaristar/:path*"],
 };
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const cookie = request.cookies.get("session")?.value;
   const session = await decrypt(cookie);
 
-  // If no session exists, redirect to login
-  if (!session) {
+ if (!session) {
     const response = NextResponse.redirect(new URL("/login", request.url));
-    response.cookies.set("session", "", {
-      path: "/",
-      maxAge: 0,
-    });
-    return NextResponse.redirect(new URL("/login", request.url));
+    response.cookies.delete("session"); // Cleaner way to clear
+    return response;
   }
 
   const userRole = session.role as string;

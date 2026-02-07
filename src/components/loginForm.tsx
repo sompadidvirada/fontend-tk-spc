@@ -28,6 +28,8 @@ const LoginForms = () => {
   const router = useRouter();
   const setStaff = useStaffStore((state) => state.setStaff);
 
+  console.log(state)
+
   useEffect(() => {
     if (state?.success && state?.userPayload) {
       if (!state.redirectPath) return;
