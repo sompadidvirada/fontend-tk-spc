@@ -12,6 +12,8 @@ export const StaffStoreSync = ({ session }: { session: any }) => {
       setStaff({
         id: session.user.id,
         phonenumber: session.user.phonenumber || "",
+        name: session.user.name || "", // Add this
+        branch_name: session.user.branch_name || "", // Add this
         role: session.user.role || "",
         birthdate: session.user.birthdate || "",
         image: session.user.image || "",
