@@ -41,7 +41,7 @@ export const createStaff = async (form: FormData) => {
 };
 
 
-export const updateStaffProfile =  (form: FormData, id: number) => {
+export const updateStaffProfiles =  (form: FormData, id: number) => {
   return axios.put(`${URL}/managestaff/updateprofilestaff/${id}`, form, {
     withCredentials: true
   })

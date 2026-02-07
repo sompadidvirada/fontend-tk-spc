@@ -25,10 +25,10 @@ import {
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { toast } from "sonner";
-import { updateStaffProfile } from "@/app/api/client/staff";
 import { useRouter } from "next/navigation";
 import { updateSessionAction } from "@/app/(lib)/update_session";
 import { useStaffStore } from "@/store/staff";
+import { updateStaffProfile } from "@/app/(login)/login/action";
 
 const profileSchema = z.object({
   name: z.string().min(2, "ຊື່ຕ້ອງມີຢ່າງໜ້ອຍ 2 ຕົວອັກສອນ"),
