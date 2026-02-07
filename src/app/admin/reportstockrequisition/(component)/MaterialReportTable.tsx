@@ -56,7 +56,7 @@ type All_Stock_Requisition = {
   quantity_requisition: number;
 };
 
-type Supplyer = {
+export type Supplyer = {
   address: string | null;
   category: string | null;
   contact_name: string;

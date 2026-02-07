@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import MaterialReportTable from "./MaterialReportTable";
+import MaterialReportTable, { Supplyer } from "./MaterialReportTable";
 import DateRanges from "@/components/DateRanges";
 import { DateRange } from "react-day-picker";
 import CalendarRange from "./CalendarRange";
@@ -116,6 +116,7 @@ interface Report_Stock_Requisition {
   min_order: number;
   category_name: string;
   image: string;
+  supplyer: Supplyer;
   all_stockrequisition: All_Stock[];
 }
 
