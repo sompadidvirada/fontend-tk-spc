@@ -50,8 +50,8 @@ export async function loginAction(
 
       cookieStore.set(name.trim(), value.trim(), {
         httpOnly: true,
-        secure: isProd, 
-        sameSite: isProd ? "none" : "lax", 
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
         path: "/",
         maxAge: 20 * 60 * 60,
       });
@@ -86,9 +86,18 @@ export async function loginAction(
 }
 
 export async function updateStaffProfile(formData: FormData, id: number) {
-  const response = await axios.put(`${URL}/baristar/updatebaristar/${id}`, formData, {
-     withCredentials: true
-  });
+  const cookieStore = await cookies();
+  const sessionToken = cookieStore.get("session")?.value;
+  const response = await axios.put(
+    `${URL}/baristar/updatebaristar/${id}`,
+    formData,
+    {
+      withCredentials: true,
+      headers: {
+        Cookie: `session=${sessionToken}`,
+      },
+    },
+  );
 
   const cookieHeader = response.headers["set-cookie"];
   if (cookieHeader) {

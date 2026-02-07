@@ -49,9 +49,9 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { updateProfileAction } from "@/app/(login)/login/action";
 import { useRouter } from "next/navigation";
 import { useStaffStore } from "@/store/staff";
+import { updateStaffProfile } from "@/app/(login)/login/action";
 
 interface ReportData {
   send: {
@@ -69,6 +69,7 @@ const ProfilePage = () => {
   const [date, setDate] = useState<Date>(new Date());
   const [mounted, setMounted] = useState(false);
   const staff_detail = useStaffStore((s)=>s.staff)
+  const setStaff = useStaffStore((s)=>s.setStaff)
   const dateString = date ? format(date, "yyyy-MM-dd") : "";
   const [reportSendExp, setReprotSendExp] = useState<ReportData>();
   const [isPending, startTransition] = useTransition();
@@ -91,36 +92,30 @@ const ProfilePage = () => {
   };
 
   const handleUpdateProfile = async () => {
-    // 1. Basic Validation
     if (!editName.trim()) {
       alert("ກະລຸນາປ້ອນຊື່");
       return;
     }
     setIsEditing(true);
     try {
-      // 2. Prepare FormData
       const formData = new FormData();
       formData.append("name", editName);
 
-      // Only append image if the user actually selected a new file
       if (selectedImage) {
         formData.append("image", selectedImage);
       }
 
       // 3. Call the Server Action
-      const result = await updateProfileAction(
+      const result = await updateStaffProfile(
         formData,
         Number(staff_detail.id),
       );
+      const ress = result.user
+      setStaff(ress)
 
-      if (result.success) {
-        // 4. Handle Success
-        setIsDialogOpen(false); // Close the dialog
-        setSelectedImage(null); // Reset file selection
-
-        // Optional: Refresh the page to show new data from the updated cookie
-        // router.refresh();
-        // or window.location.reload() if you want a hard refresh
+      if (result.message === "Update success") {
+        setIsDialogOpen(false); 
+        setSelectedImage(null); 
         window.location.reload();
       } else {
         console.log(result);
