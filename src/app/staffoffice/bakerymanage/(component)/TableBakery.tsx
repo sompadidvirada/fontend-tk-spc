@@ -24,14 +24,12 @@ import {
   Loader2,
   MoreHorizontal,
   Search,
-  Store,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -52,12 +50,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 import EditBakery from "./EditBakery";
 import ChangeStatus from "./ChangeStatus";
 import EditStatufSellPerBranch from "./EditStatufSellPerBranch";
-import DeleteBakery from "./DeleteBakery";
 
 interface DataTableProps {
   data: Bakery_Detail[];
@@ -302,10 +298,6 @@ const TableBakery = ({ data, categoryBakery,supplyer }: DataTableProps) => {
               {/*MANAGE BAEKERY SEND PER BRANCH */}
 
               <EditStatufSellPerBranch bakery_selected={bakery_selected} />
-
-              {/** DELETE THE BAKERY */}
-
-              <DeleteBakery bakery_selected={bakery_selected} />
             </DropdownMenuContent>
           </DropdownMenu>
         );

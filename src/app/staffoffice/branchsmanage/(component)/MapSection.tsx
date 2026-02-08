@@ -41,7 +41,7 @@ const MapSection = ({ branchs }: { branchs: Branch[] }) => {
     <div className="space-y-4">
       {/* Searchable Select Menu on top of the map */}
       <div className="flex flex-col gap-2">
-        <Label className="font-lao pl-2 font-bold text-2xl">ຄົ້ນຫາສາຂາ</Label>
+        <Label className="font-lao pl-2 font-bold text-2xl">ຄົ້ນຫາສາຂາໃນແຜນທີ</Label>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button

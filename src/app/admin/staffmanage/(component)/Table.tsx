@@ -63,7 +63,7 @@ import { Branch_type } from "../../tracksell/(component)/ParentTable";
 
 interface DataTableProps {
   data: Staff_Office[];
-  branchs: Branch_type[]
+  branchs: Branch_type[];
 }
 
 export type Staff_Office = {
@@ -108,7 +108,7 @@ const ROLE_CONFIG: Record<string, { label: string; className: string }> = {
   },
 };
 
-export function DataTableCompo({ data,branchs }: DataTableProps) {
+export function DataTableCompo({ data, branchs }: DataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],

@@ -14,7 +14,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   Search,
   Edit,
-  Trash2,
   MoreHorizontal,
   Building2,
   UserX,
@@ -63,9 +62,6 @@ const TableMaterial = ({ materials, category, supplyer_spc }: Prop) => {
   const [isEditOpen2, setIsEditOpen2] = useState(false);
   const [editingMaterialVariant, setEditingMaterialVariant] =
     useState<Material | null>(null);
-
-  console.log(materials);
-  // Simple filter logic for the search bar
   const filteredMaterials = materials?.filter((item) => {
     if (!item.category_materialId) return;
     const matchesSearch = item.name
@@ -99,13 +95,6 @@ const TableMaterial = ({ materials, category, supplyer_spc }: Prop) => {
   const handleEdit2 = (item: Material) => {
     setEditingMaterialVariant(item); // Set the specific item data
     setIsEditOpen2(true); // Open the modal
-  };
-
-  const handleDelete = (id: number) => {
-    if (window.confirm("ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບ?")) {
-      console.log("Deleting ID:", id);
-      // Call your API delete function here
-    }
   };
 
   return (
@@ -332,14 +321,6 @@ const TableMaterial = ({ materials, category, supplyer_spc }: Prop) => {
                           >
                             <Edit className="mr-2 h-4 w-4 text-blue-600" />
                             ແກ້ໄຂບັນຈຸພັນວັດຖຸດິບ
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            onClick={() => handleDelete(Number(material.id))}
-                            className="cursor-pointer text-red-600 focus:text-red-600"
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            ລຶບວັດຖຸດິບ
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

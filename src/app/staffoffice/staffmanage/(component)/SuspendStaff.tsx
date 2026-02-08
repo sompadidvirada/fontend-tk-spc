@@ -73,7 +73,7 @@ const SuspendStaff = ({ staff }: EditRoleStaffProps) => {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle className="font-lao text-left">
-              ປິດການໃຊ້ງານຂອງຢູເຊີ: {staff.name} ຊົ່ວຄວາ
+              ປິດການໃຊ້ງານຂອງຢູເຊີ: {staff.name} ຊົ່ວຄາວ
             </DialogTitle>
             <DialogDescription className="font-lao text-left">
               ເປັນການປິດການໃຊ້ງານຢູເຊີນີ້ຊົ່ວຄາວ ບໍ່ແມ່ນການລົບຢູເຊີ

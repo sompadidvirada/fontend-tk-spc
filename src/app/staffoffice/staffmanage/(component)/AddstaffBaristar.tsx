@@ -116,7 +116,7 @@ const AddstaffBaristar = () => {
         {/* 2. Form wraps the content inside the Dialog */}
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>ເພີ່ມພະນັກງານບາເລສຕ້າ</DialogTitle>
+            <DialogTitle>ເພີ່ມພະນັກງານບາເລສຕ້າ ຫຼື ສາຂາ</DialogTitle>
             <DialogDescription className="text-[12px]">
               ສະໄອດີພະນັກງານສຳລັບການນຳໃຊ້ລະບົບ.
               ຫລັງຈາກໃສ່ຂໍ້ມູນຄົບແລ້ວມຫ້ກົດສົ່ງຟອມ.
@@ -126,7 +126,12 @@ const AddstaffBaristar = () => {
           <div className="grid gap-4 py-4">
             <div className="grid gap-3">
               <Label htmlFor="name">ຊື່ພະນັກງານ</Label>
-              <Input id="name" name="name" placeholder="ຊື່ພະນັກງານ" required />
+              <Input
+                id="name"
+                name="name"
+                placeholder="ຊື່ພະນັກງານ ຫຼື ສາຂາ.."
+                required
+              />
             </div>
 
             <div className="grid gap-3">
@@ -134,13 +139,16 @@ const AddstaffBaristar = () => {
               <Input
                 id="phonenumber"
                 name="phonenumber"
-                placeholder="ເບີໂທ"
+                placeholder="ຂອງພະນັກງານ ຫຼື ສາຂາ.."
                 required
               />
             </div>
 
             <div className="grid gap-3">
-              <Label>ວັນເດືອນປິເກີດ</Label>
+              <Label>
+                ວັນເດືອນປິເກີດ{" "}
+                <span className="text-red-500">"ໃສ່ ຫຼື ບໍ່ກໍໄດ້"</span>{" "}
+              </Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -158,7 +166,7 @@ const AddstaffBaristar = () => {
                     onSelect={setDate}
                     captionLayout="dropdown"
                     className={cn(
-                      "p-2 [--cell-size:--spacing(5)] text-sm"
+                      "p-2 [--cell-size:--spacing(5)] text-sm",
                       // your other classes
                     )}
                     classNames={{
@@ -171,7 +179,10 @@ const AddstaffBaristar = () => {
             </div>
 
             <div className="grid gap-3">
-              <Label htmlFor="image">ຮູບພາບພະນັກງານ</Label>
+              <Label htmlFor="image">
+                ຮູບພາບພະນັກງານ{" "}
+                <span className="text-red-500">"ໃສ່ ຫຼື ບໍ່ກໍໄດ້"</span>{" "}
+              </Label>
 
               {/* FIXED CONTAINER: w-full or w-60, aspect-video or aspect-square */}
               <div className="relative w-40 h-40 aspect-video rounded-lg border-2 border-dashed border-muted-foreground/20 bg-muted/50 overflow-hidden flex flex-col items-center justify-center transition-all">
