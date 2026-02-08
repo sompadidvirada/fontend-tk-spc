@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "react-day-picker/dist/style.css";
@@ -28,6 +28,9 @@ export const metadata: Metadata = {
   title: "Treekoff store",
   description: "treekoff suuply chain hold and maintenance by sompadid virada",
 };
+
+// This object controls the global viewport behavior
+
 
 export default function RootLayout({
   children,

@@ -377,7 +377,7 @@ const ProfilePage = () => {
               </Button>
             </DialogTrigger>
 
-            <DialogContent className="rounded-[30px] w-[92%] font-lao">
+            <DialogContent className="rounded-[30px] w-[92%] font-lao" onOpenAutoFocus={(e) => e.preventDefault()}>
               <DialogHeader>
                 <DialogTitle className="text-center text-xl">
                   ແກ້ໄຂຂໍ້ມູນສ່ວນໂຕ

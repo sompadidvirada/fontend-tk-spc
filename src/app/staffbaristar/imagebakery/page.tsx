@@ -36,6 +36,7 @@ const ImageBakery = () => {
   const [uploadedUrls, setUploadedUrls] = useState<any[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const dateString = selectedDate ? format(selectedDate, "yyyy-MM-dd") : "";
 
   const today = startOfDay(new Date());
@@ -44,7 +45,6 @@ const ImageBakery = () => {
   const isTooOld = daysDifference > 1;
   const isFuture = daysDifference < 0;
   const isDisabled = isTooOld || isFuture;
-  console.log(staff_detail)
 
   useEffect(() => {
     const fecthImageTrack = async () => {
@@ -139,7 +139,7 @@ const ImageBakery = () => {
         </div>
 
         {/* 3. Calendar Popover in Header */}
-        <Popover>
+        <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
           <PopoverTrigger asChild>
             <Button
               variant={"outline"}
@@ -160,7 +160,12 @@ const ImageBakery = () => {
             <Calendar
               mode="single"
               selected={selectedDate}
-              onSelect={(date) => date && setSelectedDate(date)}
+              onSelect={(date) => {
+                if (date) {
+                  setSelectedDate(date);
+                  setIsCalendarOpen(false);
+                }
+              }}
               initialFocus
             />
           </PopoverContent>
@@ -181,16 +186,19 @@ const ImageBakery = () => {
             <div className="grid grid-cols-4 gap-2">
               {uploadedUrls.map((url, i) => (
                 /* 1. We need a relative container with a set aspect ratio */
-                <div key={i} className="relative w-full aspect-square rounded-lg overflow-hidden border shadow-sm bg-slate-100">
-  <Image
-    alt={`uploaded-bakery-${i}`}
-    src={typeof url === "string" ? url : url.image_name}
-    fill
-    sizes="(max-width: 768px) 25vw, 10vw" // This tells mobile to use smaller size
-    className="object-cover"
-    priority={i < 4} // Helps load the first 4 images faster on mobile
-  />
-</div>
+                <div
+                  key={i}
+                  className="relative w-full aspect-square rounded-lg overflow-hidden border shadow-sm bg-slate-100"
+                >
+                  <Image
+                    alt={`uploaded-bakery-${i}`}
+                    src={typeof url === "string" ? url : url.image_name}
+                    fill
+                    sizes="(max-width: 768px) 25vw, 10vw" // This tells mobile to use smaller size
+                    className="object-cover"
+                    priority={i < 4} // Helps load the first 4 images faster on mobile
+                  />
+                </div>
               ))}
             </div>
           </div>

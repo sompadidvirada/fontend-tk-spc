@@ -186,7 +186,14 @@
   --color-pink-900: var(--src-pink-900);
 }
 
-
+/* globals.css */
+html, body {
+  /* Prevent pinch-to-zoom */
+  touch-action: pan-x pan-y;
+  /* Prevent text size adjustment when rotating phone */
+  -webkit-text-size-adjust: 100%;
+  /* Ensure the body doesn't bounce/scroll past limits */
+}
 
 /* Logic for Dark Mode Inversion */
 @layer theme {
