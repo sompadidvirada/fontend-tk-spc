@@ -52,3 +52,9 @@ export const updateStaffProfiles =  (form: FormData, id: number) => {
     withCredentials: true
   })
 }
+
+export const updateStaffPassword = (form: {old_password: string, new_password: string}, id: number) => {
+  return axios.put(`${URL}/managestaff/updatepasswordstaff/${id}`, form, {
+    withCredentials: true
+  })
+}

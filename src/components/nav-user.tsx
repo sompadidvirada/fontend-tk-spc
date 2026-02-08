@@ -36,6 +36,7 @@ import {
 import EditUserForm from "./EditUserForm";
 import { LogoutItem } from "@/app/admin/LogoutItem";
 import { useUIStore } from "@/store/ui";
+import EditUserPasswrod from "./EditUserPasswrod";
 
 export function NavUser({
   user,
@@ -51,13 +52,13 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const [showEditDialog, setShowEditDialog] = useState(false);
-  const lang = useUIStore((s)=>s.language)
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const lang = useUIStore((s) => s.language);
 
-
- const  t = {
+  const t = {
     profileDetail: lang === "LA" ? "ແກ້ໄຂຂໍ້ມູນໂປຮຟາຍ" : "Profile Detail",
-    changePassword: lang === "LA" ? "ແກ້ໄຂລະຫັດຜ່ານ" : "Change password"
-  }
+    changePassword: lang === "LA" ? "ແກ້ໄຂລະຫັດຜ່ານ" : "Change password",
+  };
 
   const userAvatar =
     user.image && user.image.trim() !== "" ? user.image : undefined;
@@ -74,7 +75,11 @@ export function NavUser({
               >
                 <Avatar className="h-8 w-8 rounded-full">
                   {/* FIX 1: Pass undefined instead of "" */}
-                  <AvatarImage src={userAvatar} alt={user.name} className="object-center object-cover"/>
+                  <AvatarImage
+                    src={userAvatar}
+                    alt={user.name}
+                    className="object-center object-cover"
+                  />
                   <AvatarFallback className="rounded-lg">
                     {user.name?.charAt(0) || "U"}
                   </AvatarFallback>
@@ -98,7 +103,11 @@ export function NavUser({
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar className="h-8 w-8 rounded-full">
                     {/* FIX 2: Apply the same safe check here */}
-                    <AvatarImage src={userAvatar} alt={user.name}  className="object-center object-cover"/>
+                    <AvatarImage
+                      src={userAvatar}
+                      alt={user.name}
+                      className="object-center object-cover"
+                    />
                     <AvatarFallback className="rounded-lg">
                       {user.name?.charAt(0) || "U"}
                     </AvatarFallback>
@@ -123,17 +132,25 @@ export function NavUser({
                   <BadgeCheck />
                   {t.profileDetail}
                 </DropdownMenuItem>
-                <DropdownMenuItem disabled={true} className="cursor-pointer">
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    setShowPasswordDialog(true);
+                  }}
+                >
                   <CreditCard />
                   {t.changePassword}
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <LogoutItem lang={lang}/>
+              <LogoutItem lang={lang} />
             </DropdownMenuContent>
           </DropdownMenu>
         </SidebarMenuItem>
       </SidebarMenu>
+
+      {/**EDIT DETAIL PROFILE */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="font-lao">
           <DialogHeader>
@@ -145,6 +162,19 @@ export function NavUser({
             user={user}
             onSuccess={() => setShowEditDialog(false)}
           />
+        </DialogContent>
+      </Dialog>
+      {/**EDIT PASSWORD PROFILE */}
+      <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+        <DialogContent className="font-lao">
+          <DialogHeader>
+            <DialogTitle>{t.changePassword}</DialogTitle>
+            <DialogDescription></DialogDescription>
+            <EditUserPasswrod
+              user={user}
+              onSuccess={() => setShowPasswordDialog(false)}
+            />
+          </DialogHeader>
         </DialogContent>
       </Dialog>
     </>

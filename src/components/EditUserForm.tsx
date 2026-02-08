@@ -100,7 +100,6 @@ const EditUserForm = ({
 
     try {
       const response = await updateStaffProfiles(formData, user.id);
-      console.log(response);
 
       if (response && response.data.user) {
         setStaff({

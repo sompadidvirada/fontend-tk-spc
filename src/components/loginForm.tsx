@@ -12,8 +12,8 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { loginAction } from "@/app/(login)/login/action";
 import { type ActionState } from "@/app/(login)/login/schema";
-import { Alert, AlertTitle } from "./ui/alert";
-import { Ban, PopcornIcon } from "lucide-react";
+import { Alert } from "./ui/alert";
+import { Ban } from "lucide-react";
 import { Spinner } from "./ui/spinner";
 import { useStaffStore } from "@/store/staff";
 import { useRouter } from "next/navigation";
@@ -28,7 +28,6 @@ const LoginForms = () => {
   const router = useRouter();
   const setStaff = useStaffStore((state) => state.setStaff);
 
-  console.log(state)
 
   useEffect(() => {
     if (state?.success && state?.userPayload) {
