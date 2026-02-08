@@ -19,3 +19,9 @@ export const getAllBranchImage = (form: {track_date: string}) => {
         withCredentials: true
     })
 }
+
+export const deleteImageTrack = (id:number) => {
+    return axios.delete(`${URL}/imagetrack/deleteimagetrack/${id}`, {
+        withCredentials: true
+    })
+}

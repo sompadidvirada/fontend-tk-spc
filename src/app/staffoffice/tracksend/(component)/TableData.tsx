@@ -82,7 +82,7 @@ const TableData = ({
       toast.success("ລົບຍອດຂາຍສຳເລັດ", {
         cancel: {
           label: "x",
-          onClick: () => console.log("Calcel."),
+          onClick: () => {},
         },
       });
     } catch (err) {
@@ -90,7 +90,7 @@ const TableData = ({
       toast.error("ລອງໃຫ່ມພາຍຫລັງ", {
         cancel: {
           label: "x",
-          onClick: () => console.log("Calcel !"),
+          onClick: () => {},
         },
       });
     }

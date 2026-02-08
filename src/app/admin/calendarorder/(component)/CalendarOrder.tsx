@@ -51,8 +51,6 @@ interface Prop {
 
 const CalendarOrder = ({ supplyer_spc }: Prop) => {
   const staff = useStaffStore((state) => state.staff);
-  console.log(staff);
-  const [events, setEvents] = useState<any[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);

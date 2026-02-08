@@ -126,7 +126,7 @@ function ProfileForm({
         {
           cancel: {
             label: "x",
-            onClick: () => console.log("Cancel!"),
+            onClick: () => {},
           },
         }
       );
@@ -138,7 +138,7 @@ function ProfileForm({
         toast.success(`ອັບເດດລາຍການສຳເລັດ`, {
           cancel: {
             label: "x",
-            onClick: () => console.log("Cancel!"),
+            onClick: () => {},
           },
         });
         router.refresh();
@@ -148,7 +148,7 @@ function ProfileForm({
         toast.error("ມີບາງຢ່າງຜິດພາດ", {
           cancel: {
             label: "x",
-            onClick: () => console.log("Cancel!"),
+            onClick: () => {},
           },
         });
       } finally {

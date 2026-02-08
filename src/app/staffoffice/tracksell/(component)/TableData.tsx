@@ -76,9 +76,6 @@ const TableData = ({
     return new Intl.NumberFormat("en-US").format(value);
   };
 
-  console.log(`data`, data)
-  console.log(`value`, value)
-
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -115,7 +112,7 @@ const TableData = ({
       toast.success("ລົບຍອດຂາຍສຳເລັດ", {
         cancel: {
           label: "x",
-          onClick: () => console.log("Calcel."),
+          onClick: () => {},
         },
       });
     } catch (err) {
@@ -123,7 +120,7 @@ const TableData = ({
       toast.error("ລອງໃຫ່ມພາຍຫລັງ", {
         cancel: {
           label: "x",
-          onClick: () => console.log("Calcel !"),
+          onClick: () => {},
         },
       });
     }

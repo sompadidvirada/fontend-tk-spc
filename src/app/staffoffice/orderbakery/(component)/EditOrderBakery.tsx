@@ -48,7 +48,7 @@ const EditOrderBakery = ({ id, setCheckOrderBakery }: EditTrackSellProps) => {
           toast.success(`ອັປເດດ ສຳເລັດ`, {
             cancel: {
               label: "x",
-              onClick: () => console.log("Cancel!"),
+              onClick: () => {},
             },
           });
         } catch (err) {
@@ -56,7 +56,7 @@ const EditOrderBakery = ({ id, setCheckOrderBakery }: EditTrackSellProps) => {
           toast.error(`ລອງໃຫ່ມພາຍຫລັງ`, {
             cancel: {
               label: "x",
-              onClick: () => console.log("Cancel!"),
+              onClick: () => {},
             },
           });
         }

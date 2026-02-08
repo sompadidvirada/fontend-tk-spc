@@ -34,7 +34,6 @@ const CheckPasswordStaff = ({ staff }: EditRoleStaffProps) => {
         setFetching(true);
         try {
           const ress = await checkPasswordStaff({ id: staff?.id });
-          console.log(ress);
           setPassword(ress.data.data.password);
         } catch (err) {
           toast.error("ບໍ່ສາມາດດຶງຂໍ້ມູນລະຫັດໄດ້");

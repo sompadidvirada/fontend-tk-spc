@@ -117,7 +117,6 @@ const TableMaterial = ({ selectedDate, data, value, loading, check, setCheck }: 
     startTransition(async () => {
       try {
         const ress = await deleteStockRequisition(id);
-        console.log(ress);
         toast.success("ລົບລາຍການສຳເລັດ.");
         setCheck((prev) => prev.filter((item) => item.id !== id));
       } catch (err) {
@@ -349,7 +348,6 @@ const TableMaterial = ({ selectedDate, data, value, loading, check, setCheck }: 
         setSelectedVariants((prev) => ({ ...prev, [rowId]: variantId }));
       },
       onOpenEditStock: (someValue) => {
-       console.log("Opening stock edit for:", someValue);
        // your logic here
     },
     },

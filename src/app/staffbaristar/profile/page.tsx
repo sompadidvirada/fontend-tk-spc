@@ -118,7 +118,6 @@ const ProfilePage = () => {
         setSelectedImage(null); 
         window.location.reload();
       } else {
-        console.log(result);
         toast.error("ມິຂໍ້ຜິດພາດໃນການແກ້ໄຂ.");
       }
     } catch (error) {

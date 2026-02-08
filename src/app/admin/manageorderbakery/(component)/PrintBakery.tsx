@@ -24,8 +24,6 @@ const PrintBakery = ({ selecDate }: { selecDate: string }) => {
     }
   }, [selecDate]);
 
-  console.log(dataToPrint)
-
   return (
     <>
       <Button variant="secondary" onClick={reactToPrintFn}>

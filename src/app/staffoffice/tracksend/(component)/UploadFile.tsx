@@ -105,8 +105,6 @@ const UploadFile = ({
       items: itemsToUpdate,
     };
 
-    console.log("Prepared for API:", finalPayload);
-
     try {
       const ress = await uploadTrackingSend(finalPayload);
 

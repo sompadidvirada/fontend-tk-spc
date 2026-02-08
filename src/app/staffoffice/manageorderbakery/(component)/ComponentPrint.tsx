@@ -43,8 +43,6 @@ const ComponentPrint = React.forwardRef<HTMLDivElement, ComponentPrintProps>(
       );
     }
 
-    console.log(dataToPrint);
-
     return (
       <div
         ref={ref}

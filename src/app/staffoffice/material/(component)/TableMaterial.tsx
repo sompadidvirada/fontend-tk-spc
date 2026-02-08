@@ -144,7 +144,7 @@ const TableMaterial = ({ materials, category, supplyer_spc }: Prop) => {
           }}
           onSuccess={() => {
             // Trigger your parent fetch logic here (e.g., refresh data)
-            console.log("Updated successfully!");
+            
           }}
         />
       )}
@@ -157,7 +157,7 @@ const TableMaterial = ({ materials, category, supplyer_spc }: Prop) => {
             setEditingMaterialVariant(null);
           }}
           onSuccess={() => {
-            console.log("Updated successfully!");
+            
           }}
         />
       )}

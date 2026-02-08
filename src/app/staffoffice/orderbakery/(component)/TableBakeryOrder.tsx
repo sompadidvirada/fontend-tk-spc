@@ -114,7 +114,6 @@ const TableBakeryOrder = ({
     startTransition(async () => {
       try {
         const ress = await insertOrderBakery(dataToApi);
-        console.log(ress);
         setCheckOrderBakery((prev) => [...prev, ress.data]);
         form.reset();
       } catch (err) {

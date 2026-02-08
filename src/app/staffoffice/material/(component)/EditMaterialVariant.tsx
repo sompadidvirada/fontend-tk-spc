@@ -67,7 +67,6 @@ const EditMaterialVariant = ({ material, isOpen, onClose, onSuccess }: any) => {
     setLoading(true);
     try {
       const ress = await createMaterialVariant({ materialId: material.id });
-      console.log(ress);
 
       const newVariantFromDB = ress.data;
       setVariants((prev) => [...prev, newVariantFromDB]);
@@ -83,7 +82,7 @@ const EditMaterialVariant = ({ material, isOpen, onClose, onSuccess }: any) => {
     e.preventDefault();
     try {
       const response = await updateRelationVariant(variants);
-      onClose()
+      onClose();
       toast.success("ອັປເດດສຳເລັດ");
       router.refresh();
     } catch (err) {

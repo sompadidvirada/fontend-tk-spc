@@ -66,8 +66,6 @@ const ReportHistory = () => {
     }
   }, [currentPage, staff_detail?.branchId]);
 
-  console.log("Current reports on this page:", reports.map(r => ({ id: r.id, date: r.report_date })));
-
   return (
     <div className="min-h-screen bg-slate-50 font-lao pb-24">
       {/* 1. Header */}

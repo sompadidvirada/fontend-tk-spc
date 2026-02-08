@@ -83,7 +83,7 @@ const Addstaff = () => {
           description: `${staffName}`,
           action: {
             label: "Undo",
-            onClick: () => console.log("Undo"),
+            onClick: () => {},
           },
         });
 

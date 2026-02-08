@@ -39,7 +39,7 @@ const EditTrackSend = ({ id, setCheckBakery }: EditTrackSendProps) => {
       toast.success(`ອັປເດດ ສຳເລັດ`, {
         cancel: {
           label: "x",
-          onClick: () => console.log("Cancel!"),
+          onClick: () => {},
         },
       });
     } catch (err) {
@@ -47,7 +47,7 @@ const EditTrackSend = ({ id, setCheckBakery }: EditTrackSendProps) => {
       toast.error(`ລອງໃຫ່ມພາຍຫລັງ`, {
         cancel: {
           label: "x",
-          onClick: () => console.log("Cancel!"),
+          onClick: () => {},
         },
       });
     }

@@ -95,7 +95,7 @@ const AddstaffBaristar = ({ branchs }: { branchs: Branch_type[] }) => {
           description: `${staffName}`,
           action: {
             label: "Undo",
-            onClick: () => console.log("Undo"),
+            onClick: () => {},
           },
         });
 

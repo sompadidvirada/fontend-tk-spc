@@ -68,8 +68,6 @@ const Navbar = () => {
     // Listen for the event from the backend
     socket.on("new_report_notification", (newReport) => {
       // Check if report is already in the list to avoid duplicates
-
-      console.log(newReport)
       setNotifications((prev) => {
         const exists = prev.find((n) => n.id === newReport.id);
         if (exists) return prev;

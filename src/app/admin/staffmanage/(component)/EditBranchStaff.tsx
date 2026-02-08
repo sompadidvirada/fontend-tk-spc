@@ -142,7 +142,7 @@ function ProfileForm({
         toast.success("ອັບເດດສຳເລັດ", {
           cancel: {
             label: "x",
-            onClick: () => console.log("Cancel!"),
+            onClick: () => {},
           },
         });
         router.refresh();
@@ -152,7 +152,7 @@ function ProfileForm({
         toast.success("ມີບາງຢ່າງຜິດພາດ", {
           cancel: {
             label: "x",
-            onClick: () => console.log("Cancel!"),
+            onClick: () => {},
           },
         });
       } finally {

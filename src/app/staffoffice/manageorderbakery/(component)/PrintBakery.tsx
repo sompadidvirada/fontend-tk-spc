@@ -24,7 +24,6 @@ const PrintBakery = ({ selecDate }: { selecDate: string }) => {
     }
   }, [selecDate]);
 
-  console.log(dataToPrint)
 
   return (
     <>

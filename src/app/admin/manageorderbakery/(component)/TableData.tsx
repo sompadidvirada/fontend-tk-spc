@@ -93,7 +93,6 @@ const TableData = () => {
     };
     const handleUpdateAdmin = (data: any) => {
       const socketDateOnly = data.confirm_date.split('T')[0];
-      console.log(data);
       if (socketDateOnly === selecDate) {
         setTrackOrder((prev) => {
           const exists = prev.find(

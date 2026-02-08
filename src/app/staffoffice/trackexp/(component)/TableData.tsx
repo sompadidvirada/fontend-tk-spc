@@ -106,7 +106,7 @@ const TableData = ({
       toast.success("ລົບຍອດໝົດອາຍຸສຳເລັດ", {
         cancel: {
           label: "x",
-          onClick: () => console.log("Calcel."),
+          onClick: () => {},
         },
       });
     } catch (err) {
@@ -114,7 +114,7 @@ const TableData = ({
       toast.error("ລອງໃຫ່ມພາຍຫລັງ", {
         cancel: {
           label: "x",
-          onClick: () => console.log("Calcel !"),
+          onClick: () => {},
         },
       });
     }

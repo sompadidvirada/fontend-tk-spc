@@ -38,7 +38,7 @@ const AddCategory = () => {
         toast.success(`ເພີ່ມເບເກີລີ້ ${categoryName} ສຳເລັດ`, {
           cancel: {
             label: "x",
-            onClick: () => console.log("Cancel!"),
+            onClick: () => {},
           },
         });
         router.refresh();
@@ -47,7 +47,7 @@ const AddCategory = () => {
         toast.error("ເກີດຂໍ້ຜິດຜາດຂັ້ນຕອນສ້າງ", {
           cancel: {
             label: "x",
-            onClick: () => console.log("Cancel!"),
+            onClick: () => {},
           },
         });
       } finally {

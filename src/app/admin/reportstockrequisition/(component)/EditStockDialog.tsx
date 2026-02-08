@@ -14,7 +14,6 @@ import { toast } from "sonner";
 const EditStockDialog = ({ isOpen, setIsOpen, data, fecthStockRemain }: any) => {
   if (!data) return null;
 
-  console.log(data);
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,7 +33,6 @@ const EditStockDialog = ({ isOpen, setIsOpen, data, fecthStockRemain }: any) => 
     } catch (err) {
       console.log(err);
     }
-    console.log("Updating ID:", data.variantId, "to new value...");
     setIsOpen(false);
   };
 

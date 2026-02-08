@@ -66,7 +66,7 @@ const AddstaffBaristar = () => {
           description: `${staffName}`,
           action: {
             label: "Undo",
-            onClick: () => console.log("Undo"),
+            onClick: () => {},
           },
         });
 

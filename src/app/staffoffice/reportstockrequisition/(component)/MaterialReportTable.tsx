@@ -136,7 +136,6 @@ const MaterialReportTable = ({
     ]),
   );
 
-  console.log(data);
 
   // Then in your cell:
 

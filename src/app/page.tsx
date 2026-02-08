@@ -25,7 +25,6 @@ export default async function Home() {
   if (role === "STAFF_SPC" || role === "STAFF_TK" || role === "STAFF_WH") {
    return redirect("/staffoffice");
   }
-  console.log(role)
 
   if (role === "BARISTAR") {
    return redirect("/staffbaristar")

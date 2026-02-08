@@ -64,7 +64,6 @@ const TableMaterial = ({ materials, category, supplyer_spc }: Prop) => {
   const [editingMaterialVariant, setEditingMaterialVariant] =
     useState<Material | null>(null);
 
-  console.log(materials);
   // Simple filter logic for the search bar
   const filteredMaterials = materials?.filter((item) => {
     if (!item.category_materialId) return;
@@ -103,7 +102,6 @@ const TableMaterial = ({ materials, category, supplyer_spc }: Prop) => {
 
   const handleDelete = (id: number) => {
     if (window.confirm("ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບ?")) {
-      console.log("Deleting ID:", id);
       // Call your API delete function here
     }
   };
@@ -154,8 +152,6 @@ const TableMaterial = ({ materials, category, supplyer_spc }: Prop) => {
             setEditingMaterial(null);
           }}
           onSuccess={() => {
-            // Trigger your parent fetch logic here (e.g., refresh data)
-            console.log("Updated successfully!");
           }}
         />
       )}
@@ -168,7 +164,6 @@ const TableMaterial = ({ materials, category, supplyer_spc }: Prop) => {
             setEditingMaterialVariant(null);
           }}
           onSuccess={() => {
-            console.log("Updated successfully!");
           }}
         />
       )}

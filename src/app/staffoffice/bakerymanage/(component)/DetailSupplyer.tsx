@@ -54,7 +54,6 @@ const DetailSupplyer = ({ supplyers }: { supplyers: Supplyer[] }) => {
     // Add your API delete logic here
     try {
       const ress = await deleteSupplyer(deletingId);
-      console.log(ress)
       router.refresh();
       toast.success("ລົບສຳເລັດ")
     } catch (err) {

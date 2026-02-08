@@ -85,12 +85,10 @@ const AddBakery = ({ categoryBakery }: DataTableProps) => {
     startTransition(async () => {
       try {
         const resss = await createBakery(formData);
-
-        console.log(resss);
         toast.success(`ເພີ່ມເບເກີລີ້ ${bakeryName} ສຳເລັດ`, {
           cancel: {
             label: "x",
-            onClick: () => console.log("Cancel!"),
+            onClick: () => {},
           },
         });
 
@@ -100,7 +98,7 @@ const AddBakery = ({ categoryBakery }: DataTableProps) => {
         toast.error("ເກີດຂໍ້ຜິດຜາດຂັ້ນຕອນສ້າງ", {
           cancel: {
             label: "x",
-            onClick: () => console.log("Cancel!"),
+            onClick: () => {},
           },
         });
       } finally {

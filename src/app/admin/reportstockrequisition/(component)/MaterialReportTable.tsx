@@ -136,8 +136,6 @@ const MaterialReportTable = ({
     ]),
   );
 
-  console.log(data);
-
   // Then in your cell:
 
   const columns: ColumnDef<Report_Stock>[] = [

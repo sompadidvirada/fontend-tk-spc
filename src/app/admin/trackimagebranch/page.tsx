@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import {
   Carousel,
+  CarouselApi,
   CarouselContent,
   CarouselItem,
   CarouselNext,
@@ -34,6 +35,7 @@ import {
   Pencil,
   CalendarIcon,
   ChevronDownIcon,
+  Trash2,
 } from "lucide-react";
 import Image from "next/image";
 import { Label } from "@/components/ui/label";
@@ -45,9 +47,24 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { getAllBranchImage } from "@/app/api/client/tracking_image";
+import {
+  deleteImageTrack,
+  getAllBranchImage,
+} from "@/app/api/client/tracking_image";
 import { addPhoneBranch } from "@/app/api/client/branchs";
 import { toast } from "sonner";
+import { DialogDescription } from "@radix-ui/react-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useRouter } from "next/navigation";
 
 interface Branch {
   id: string;
@@ -71,6 +88,20 @@ export default function BranchImageTracker() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [branchsImages, setBranchsImages] = useState<Branch[]>([]);
   const dateString = date ? format(date, "yyyy-MM-dd") : "";
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [api, setApi] = useState<CarouselApi>();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [targetImageId, setTargetImageId] = useState<number>();
+  const router = useRouter();
+
+  // Listen for slide changes
+  useEffect(() => {
+    if (!api) return;
+
+    api.on("select", () => {
+      setCurrentIndex(api.selectedScrollSnap());
+    });
+  }, [api]);
 
   useEffect(() => {
     const fecthBranchImage = async () => {
@@ -108,16 +139,38 @@ export default function BranchImageTracker() {
             : branch,
         ),
       );
-      toast.success("ເພີ່ມເບີໂທສຳເລັດ",{
+      toast.success("ເພີ່ມເບີໂທສຳເລັດ", {
         cancel: {
           label: "x",
-          onClick: ()=>{}
-        }
-      })
+          onClick: () => {},
+        },
+      });
     } catch (err) {
       console.error("Update failed:", err);
     } finally {
       setEditingBranch(null);
+    }
+  };
+
+  const handleDeleteImage = async () => {
+    if (!targetImageId) return;
+    try {
+      await deleteImageTrack(targetImageId);
+      setBranchsImages((prev) =>
+        prev.map((branch) => ({
+          ...branch,
+          // Filter the track_image_bakery array for each branch
+          track_image_bakery: branch.track_image_bakery.filter(
+            (img) => img.id !== targetImageId,
+          ),
+        })),
+      );
+      toast.success("ລົບຮູບພາບສຳເລັດ");
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setSelectedBranch(null);
+      router.refresh();
     }
   };
 
@@ -222,28 +275,34 @@ export default function BranchImageTracker() {
                   </div>
                 </TableCell>
                 <TableCell className="px-3">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={branch.phonenumber ? false : true}
-                    className="h-8 gap-2 text-green-100 bg-green-600 rounded-2xl border-green-200 hover:bg-green-50 hover:text-green-700 hover:border-green-300"
-                    onClick={() => openWhatsApp(branch.phonenumber)}
-                  >
-                    <MessageCircle className="w-3.5 h-3.5" />
-                    ສົ່ງຂໍ້ຄວາມ
-                  </Button>
+                  {branch.phonenumber ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 gap-2 text-green-100 bg-green-600 rounded-2xl border-green-200 hover:bg-green-50 hover:text-green-700 hover:border-green-300"
+                      onClick={() => openWhatsApp(branch.phonenumber)}
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" />
+                      ສົ່ງຂໍ້ຄວາມ
+                    </Button>
+                  ) : (
+                    <span className="opacity-50">none</span>
+                  )}
                 </TableCell>
 
                 <TableCell className="text-right px-3">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={branch.track_image_bakery.length === 0}
-                    onClick={() => setSelectedBranch(branch)}
-                    className="hover:bg-blue-50 hover:text-blue-600"
-                  >
-                    <Eye className="w-4 h-4 mr-2" /> Review
-                  </Button>
+                  {branch.track_image_bakery.length === 0 ? (
+                    <span className="opacity-50">none</span>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedBranch(branch)}
+                      className="hover:bg-blue-50 hover:text-blue-600"
+                    >
+                      <Eye className="w-4 h-4 mr-2" /> Review
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
             ))}
@@ -302,10 +361,31 @@ export default function BranchImageTracker() {
               {dateString}
             </Badge>
           </div>
+          <div className="absolute bottom-1 left-4 z-50">
+            <Button
+              type="button"
+              variant="destructive"
+              size="sm"
+              className="font-lao"
+              onClick={() => {
+                // Get the image object based on the current visible slide
+                const imageToDelete =
+                  selectedBranch?.track_image_bakery[currentIndex];
+
+                if (imageToDelete) {
+                  // You can store this in a state to pass to your AlertDialog
+                  setTargetImageId(imageToDelete.id);
+                  setIsDeleteDialogOpen(true);
+                }
+              }}
+            >
+              ລົບຮູບພາບນິ້
+            </Button>
+          </div>
 
           <div className="flex items-center justify-center min-h-[600px] w-full group">
             {selectedBranch && selectedBranch.track_image_bakery.length > 0 ? (
-              <Carousel className="w-full h-full">
+              <Carousel setApi={setApi} className="w-full h-full">
                 <CarouselContent>
                   {selectedBranch.track_image_bakery.map((img, index) => (
                     <CarouselItem
@@ -347,6 +427,33 @@ export default function BranchImageTracker() {
           </div>
         </DialogContent>
       </Dialog>
+      {/**DIALOG CONFIRM DELETE IMAGE PREVIEW */}
+
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogContent className="font-lao">
+          <AlertDialogHeader>
+            <AlertDialogTitle>ທ່ານແນ່ໃຈບໍ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              ການລົບຮູບພາບນີ້ຈະບໍ່ສາມາດກູ້ຄືນໄດ້. ທ່ານຕ້ອງການລົບແທ້ບໍ?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>ຍົກເລີກ</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                handleDeleteImage(); // Call your delete function
+                setIsDeleteDialogOpen(false);
+              }}
+            >
+              ຢືນຢັນການລົບ
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

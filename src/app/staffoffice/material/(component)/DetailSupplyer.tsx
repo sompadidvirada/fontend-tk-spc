@@ -104,7 +104,6 @@ const DetailSupplyer = ({ supplyer_spc }: { supplyer_spc: Supplyer_Spc[] }) => {
     try {
       // Replace with your actual update API route
       const ress = await updateSupplyerSpc(data, editingSupplier.id);
-      console.log(ress);
       toast.success("ອັບເດດຂໍ້ມູນສຳເລັດ");
       setIsEditDialogOpen(false);
       // Optional: trigger a refresh here

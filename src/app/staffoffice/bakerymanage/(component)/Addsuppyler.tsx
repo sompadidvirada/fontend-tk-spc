@@ -42,11 +42,10 @@ const Addsuppyler = () => {
       try {
         const resss = await createSupplyer(formData);
 
-        console.log(resss);
         toast.success(`ເພີ່ມເບເກີລີ້ ${supplyerName} ສຳເລັດ`, {
           cancel: {
             label: "x",
-            onClick: () => console.log("Cancel!"),
+            onClick: () => {},
           },
         });
 
@@ -56,7 +55,7 @@ const Addsuppyler = () => {
         toast.error("ເກີດຂໍ້ຜິດຜາດຂັ້ນຕອນສ້າງ", {
           cancel: {
             label: "x",
-            onClick: () => console.log("Cancel!"),
+            onClick: () => {},
           },
         });
       } finally {

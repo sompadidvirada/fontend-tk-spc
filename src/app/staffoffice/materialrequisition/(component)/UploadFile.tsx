@@ -97,7 +97,6 @@ const UploadFile = ({
 
     if (newRequisitions.length > 0) {
       const response = await uploadFileStock(newRequisitions);
-      console.log(response);
       setCheck((prev) => {
         // Create a map from existing state for quick lookup
         const existingMap = new Map(
