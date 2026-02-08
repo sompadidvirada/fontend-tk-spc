@@ -74,15 +74,19 @@ const EditUserPasswrod = ({
 
     setLoading(true);
     try {
-    const ress =  await updateStaffPassword(
+      const ress = await updateStaffPassword(
         { old_password: data.old_password, new_password: data.new_password },
         user.id,
       );
-      onSuccess()
-      toast.success(ress.data.message)
-    } catch (err) {
+      onSuccess();
+      toast.success(ress.data.message);
+    } catch (err: any) {
       console.error(err);
-      toast.error("ເກີດຂໍ້ຜິດພາດໃນການອັບເດດ");
+      if (err.response.data.message === "ລະຫັດຜ່ານເກົ່າບໍ່ຖືກຕ້ອງ.") {
+        toast.error("ລະຫັດຜ່ານເກົ່າບໍ່ຖືກຕ້ອງ.");
+      } else {
+        toast.error("ເກີດຂໍ້ຜິດພາດໃນການອັບເດດ");
+      }
     } finally {
       setLoading(false);
     }
