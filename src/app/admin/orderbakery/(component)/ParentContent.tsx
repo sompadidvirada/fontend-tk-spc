@@ -69,7 +69,7 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
   const [supplyerId, setSupplyerId] = React.useState("");
   const [bakerys, setBakerys] = React.useState<BakeryDetail[]>([]);
   const [isPending, startTransition] = React.useTransition();
-  const [loading, setLoading] = React.useState(false)
+  const [loading, setLoading] = React.useState(false);
   const [checkOrderBakery, setCheckOrderBakery] = React.useState<
     Order_Bakery[]
   >([]);
@@ -152,11 +152,14 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
 
   React.useEffect(() => {
     const fecthData = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
         const dateTo = date?.toLocaleDateString("en-CA");
         const [bakerysRes, DataOrderRes, orderBakery] = await Promise.all([
-          getBakerysAvailable({ branchId: Number(value), supplyerId: Number(supplyerId)  }),
+          getBakerysAvailable({
+            branchId: Number(value),
+            supplyerId: Number(supplyerId),
+          }),
           getDataOrderBakery({
             branchId: Number(value),
             order_at: dateTo,
@@ -171,8 +174,8 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
         setPreviousOrder(orderBakery.data.previous);
       } catch (err) {
         console.log(err);
-      } finally{
-        setLoading(false)
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -199,19 +202,19 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
             isForReport={false}
           />
           {/* 2. Controlled Select component */}
-            <Select onValueChange={setSupplyerId} value={supplyerId}>
-              <SelectTrigger className="border-slate-200 w-full bg-secondary">
-                <SelectValue placeholder="ເລືອກບໍລິສັດ/ຮ້ານ" />
-              </SelectTrigger>
-              <SelectContent className="font-lao">
-                {supplyer &&
-                  supplyer?.map((item, i) => (
-                    <SelectItem key={i} value={item.id.toString()}>
-                      {item.name}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
+          <Select onValueChange={setSupplyerId} value={supplyerId}>
+            <SelectTrigger className="border-slate-200 w-full bg-secondary">
+              <SelectValue placeholder="ເລືອກບໍລິສັດ/ຮ້ານ" />
+            </SelectTrigger>
+            <SelectContent className="font-lao">
+              {supplyer &&
+                supplyer?.map((item, i) => (
+                  <SelectItem key={i} value={item.id.toString()}>
+                    {item.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
 
           <ConfirmOrder selectDate={date} value={value} />
           <>

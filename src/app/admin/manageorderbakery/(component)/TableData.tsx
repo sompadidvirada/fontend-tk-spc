@@ -31,6 +31,14 @@ import { toast } from "sonner";
 import { getTrackingOrderBakery } from "@/app/api/client/order_bakery";
 import { useSocket } from "@/socket-io/SocketContext";
 import PrintBakery from "./PrintBakery";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Supplyer } from "../../bakerymanage/(component)/TableBakery";
 
 interface Track_Order_Branch {
   branchId: number;
@@ -41,11 +49,12 @@ interface Track_Order_Branch {
   admin_confirm_stt: boolean;
 }
 
-const TableData = () => {
+const TableData = ({ supllyers }: { supllyers: Supplyer[] }) => {
   const [date, setDate] = useState<Date>(new Date());
   const selecDate = date ? format(date, "yyyy-MM-dd") : "";
   const [trackOrder, setTrackOrder] = useState<Track_Order_Branch[]>([]);
   const [open, setOpen] = useState(false);
+  const [supplyerId, setSupplyerId] = React.useState("");
 
   useEffect(() => {
     const fecthTrackingOrder = async () => {
@@ -92,12 +101,10 @@ const TableData = () => {
       }
     };
     const handleUpdateAdmin = (data: any) => {
-      const socketDateOnly = data.confirm_date.split('T')[0];
+      const socketDateOnly = data.confirm_date.split("T")[0];
       if (socketDateOnly === selecDate) {
         setTrackOrder((prev) => {
-          const exists = prev.find(
-            (item) => item.branchId === data.branchId,
-          );
+          const exists = prev.find((item) => item.branchId === data.branchId);
 
           if (exists) {
             return prev.map((item) =>
@@ -125,6 +132,23 @@ const TableData = () => {
   return (
     <>
       <div className="flex gap-3 my-3 w-full justify-end">
+        {/* 2. Controlled Select component */}
+        <div>
+          <Select onValueChange={setSupplyerId} value={supplyerId}>
+          <SelectTrigger className="border-slate-200 w-full bg-secondary">
+            <SelectValue placeholder="ເລືອກບໍລິສັດ/ຮ້ານ" />
+          </SelectTrigger>
+          <SelectContent className="font-lao">
+            {supllyers &&
+              supllyers?.map((item, i) => (
+                <SelectItem key={i} value={item.id.toString()}>
+                  {item.name}
+                </SelectItem>
+              ))}
+          </SelectContent>
+        </Select>
+        </div>
+        
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -147,7 +171,7 @@ const TableData = () => {
             />
           </PopoverContent>
         </Popover>
-       <PrintBakery selecDate={selecDate}/>
+        <PrintBakery selecDate={selecDate} supplyerId={supplyerId}/>
       </div>
       {/* --- EXCEPTION TABLE --- */}
       <Card className="border-none shadow-xl shadow-slate-200/60 overflow-hidden bg-white">
@@ -158,19 +182,19 @@ const TableData = () => {
                 ຊື່ສາຂາ
               </TableHead>
               <TableHead className="text-center text-slate-500 font-bold">
-                ຈຳນວນລາຍການທັງໝົດ
+                ຈຳນວນເບເກີລີ້ທັງໝົດ
               </TableHead>
               <TableHead className="text-center text-slate-900 font-bold">
-                ຈຳນວນທີ່ປ່ຽນແປງ (Changed)
+                ລາຍການທີສາຂາແກ້ໄຂ
               </TableHead>
               <TableHead className="text-center text-slate-500 font-bold">
-                Barista
+                ສາຂາຢືນຢັນ
               </TableHead>
               <TableHead className="text-center text-slate-500 font-bold">
-                Admin
+                ຫົວໜ້າຢືນຢັນ
               </TableHead>
               <TableHead className="text-right pr-8 text-slate-500 font-bold">
-                Action
+                ຈັດການ
               </TableHead>
             </TableRow>
           </TableHeader>

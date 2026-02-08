@@ -73,7 +73,7 @@ export const getTrackingOrderBakery = (form: {track_date: string | undefined}) =
   })
 }
 
-export const getOrderBakeryPrint = (form: {order_at: string | undefined}) => {
+export const getOrderBakeryPrint = (form: {order_at: string | undefined, supplyerId: string}) => {
   return axios.post(`${URL}/orderbakery/getordertoprint`, form, {
     withCredentials: true
   })

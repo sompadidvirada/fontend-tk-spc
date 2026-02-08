@@ -1,10 +1,12 @@
 import { Filter } from "lucide-react";
 import TableData from "./(component)/TableData";
+import { getSupplyer } from "@/app/api/server/supplyer";
 
 // --- DEMO DATA ---
 // Each row represents one branch's total status for the day
 
-const TrackAllOrder = () => {
+const TrackAllOrder = async () => {
+  const supllyers = await getSupplyer()
   return (
     <div className="flex flex-1 flex-col relative px-4 font-lao mt-3">
       <div className="@container/main flex flex-1 flex-col gap-2 mb-8">
@@ -20,7 +22,7 @@ const TrackAllOrder = () => {
           </p>
         </div>
 
-        <TableData/>
+        <TableData supllyers={supllyers}/>
         {/* --- HEADER --- */}
       </div>
     </div>
