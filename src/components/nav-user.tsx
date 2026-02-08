@@ -74,7 +74,7 @@ export function NavUser({
               >
                 <Avatar className="h-8 w-8 rounded-full">
                   {/* FIX 1: Pass undefined instead of "" */}
-                  <AvatarImage src={userAvatar} alt={user.name} />
+                  <AvatarImage src={userAvatar} alt={user.name} className="object-center object-cover"/>
                   <AvatarFallback className="rounded-lg">
                     {user.name?.charAt(0) || "U"}
                   </AvatarFallback>
@@ -98,7 +98,7 @@ export function NavUser({
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar className="h-8 w-8 rounded-full">
                     {/* FIX 2: Apply the same safe check here */}
-                    <AvatarImage src={userAvatar} alt={user.name} />
+                    <AvatarImage src={userAvatar} alt={user.name}  className="object-center object-cover"/>
                     <AvatarFallback className="rounded-lg">
                       {user.name?.charAt(0) || "U"}
                     </AvatarFallback>
