@@ -159,7 +159,7 @@ const OrderBakery = () => {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 pb-32 font-lao">
       {/* 1. TOP SECTION: Header & Date Picker */}
-      <div className="bg-[#402f22] px-6 pt-12 pb-6 border-b rounded-b-[30px] shadow-sm sticky top-0 z-10">
+      <div className="bg-[#402f22] px-6 pt-12 pb-6 border-b rounded-b-[30px] shadow-sm top-0 z-10">
         <h1 className="text-xl font-black text-gray-100 mb-4">
           ຈັດການອໍເບເກີລີ້
         </h1>

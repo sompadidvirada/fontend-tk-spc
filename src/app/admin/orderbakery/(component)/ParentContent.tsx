@@ -181,6 +181,9 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
     }
   }, [date, value, supplyerId]);
 
+  
+  console.log(checkOrderBakery)
+
   return (
     <>
       {" "}
