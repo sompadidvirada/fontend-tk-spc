@@ -47,3 +47,10 @@ export const getReportHistory = (form: {
   });
 };
 
+
+export const updatePasswordBaristar = (form: {old_password: string, new_password: string}, id: number) => {
+  return axios.patch(`${URL}/baristar/updatepasswordbaristar/${id}`, form, {
+    withCredentials: true
+  })
+}
+

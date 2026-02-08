@@ -13,6 +13,7 @@ import {
   Camera,
   ClipboardClock,
   ChevronRight,
+  Lock,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -25,7 +26,10 @@ import {
 import { cn } from "@/lib/utils";
 import { useSession } from "../SessionProvider";
 import { addDays, format, getDay } from "date-fns";
-import { getSendAndExp } from "@/app/api/client/baristar";
+import {
+  getSendAndExp,
+  updatePasswordBaristar,
+} from "@/app/api/client/baristar";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -68,8 +72,8 @@ interface ReportData {
 const ProfilePage = () => {
   const [date, setDate] = useState<Date>(new Date());
   const [mounted, setMounted] = useState(false);
-  const staff_detail = useStaffStore((s)=>s.staff)
-  const setStaff = useStaffStore((s)=>s.setStaff)
+  const staff_detail = useStaffStore((s) => s.staff);
+  const setStaff = useStaffStore((s) => s.setStaff);
   const dateString = date ? format(date, "yyyy-MM-dd") : "";
   const [reportSendExp, setReprotSendExp] = useState<ReportData>();
   const [isPending, startTransition] = useTransition();
@@ -82,6 +86,46 @@ const ProfilePage = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     staff_detail?.image || null,
   );
+
+  const [isPasswordOpen, setIsPasswordOpen] = useState(false);
+  const [passData, setPassData] = useState({
+    old: "",
+    new: "",
+    confirm: "",
+  });
+
+  const handlePasswordChange = async () => {
+    // Validation
+    if (!passData.old || !passData.new || !passData.confirm) {
+      return toast.error("ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບ");
+    }
+    if (passData.new !== passData.confirm) {
+      return toast.error("ລະຫັດຜ່ານໃໝ່ບໍ່ຕົງກັນ");
+    }
+    if (passData.new.length < 3) {
+      return toast.error("ລະຫັດຜ່ານຕ້ອງມີຢ່າງໜ້ອຍ 3 ຕົວອັກສອນ");
+    }
+
+    try {
+      setIsEditing(true);
+      await updatePasswordBaristar(
+        { old_password: passData.old, new_password: passData.new },
+        Number(staff_detail.id),
+      );
+
+      toast.success("ປ່ຽນລະຫັດຜ່ານສຳເລັດ");
+      setIsPasswordOpen(false);
+      setPassData({ old: "", new: "", confirm: "" });
+    } catch (error: any) {
+      if (error.response.data.message === "ລະຫັດຜ່ານເກົ່າບໍ່ຖືກຕ້ອງ") {
+        toast.error("ລະຫັດຜ່ານເກົ່າບໍ່ຖືກຕ້ອງ");
+      } else {
+        toast.error("ເຊີເວີຂັດຂ້ອງ");
+      }
+    } finally {
+      setIsEditing(false);
+    }
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -110,12 +154,12 @@ const ProfilePage = () => {
         formData,
         Number(staff_detail.id),
       );
-      const ress = result.user
-      setStaff(ress)
+      const ress = result.user;
+      setStaff(ress);
 
       if (result.message === "Update success") {
-        setIsDialogOpen(false); 
-        setSelectedImage(null); 
+        setIsDialogOpen(false);
+        setSelectedImage(null);
         window.location.reload();
       } else {
         toast.error("ມິຂໍ້ຜິດພາດໃນການແກ້ໄຂ.");
@@ -362,6 +406,9 @@ const ProfilePage = () => {
             {/* Optional: Add a chevron icon for better UI */}
             <ChevronRight size={18} className="text-slate-300" />
           </Button>
+
+          {/**DIALOG EDIT PROFLIE */}
+
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button
@@ -376,7 +423,10 @@ const ProfilePage = () => {
               </Button>
             </DialogTrigger>
 
-            <DialogContent className="rounded-[30px] w-[92%] font-lao" onOpenAutoFocus={(e) => e.preventDefault()}>
+            <DialogContent
+              className="rounded-[30px] w-[92%] font-lao"
+              onOpenAutoFocus={(e) => e.preventDefault()}
+            >
               <DialogHeader>
                 <DialogTitle className="text-center text-xl">
                   ແກ້ໄຂຂໍ້ມູນສ່ວນໂຕ
@@ -451,6 +501,89 @@ const ProfilePage = () => {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+
+          {/**DIALOG CHANGE PASSWORD */}
+
+          <Dialog open={isPasswordOpen} onOpenChange={setIsPasswordOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="ghost"
+                className="w-full justify-between h-14 rounded-2xl bg-slate-50 px-4 mt-2"
+              >
+                <div className="flex items-center gap-3">
+                  <Lock size={20} className="text-slate-400" />
+                  <span className="text-sm font-medium">ແກ້ໄຂລະຫັດຜ່ານ</span>
+                </div>
+              </Button>
+            </DialogTrigger>
+
+            <DialogContent className="rounded-[30px] w-[92%] font-lao">
+              <DialogHeader>
+                <DialogTitle className="text-center text-xl">
+                  ປ່ຽນລະຫັດຜ່ານໃໝ່
+                </DialogTitle>
+              </DialogHeader>
+
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label className="text-slate-600">ລະຫັດຜ່ານເກົ່າ</Label>
+                  <Input
+                    type="password"
+                    className="h-12 rounded-xl"
+                    placeholder="••••••••"
+                    value={passData.old}
+                    onChange={(e) =>
+                      setPassData({ ...passData, old: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-slate-600">ລະຫັດຜ່ານໃໝ່</Label>
+                  <Input
+                    type="password"
+                    className="h-12 rounded-xl"
+                    placeholder="••••••••"
+                    value={passData.new}
+                    onChange={(e) =>
+                      setPassData({ ...passData, new: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-slate-600">ຢືນຢັນລະຫັດຜ່ານໃໝ່</Label>
+                  <Input
+                    type="password"
+                    className="h-12 rounded-xl"
+                    placeholder="••••••••"
+                    value={passData.confirm}
+                    onChange={(e) =>
+                      setPassData({ ...passData, confirm: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              <DialogFooter className="flex-row gap-3">
+                <Button
+                  variant="outline"
+                  className="flex-1 h-12 rounded-2xl bg-slate-100 border-none"
+                  onClick={() => setIsPasswordOpen(false)}
+                >
+                  ຍົກເລີກ
+                </Button>
+                <Button
+                  className="flex-1 h-12 rounded-2xl bg-blue-600 text-white"
+                  disabled={isEditing}
+                  onClick={handlePasswordChange}
+                >
+                  {isEditing ? <Loader2 className="animate-spin" /> : "ຢືນຢັນ"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
