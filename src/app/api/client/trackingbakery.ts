@@ -46,7 +46,7 @@ export const sendTrackBakerySell = (form: Track_Bakery_Sell) => {
   });
 };
 
-export const getBakerysAvailable = (form: { branchId: number }) => {
+export const getBakerysAvailable = (form: { branchId: number, supplyerId?: number }) => {
   return axios.post(`${URL}/managetracking/getavailablebakerys`, form, {
     withCredentials: true,
   });

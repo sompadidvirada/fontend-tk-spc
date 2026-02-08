@@ -52,7 +52,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 import EditBakery from "./EditBakery";
 import ChangeStatus from "./ChangeStatus";

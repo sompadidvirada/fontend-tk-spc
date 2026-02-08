@@ -16,6 +16,7 @@ export interface InsertManyBakeryOrderForm {
 export const getDataOrderBakery = (form: {
   branchId: number;
   order_at: string | undefined;
+  supplyerId: number
 }) => {
   return axios.post(`${URL}/orderbakery/getdatatoorder`, form, {
     withCredentials: true,

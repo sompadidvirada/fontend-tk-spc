@@ -2,9 +2,11 @@ import { CakeSlice } from "lucide-react";
 import React from "react";
 import ParentContent from "./(component)/ParentContent";
 import { getAllBranch } from "@/app/api/server/branchs";
+import { getSupplyer } from "@/app/api/server/supplyer";
 
 const OrderBakery = async () => {
   const branchs = await getAllBranch();
+  const supplyer = await getSupplyer();
   return (
     <div className="flex flex-1 flex-col relative">
       <div className="@container/main flex flex-1 flex-col gap-2 mb-8">
@@ -24,7 +26,7 @@ const OrderBakery = async () => {
         </div>
         {/**CONTENT OF THE PAGE */}
         <div className="px-4 lg:px-6">
-          <ParentContent branchs={branchs} />
+          <ParentContent branchs={branchs} supplyer={supplyer}/>
         </div>
       </div>
 

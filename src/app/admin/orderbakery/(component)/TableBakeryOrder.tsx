@@ -43,6 +43,7 @@ import EditOrderBakery from "./EditOrderBakery";
 import { Spinner } from "@/components/ui/spinner";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export type BakeryDetail = {
   id: number;
@@ -62,7 +63,8 @@ interface OrderBakeryProp {
   checkOrderBakery: Order_Bakery[];
   setCheckOrderBakery: React.Dispatch<React.SetStateAction<Order_Bakery[]>>;
   previousOrder: Order_Bakery[];
-  result: any[]
+  result: any[];
+  loading: boolean;
 }
 
 export type Order_Bake_Api_Body = {
@@ -80,7 +82,8 @@ const TableBakeryOrder = ({
   checkOrderBakery,
   setCheckOrderBakery,
   previousOrder,
-  result
+  result,
+  loading,
 }: OrderBakeryProp) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [selectedViewImage, setSelectedViewImage] = React.useState<
@@ -486,7 +489,20 @@ const TableBakeryOrder = ({
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length && value ? (
+          {/* 1. CHECK LOADING STATE FIRST */}
+          {loading ? (
+            Array.from({ length: 5 }).map((_, rowIndex) => (
+              <TableRow key={`skeleton-${rowIndex}`}>
+                {columns.map((column, colIndex) => (
+                  <TableCell key={`cell-${colIndex}`} className="text-center">
+                    {/* We use a skeleton that mimics the height of your h-12 inputs */}
+                    <Skeleton className="h-8 w-full rounded-md opacity-60" />
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : table.getRowModel().rows?.length && value ? (
+            // 2. RENDER ACTUAL ROWS
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
@@ -497,6 +513,7 @@ const TableBakeryOrder = ({
               </TableRow>
             ))
           ) : (
+            // 3. RENDER EMPTY STATE
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
                 ກະລຸນາເລືອກວັນທີ່ ແລະ ສາຂາເພື່ອຄີອໍເດີເບເກີລີ້.

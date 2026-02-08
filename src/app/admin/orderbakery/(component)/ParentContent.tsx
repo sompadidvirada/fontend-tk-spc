@@ -18,9 +18,18 @@ import {
 import { toast } from "sonner";
 import { checkConfirmStatus } from "@/app/api/client/baristar";
 import ConfirmOrder from "./ConfirmOrder";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Supplyer } from "../../bakerymanage/(component)/TableBakery";
 
 export interface DataBranchProps {
   branchs: Branch_type[];
+  supplyer: Supplyer[];
 }
 
 export type Branch_type = {
@@ -54,11 +63,13 @@ export type Order_Bakery = {
   branchId: number;
 };
 
-const ParentContent = ({ branchs }: DataBranchProps) => {
+const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
   const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [value, setValue] = React.useState("");
+  const [supplyerId, setSupplyerId] = React.useState("");
   const [bakerys, setBakerys] = React.useState<BakeryDetail[]>([]);
   const [isPending, startTransition] = React.useTransition();
+  const [loading, setLoading] = React.useState(false)
   const [checkOrderBakery, setCheckOrderBakery] = React.useState<
     Order_Bakery[]
   >([]);
@@ -141,11 +152,16 @@ const ParentContent = ({ branchs }: DataBranchProps) => {
 
   React.useEffect(() => {
     const fecthData = async () => {
+      setLoading(true)
       try {
         const dateTo = date?.toLocaleDateString("en-CA");
         const [bakerysRes, DataOrderRes, orderBakery] = await Promise.all([
-          getBakerysAvailable({ branchId: Number(value) }),
-          getDataOrderBakery({ branchId: Number(value), order_at: dateTo }),
+          getBakerysAvailable({ branchId: Number(value), supplyerId: Number(supplyerId)  }),
+          getDataOrderBakery({
+            branchId: Number(value),
+            order_at: dateTo,
+            supplyerId: Number(supplyerId),
+          }),
           getOrderBakery({ branchId: Number(value), order_at: dateTo }),
         ]);
 
@@ -155,20 +171,22 @@ const ParentContent = ({ branchs }: DataBranchProps) => {
         setPreviousOrder(orderBakery.data.previous);
       } catch (err) {
         console.log(err);
+      } finally{
+        setLoading(false)
       }
     };
 
-    if (date && value) {
+    if (date && value && supplyerId) {
       fecthData();
     }
-  }, [date, value]);
+  }, [date, value, supplyerId]);
 
   return (
     <>
       {" "}
       <div className="flex flex-col lg:flex-row mb-5 justify-between gap-4">
         {/* Buttons: Stacked on mobile, row on desktop */}
-        <div className="grid grid-cols-1  md:flex md:flex-row gap-3 h-6 md:h-10">
+        <div className="grid grid-cols-1  md:flex md:flex-row gap-3 h-6 md:h-10 font-lao">
           <CalendarCompo
             selectedDate={date}
             onDateChange={setDate}
@@ -180,6 +198,21 @@ const ParentContent = ({ branchs }: DataBranchProps) => {
             setValue={setValue}
             isForReport={false}
           />
+          {/* 2. Controlled Select component */}
+            <Select onValueChange={setSupplyerId} value={supplyerId}>
+              <SelectTrigger className="border-slate-200 w-full bg-secondary">
+                <SelectValue placeholder="ເລືອກບໍລິສັດ/ຮ້ານ" />
+              </SelectTrigger>
+              <SelectContent className="font-lao">
+                {supplyer &&
+                  supplyer?.map((item, i) => (
+                    <SelectItem key={i} value={item.id.toString()}>
+                      {item.name}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+
           <ConfirmOrder selectDate={date} value={value} />
           <>
             <Button variant="outline" className="font-lao">
@@ -215,6 +248,7 @@ const ParentContent = ({ branchs }: DataBranchProps) => {
           setCheckOrderBakery={setCheckOrderBakery}
           previousOrder={previousOrder}
           result={result}
+          loading={loading}
         />
       </Card>
     </>
