@@ -16,7 +16,7 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-black/60" />
       </div>
       <div className="relative z-10 w-full max-w-sm px-6">
-        <div className="rounded-xl bg-background/5 backdrop-blur-md shadow-lg p-6 border border-white/10">
+        <div className="rounded-xl bg-background/5 backdrop-blur-md shadow-lg p-1 border border-white/10">
           <LoginForm />
         </div>
       </div>

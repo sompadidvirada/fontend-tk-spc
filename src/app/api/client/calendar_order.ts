@@ -53,3 +53,15 @@ export const updateStatusCalendarOrderSpc = async (
     },
   );
 };
+
+export const updatePaymentDate = async (id: string, form: {payment_date: string}) => {
+  return axios.patch(`${URL}/calendarorder/updatepaymentdate/${id}`, form, {
+    withCredentials: true
+  })
+}
+
+export const updateDeliveryDate = async (id:string, form: {delivery_date: string}) => {
+  return axios.patch(`${URL}/calendarorder/updatedeliverydate/${id}`, form, {
+    withCredentials: true
+  })
+}
