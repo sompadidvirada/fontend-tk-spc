@@ -163,152 +163,6 @@ const MaterialReportTable = ({
       },
     },
     {
-      accessorKey: "material_variant",
-      header: "ເລືອກແພັກໄຊ້",
-      size: 120,
-      cell: ({ row, table }) => {
-        const variants = row.original.all_stockrequisition;
-
-        // 1. Get the current selected ID from the global table state (meta)
-        // If nothing is selected yet, default to the first variant's ID
-        const selectedId =
-          table.options.meta?.selectedVariants[row.id] || variants[0]?.id;
-
-        return (
-          <div className="flex flex-col gap-1">
-            <select
-              className="text-[11px] border rounded p-1 bg-white"
-              value={selectedId}
-              // 2. Update the GLOBAL state so other columns see the change
-              onChange={(e) => {
-                const newId = Number(e.target.value);
-                table.options.meta?.updateVariant(row.id, newId);
-              }}
-            >
-              {variants.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.variant_name}
-                </option>
-              ))}
-            </select>
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "name",
-      size: 80,
-      header: "ລາຍການ",
-      cell: ({ row, table }) => {
-        const selectedId = table.options.meta?.selectedVariants[row.id];
-        const variant =
-          row.original.all_stockrequisition.find((v) => v.id === selectedId) ||
-          row.original.all_stockrequisition[0];
-        const name = row.getValue("name") as string;
-        return (
-          <div className="font-medium text-[11px]">
-            {name} {variant.variant_name}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "category_name",
-      size: 160,
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="text-xs font-bold"
-        >
-          ໝວດໝູ່ <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
-      cell: ({ row }) => {
-        const name = row.getValue("category_name") as string;
-        return <div className="font-medium text-[11px]">{name}</div>;
-      },
-    },
-   
-    {
-      accessorKey: "quantity_requisition",
-      header: "ຈຳນວນການເບີກ",
-      size: 160,
-      cell: ({ row, table }) => {
-        const selectedId = table.options.meta?.selectedVariants[row.id];
-        const variant =
-          row.original.all_stockrequisition.find((v) => v.id === selectedId) ||
-          row.original.all_stockrequisition[0];
-
-        return (
-          <div className="font-medium text-xs text-blue-600">
-            {variant?.quantity_requisition.toLocaleString()}{" "}
-            {`(${variant?.variant_name})`}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "requisition_perday",
-      header: "ຍອດເບີກສະເລ່ຍຕໍ່ມື້",
-      size: 160,
-      cell: ({ row, table }) => {
-        const selectedId = table.options.meta?.selectedVariants[row.id];
-        const variant =
-          row.original.all_stockrequisition.find((v) => v.id === selectedId) ||
-          row.original.all_stockrequisition[0];
-
-        return (
-          <div className="font-medium text-xs text-blue-500">
-            {(variant?.quantity_requisition / diffInDays).toLocaleString()}{" "}
-            {`(${variant?.variant_name}) / ມື້`}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "requisition_permonth",
-      header: "ຍອດເບີກສະເລ່ຍຕໍ່ເດືອນ",
-      size: 160,
-      cell: ({ row, table }) => {
-        const selectedId = table.options.meta?.selectedVariants[row.id];
-        const variant =
-          row.original.all_stockrequisition.find((v) => v.id === selectedId) ||
-          row.original.all_stockrequisition[0];
-
-        return (
-          <div className="font-medium text-xs text-blue-500">
-            {(
-              (variant?.quantity_requisition / diffInDays) *
-              30
-            ).toLocaleString()}{" "}
-            {`(${variant?.variant_name}) / ເດືອນ`}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "requisition_perbranch",
-      header: "ຍອດເບີກສະເລ່ຍຕໍ່ສາຂາ",
-      size: 160,
-      cell: ({ row, table }) => {
-        const selectedId = table.options.meta?.selectedVariants[row.id];
-        const variant =
-          row.original.all_stockrequisition.find((v) => v.id === selectedId) ||
-          row.original.all_stockrequisition[0];
-
-        return (
-          <div className="font-medium text-xs text-blue-600">
-            {(
-              ((variant?.quantity_requisition / diffInDays) * 30) /
-              countBranch
-            ).toLocaleString()}{" "}
-            {`(${variant?.variant_name}) / ເດືອນ / ສາຂາ`}
-          </div>
-        );
-      },
-    },
-    {
       accessorKey: "stock_remain",
       header: "ສະຕ໋ອກຄົງເຫຼືອ",
       size: 160,
@@ -387,23 +241,6 @@ const MaterialReportTable = ({
       },
     },
     {
-      accessorKey: "min_order",
-      size: 180,
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="text-xs font-bold"
-        >
-          ສະຕ໋ອກຂັ້ນຕ່ຳ <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
-      cell: ({ row }) => {
-        const name = row.getValue("min_order") as string;
-        return <div className="font-medium text-[11px] px-3">{name}</div>;
-      },
-    },
-     {
       accessorKey: "supplyer",
       sortingFn: (rowA, rowB) => {
         const nameA = rowA.original.supplyer?.name ?? "";
@@ -507,6 +344,172 @@ const MaterialReportTable = ({
         );
       },
     },
+
+    {
+      accessorKey: "material_variant",
+      header: "ເລືອກແພັກໄຊ້",
+      size: 120,
+      cell: ({ row, table }) => {
+        const variants = row.original.all_stockrequisition;
+
+        // 1. Get the current selected ID from the global table state (meta)
+        // If nothing is selected yet, default to the first variant's ID
+        const selectedId =
+          table.options.meta?.selectedVariants[row.id] || variants[0]?.id;
+
+        return (
+          <div className="flex flex-col gap-1">
+            <select
+              className="text-[11px] border rounded p-1 bg-white"
+              value={selectedId}
+              // 2. Update the GLOBAL state so other columns see the change
+              onChange={(e) => {
+                const newId = Number(e.target.value);
+                table.options.meta?.updateVariant(row.id, newId);
+              }}
+            >
+              {variants.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.variant_name}
+                </option>
+              ))}
+            </select>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "name",
+      size: 80,
+      header: "ລາຍການ",
+      cell: ({ row, table }) => {
+        const selectedId = table.options.meta?.selectedVariants[row.id];
+        const variant =
+          row.original.all_stockrequisition.find((v) => v.id === selectedId) ||
+          row.original.all_stockrequisition[0];
+        const name = row.getValue("name") as string;
+        return (
+          <div className="font-medium text-[11px]">
+            {name} {variant.variant_name}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "category_name",
+      size: 160,
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="text-xs font-bold"
+        >
+          ໝວດໝູ່ <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const name = row.getValue("category_name") as string;
+        return <div className="font-medium text-[11px]">{name}</div>;
+      },
+    },
+
+    {
+      accessorKey: "quantity_requisition",
+      header: "ຈຳນວນການເບີກ",
+      size: 160,
+      cell: ({ row, table }) => {
+        const selectedId = table.options.meta?.selectedVariants[row.id];
+        const variant =
+          row.original.all_stockrequisition.find((v) => v.id === selectedId) ||
+          row.original.all_stockrequisition[0];
+
+        return (
+          <div className="font-medium text-xs text-blue-600">
+            {variant?.quantity_requisition.toLocaleString()}{" "}
+            {`(${variant?.variant_name})`}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "requisition_perday",
+      header: "ຍອດເບີກສະເລ່ຍຕໍ່ມື້",
+      size: 160,
+      cell: ({ row, table }) => {
+        const selectedId = table.options.meta?.selectedVariants[row.id];
+        const variant =
+          row.original.all_stockrequisition.find((v) => v.id === selectedId) ||
+          row.original.all_stockrequisition[0];
+
+        return (
+          <div className="font-medium text-xs text-blue-500">
+            {(variant?.quantity_requisition / diffInDays).toLocaleString()}{" "}
+            {`(${variant?.variant_name}) / ມື້`}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "requisition_permonth",
+      header: "ຍອດເບີກສະເລ່ຍຕໍ່ເດືອນ",
+      size: 160,
+      cell: ({ row, table }) => {
+        const selectedId = table.options.meta?.selectedVariants[row.id];
+        const variant =
+          row.original.all_stockrequisition.find((v) => v.id === selectedId) ||
+          row.original.all_stockrequisition[0];
+
+        return (
+          <div className="font-medium text-xs text-blue-500">
+            {(
+              (variant?.quantity_requisition / diffInDays) *
+              30
+            ).toLocaleString()}{" "}
+            {`(${variant?.variant_name}) / ເດືອນ`}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "requisition_perbranch",
+      header: "ຍອດເບີກສະເລ່ຍຕໍ່ສາຂາ",
+      size: 160,
+      cell: ({ row, table }) => {
+        const selectedId = table.options.meta?.selectedVariants[row.id];
+        const variant =
+          row.original.all_stockrequisition.find((v) => v.id === selectedId) ||
+          row.original.all_stockrequisition[0];
+
+        return (
+          <div className="font-medium text-xs text-blue-600">
+            {(
+              ((variant?.quantity_requisition / diffInDays) * 30) /
+              countBranch
+            ).toLocaleString()}{" "}
+            {`(${variant?.variant_name}) / ເດືອນ / ສາຂາ`}
+          </div>
+        );
+      },
+    },
+
+    {
+      accessorKey: "min_order",
+      size: 180,
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="text-xs font-bold"
+        >
+          ສະຕ໋ອກຂັ້ນຕ່ຳ <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const name = row.getValue("min_order") as string;
+        return <div className="font-medium text-[11px] px-3">{name}</div>;
+      },
+    },
+
     {
       accessorKey: "price",
       header: "ຕົ້ນທຶນ",
