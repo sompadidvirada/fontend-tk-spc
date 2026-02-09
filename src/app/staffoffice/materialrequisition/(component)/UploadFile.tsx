@@ -96,7 +96,10 @@ const UploadFile = ({
     });
 
     if (newRequisitions.length > 0) {
-      const response = await uploadFileStock(newRequisitions);
+      await uploadFileStock({
+        requisitions: newRequisitions,
+        branchId: Number(value),
+      });
       setCheck((prev) => {
         // Create a map from existing state for quick lookup
         const existingMap = new Map(
