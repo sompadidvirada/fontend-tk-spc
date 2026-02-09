@@ -6,17 +6,18 @@ import {
   ChevronsUpDown,
   Clock,
   CreditCard,
+  Edit3,
   FileText,
   Info,
   Truck,
   X,
 } from "lucide-react";
-import { v4 as uuidv4 } from "uuid";
 import React, { useRef, useState, useTransition } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import { Supplyer_Spc } from "../../material/(component)/DetailSupplyer";
 import { Label } from "@/components/ui/label";
 import {
   Popover,
@@ -39,11 +40,12 @@ import {
   deleteCalendarOrderSpc,
   getAllCalendarOrderSpc,
   updateCalendarOrderDate,
+  updateDeliveryDate,
+  updatePaymentDate,
   updateStatusCalendarOrderSpc,
 } from "@/app/api/client/calendar_order";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
-import { Supplyer_Spc } from "@/app/admin/material/(component)/DetailSupplyer";
 
 interface Prop {
   supplyer_spc: Supplyer_Spc[];
@@ -51,18 +53,56 @@ interface Prop {
 
 const CalendarOrder = ({ supplyer_spc }: Prop) => {
   const staff = useStaffStore((state) => state.staff);
-  const [events, setEvents] = useState<any[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [open, setOpen] = useState(false);
   const calendarRef = useRef<FullCalendar>(null);
+  const [isEditingPaymentDate, setIsEditingPaymentDate] = useState(false);
+  const [isEditingDeliveryDate, setIsEditingDeliveryDate] = useState(false);
+
+  const handleUpdatePaymentDate = async (newDate: string) => {
+    try {
+      await updatePaymentDate(selectedEvent.id, {
+        payment_date: newDate,
+      });
+      // Update local state so UI changes immediately
+      setSelectedEvent({ ...selectedEvent, payment_date: newDate });
+      setIsEditingPaymentDate(false);
+
+      // Refresh the background calendar
+      calendarRef.current?.getApi().refetchEvents();
+      toast.success("ອັບເດດວັນທີຊຳລະສຳເລັດ");
+    } catch (err) {
+      console.error(err);
+      toast.error("ບໍ່ສາມາດອັບເດດວັນທີໄດ້");
+    }
+  };
+  
+  const handleUpdateDeliveryDate = async (newDate: string) => {
+    try {
+      await updateDeliveryDate(selectedEvent.id, {
+        delivery_date: newDate,
+      });
+      
+      setSelectedEvent({ ...selectedEvent, delivery_date: newDate });
+      setIsEditingDeliveryDate(false);
+
+      // Refresh the background calendar
+      calendarRef.current?.getApi().refetchEvents();
+      toast.success("ອັບເດດວັນທີຊຳລະສຳເລັດ");
+    } catch (err) {
+      console.error(err);
+      toast.error("ບໍ່ສາມາດອັບເດດວັນທີໄດ້");
+    }
+  };
 
   // Helper to get color based on status
-  const getEventColor = (payStatus: string, devStatus: string) => {
-    if (payStatus === "success" && devStatus === "success") return "#10b981"; // Green
-    if (payStatus === "success" || devStatus === "success") return "#3b82f6"; // Blue
-    return "#64748b"; // Slate/Gray for pending
+ const getEventColor = (payStatus: string, devStatus: string) => {
+    if (payStatus === "success" && devStatus === "success") return "#b700ff"; // Green
+    if (devStatus === "success") return "#3b82f6"; // Blue
+    if (payStatus === "success") return "#10b981"; // Blue
+    return "#000000"; // Slate/Gray for pending
   };
 
   const [formData, setFormData] = useState({
@@ -239,7 +279,7 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
                 start: info.startStr,
                 end: info.endStr,
                 role: staff.role,
-                id: staff.id
+                id: staff.id,
               });
 
               const formattedEvents = response.data.map((order: any) => ({
@@ -457,11 +497,41 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
                     </div>
                     <div>
                       <p className="text-xs text-slate-400 uppercase font-bold">
-                        ການຊຳລະເງິນ
+                        ການຊຳລະ
                       </p>
-                      <p className="text-lg font-bold">
-                        {selectedEvent.payment_date?.split("T")[0]}
-                      </p>
+                      {isEditingPaymentDate ? (
+                        <div className="flex items-center gap-2 mt-1">
+                          <input
+                            type="date"
+                            className="border rounded-lg px-2 py-1 text-sm font-bold text-slate-700 outline-blue-500"
+                            defaultValue={
+                              selectedEvent.payment_date?.split("T")[0]
+                            }
+                            onChange={(e) =>
+                              handleUpdatePaymentDate(e.target.value)
+                            }
+                          />
+                          <button
+                            onClick={() => setIsEditingPaymentDate(false)}
+                            className="text-xs text-slate-400 underline"
+                          >
+                            ຍົກເລີກ
+                          </button>
+                        </div>
+                      ) : (
+                        <div
+                          className="flex items-center gap-2 cursor-pointer group"
+                          onClick={() => setIsEditingPaymentDate(true)}
+                        >
+                          <p className="text-lg font-bold">
+                            {selectedEvent.payment_date?.split("T")[0]}
+                          </p>
+                          <Edit3
+                            size={14}
+                            className="text-slate-300 group-hover:text-blue-500 transition-colors"
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                   <button
@@ -497,11 +567,41 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
                     </div>
                     <div>
                       <p className="text-xs text-slate-400 uppercase font-bold">
-                        ການສົ່ງເຄື່ອງ
+                        ການຈັດສົ່ງ
                       </p>
-                      <p className="text-lg font-bold">
-                        {selectedEvent.delivery_date?.split("T")[0]}
-                      </p>
+                      {isEditingDeliveryDate ? (
+                        <div className="flex items-center gap-2 mt-1">
+                          <input
+                            type="date"
+                            className="border rounded-lg px-2 py-1 text-sm font-bold text-slate-700 outline-blue-500"
+                            defaultValue={
+                              selectedEvent.delivery_date?.split("T")[0]
+                            }
+                            onChange={(e) =>
+                              handleUpdateDeliveryDate(e.target.value)
+                            }
+                          />
+                          <button
+                            onClick={() => setIsEditingDeliveryDate(false)}
+                            className="text-xs text-slate-400 underline"
+                          >
+                            ຍົກເລີກ
+                          </button>
+                        </div>
+                      ) : (
+                        <div
+                          className="flex items-center gap-2 cursor-pointer group"
+                          onClick={() => setIsEditingDeliveryDate(true)}
+                        >
+                          <p className="text-lg font-bold">
+                            {selectedEvent.delivery_date?.split("T")[0]}
+                          </p>
+                          <Edit3
+                            size={14}
+                            className="text-slate-300 group-hover:text-blue-500 transition-colors"
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                   <button

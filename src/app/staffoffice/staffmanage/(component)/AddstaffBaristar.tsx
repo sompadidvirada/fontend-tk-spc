@@ -18,7 +18,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Check, ChevronDownIcon, ChevronsUpDown, Coffee, UserRoundPlus, X } from "lucide-react";
+import {
+  Check,
+  ChevronDownIcon,
+  ChevronsUpDown,
+  Coffee,
+  UserRoundPlus,
+  X,
+} from "lucide-react";
 import React from "react";
 import { Calendar } from "@/components/ui/calendar";
 import Image from "next/image";
@@ -27,10 +34,17 @@ import { cn } from "@/lib/utils";
 import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
 import { createStaffBaristar } from "@/app/api/client/staff";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import { Branch_type } from "../../tracksell/(component)/ParentTable";
 
-const AddstaffBaristar = ({branchs}: {branchs: Branch_type[]}) => {
+const AddstaffBaristar = ({ branchs }: { branchs: Branch_type[] }) => {
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [selectedImage, setSelectedImage] = React.useState<File | null>(null);
@@ -58,7 +72,7 @@ const AddstaffBaristar = ({branchs}: {branchs: Branch_type[]}) => {
 
     const formData = new FormData(e.currentTarget);
     const staffName = formData.get("name") as string;
-    formData.append("branchId", String(branchId))
+    formData.append("branchId", String(branchId));
     // Manual appends for non-standard inputs
     if (date) formData.append("birthdate", date.toISOString());
     if (selectedImage) formData.append("image", selectedImage);

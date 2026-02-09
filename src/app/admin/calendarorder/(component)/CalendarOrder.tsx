@@ -12,7 +12,6 @@ import {
   Truck,
   X,
 } from "lucide-react";
-import { v4 as uuidv4 } from "uuid";
 import React, { useRef, useState, useTransition } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -99,10 +98,11 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
   };
 
   // Helper to get color based on status
-  const getEventColor = (payStatus: string, devStatus: string) => {
-    if (payStatus === "success" && devStatus === "success") return "#10b981"; // Green
-    if (payStatus === "success" || devStatus === "success") return "#3b82f6"; // Blue
-    return "#64748b"; // Slate/Gray for pending
+ const getEventColor = (payStatus: string, devStatus: string) => {
+    if (payStatus === "success" && devStatus === "success") return "#b700ff"; // Green
+    if (devStatus === "success") return "#3b82f6"; // Blue
+    if (payStatus === "success") return "#10b981"; // Blue
+    return "#000000"; // Slate/Gray for pending
   };
 
   const [formData, setFormData] = useState({
