@@ -44,3 +44,9 @@ export const updateSupplyerSpc = (form: FormData, id: number) => {
     withCredentials: true
   })
 }
+
+export const deleteSupplerSpc = (id: number) => {
+  return axios.delete(`${URL}/supplyer/deletesupleryspc/${id}`, {
+    withCredentials: true
+  })
+}

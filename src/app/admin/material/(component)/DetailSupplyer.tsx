@@ -26,11 +26,12 @@ import {
   Loader2,
   Upload,
   ImageIcon,
+  Trash2,
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { updateSupplyerSpc } from "@/app/api/client/supplyer";
+import { deleteSupplerSpc, updateSupplyerSpc } from "@/app/api/client/supplyer";
 import { useRouter } from "next/navigation";
 import {
   Select,
@@ -39,6 +40,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 // Demo Data
 // Hardcoded Categories
@@ -64,6 +76,7 @@ export type Supplyer_Spc = {
 const DetailSupplyer = ({ supplyer_spc }: { supplyer_spc: Supplyer_Spc[] }) => {
   const [suppliers, setSuppliers] = useState(supplyer_spc);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState<any>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -77,6 +90,11 @@ const DetailSupplyer = ({ supplyer_spc }: { supplyer_spc: Supplyer_Spc[] }) => {
     setSelectedFile(null);
     setIsEditDialogOpen(true);
   };
+  const handleDeleteClick = (supplier: any) => {
+    setEditingSupplier(supplier);
+    setPreviewUrl(supplier.image);
+    setIsDeleteDialogOpen(true);
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -88,7 +106,6 @@ const DetailSupplyer = ({ supplyer_spc }: { supplyer_spc: Supplyer_Spc[] }) => {
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
     const data = new FormData();
     data.append("name", editingSupplier.name);
@@ -100,10 +117,10 @@ const DetailSupplyer = ({ supplyer_spc }: { supplyer_spc: Supplyer_Spc[] }) => {
     if (selectedFile) {
       data.append("image", selectedFile);
     }
-
+    setLoading(true);
     try {
       // Replace with your actual update API route
-      const ress = await updateSupplyerSpc(data, editingSupplier.id);
+      await updateSupplyerSpc(data, editingSupplier.id);
       toast.success("ອັບເດດຂໍ້ມູນສຳເລັດ");
       setIsEditDialogOpen(false);
       // Optional: trigger a refresh here
@@ -112,6 +129,21 @@ const DetailSupplyer = ({ supplyer_spc }: { supplyer_spc: Supplyer_Spc[] }) => {
       toast.error("ບໍ່ສາມາດອັບເດດໄດ້: " + error.message);
     } finally {
       setLoading(false);
+      setEditingSupplier("");
+      setPreviewUrl(""); // Set current image as preview
+      setSelectedFile(null);
+      setIsEditDialogOpen(false);
+    }
+  };
+  const handleDelete = async (id: number) => {
+    if (!id) return toast.error("ລອງໃຫ່ມພາຍຫລັງ");
+    try {
+      await deleteSupplerSpc(id);
+      toast.success("ລົບສຳເລັດ");
+      router.refresh();
+    } catch (err) {
+      console.log(err);
+    } finally {
     }
   };
 
@@ -198,6 +230,14 @@ const DetailSupplyer = ({ supplyer_spc }: { supplyer_spc: Supplyer_Spc[] }) => {
                         onClick={() => handleEditClick(supplier)}
                       >
                         <ExternalLink size={16} />
+                      </Button>{" "}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 text-slate-400 hover:text-blue-600"
+                        onClick={() => handleDeleteClick(supplier)}
+                      >
+                        <Trash2 size={16} />
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -336,6 +376,55 @@ const DetailSupplyer = ({ supplyer_spc }: { supplyer_spc: Supplyer_Spc[] }) => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/**DELETE DIALOG */}
+
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogTrigger />
+        <AlertDialogContent className="font-lao max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl">ລົບບໍລິສັດ</AlertDialogTitle>
+
+            {/* 1. Image Container - Placed prominently above the text */}
+            <div className="mt-4 mb-2 overflow-hidden rounded-xl border border-slate-100 bg-slate-50">
+              {previewUrl ? (
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className="aspect-video w-full object-cover shadow-sm"
+                />
+              ) : (
+                <div className="flex aspect-video items-center justify-center">
+                  <ImageIcon className="h-12 w-12 text-slate-300" />
+                </div>
+              )}
+            </div>
+
+            <AlertDialogDescription className="text-base leading-relaxed">
+              ທ່ານຕ້ອງການລົບບໍລິສັດ{" "}
+              <span className="text-red-500 font-bold underline">
+                {editingSupplier?.name}
+              </span>{" "}
+              ແທ້ບໍ່? ຫຼັງຈາກລົບແລ້ວບໍ່ສາມາດຍົກເລີກໄດ້ ຈະເປັນການລົບຖາວອນ.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter className="mt-6">
+            <AlertDialogCancel className="rounded-xl">
+              ຍົກເລີກ
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700 rounded-xl"
+              onClick={() => handleDelete(editingSupplier?.id)}
+            >
+              ຢືນຢັນການລົບ
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
