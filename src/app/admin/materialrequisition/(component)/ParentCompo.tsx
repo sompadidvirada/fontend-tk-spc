@@ -28,23 +28,6 @@ const ParentCompo = ({ branchs, materiant_Variant }: DataBranchProps) => {
 
   const dateToSend = date?.toLocaleDateString("en-CA");
 
-  const fecthCheck = async () => {
-    if (!dateToSend) return;
-    setLoading(true);
-    try {
-      const ress = await getAllStockRequisition({
-        date: dateToSend,
-        branchId: Number(value),
-      });
-      setCheck(ress.data);
-    } catch (err) {
-      console.log(err);
-      toast.error("ບໍ່ສາມາດດຶງຍອດເບີກວັດຖຸດິບໄດ້.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const deleteAllStock = async () => {
     if (!dateToSend) return;
     try {
@@ -52,14 +35,30 @@ const ParentCompo = ({ branchs, materiant_Variant }: DataBranchProps) => {
         date: dateToSend,
         branchId: Number(value),
       });
-      setCheck([])
-      toast.success("ລົບລາຍການທັງໝົດສຳເລັດ")
+      setCheck([]);
+      toast.success("ລົບລາຍການທັງໝົດສຳເລັດ");
     } catch (err) {
       console.log(err);
     }
   };
 
   useEffect(() => {
+    const fecthCheck = async () => {
+      if (!dateToSend) return;
+      setLoading(true);
+      try {
+        const ress = await getAllStockRequisition({
+          date: dateToSend,
+          branchId: Number(value),
+        });
+        setCheck(ress.data);
+      } catch (err) {
+        console.log(err);
+        toast.error("ບໍ່ສາມາດດຶງຍອດເບີກວັດຖຸດິບໄດ້.");
+      } finally {
+        setLoading(false);
+      }
+    };
     if (date && value) {
       fecthCheck();
     }
@@ -79,7 +78,11 @@ const ParentCompo = ({ branchs, materiant_Variant }: DataBranchProps) => {
             setValue={setValue}
             isForReport={false}
           />
-          <Button variant={"outline"} className="font-lao" onClick={deleteAllStock}>
+          <Button
+            variant={"outline"}
+            className="font-lao"
+            onClick={deleteAllStock}
+          >
             <RotateCcw className="mr-1 h-4 w-4" /> ລົບທັງໝົດ
           </Button>
           <UploadFile
