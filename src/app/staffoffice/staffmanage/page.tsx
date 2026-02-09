@@ -25,7 +25,7 @@ const StaffManage = async () => {
         <div className="flex flex-col lg:flex-row justify-between px-5 mt-5 gap-4">
           {/* Buttons: Stacked on mobile, row on desktop */}
           <div className="grid grid-cols-1  md:flex md:flex-row gap-3 h-6 md:h-10">
-            <AddstaffBaristar />
+            <AddstaffBaristar branchs={branchs}/>
           </div>
         </div>
         <div className="px-5 mt-3">

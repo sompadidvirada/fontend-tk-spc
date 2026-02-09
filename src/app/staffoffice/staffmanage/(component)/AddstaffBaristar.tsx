@@ -18,7 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChevronDownIcon, Coffee, UserRoundPlus, X } from "lucide-react";
+import { Check, ChevronDownIcon, ChevronsUpDown, Coffee, UserRoundPlus, X } from "lucide-react";
 import React from "react";
 import { Calendar } from "@/components/ui/calendar";
 import Image from "next/image";
@@ -27,13 +27,17 @@ import { cn } from "@/lib/utils";
 import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
 import { createStaffBaristar } from "@/app/api/client/staff";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Branch_type } from "../../tracksell/(component)/ParentTable";
 
-const AddstaffBaristar = () => {
+const AddstaffBaristar = ({branchs}: {branchs: Branch_type[]}) => {
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [selectedImage, setSelectedImage] = React.useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
   const [isPending, startTransition] = React.useTransition();
+  const [branchSearchOpen, setBranchSearchOpen] = React.useState(false);
+  const [branchId, setBranchId] = React.useState<string>();
   const router = useRouter();
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -54,7 +58,7 @@ const AddstaffBaristar = () => {
 
     const formData = new FormData(e.currentTarget);
     const staffName = formData.get("name") as string;
-
+    formData.append("branchId", String(branchId))
     // Manual appends for non-standard inputs
     if (date) formData.append("birthdate", date.toISOString());
     if (selectedImage) formData.append("image", selectedImage);
@@ -174,6 +178,64 @@ const AddstaffBaristar = () => {
                       button_next: "size-6",
                     }}
                   />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="grid gap-3">
+              <Label>ສາຂາ</Label>
+              <Popover
+                open={branchSearchOpen}
+                onOpenChange={setBranchSearchOpen}
+              >
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={branchSearchOpen}
+                    className="w-full justify-between font-lao bg-white"
+                  >
+                    {branchId
+                      ? branchs.find((b) => String(b.id) === String(branchId))
+                          ?.name || "ບໍ່ພົບຊື່ສາຂາ"
+                      : "ເລືອກສາຂາ..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0 font-lao" align="start">
+                  <Command>
+                    <CommandInput placeholder="ຄົ້ນຫາສາຂາ..." />
+                    <CommandList>
+                      <CommandEmpty>ບໍ່ພົບຂໍ້ມູນສາຂາ.</CommandEmpty>
+                      <CommandGroup>
+                        {branchs.map((branch) => (
+                          <CommandItem
+                            key={branch.id}
+                            value={branch.name}
+                            onSelect={() => {
+                              setBranchId(branch.id.toString());
+                              setBranchSearchOpen(false);
+                            }}
+                            className="cursor-pointer"
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                branchId === branch.id.toString()
+                                  ? "opacity-100"
+                                  : "opacity-0",
+                              )}
+                            />
+                            <div className="flex flex-col">
+                              <span>{branch.name}</span>
+                              <span className="text-[10px] text-muted-foreground">
+                                {branch.province}
+                              </span>
+                            </div>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
                 </PopoverContent>
               </Popover>
             </div>
