@@ -115,7 +115,6 @@ const MaterialReportTable = ({
   >(null);
   const [isImageLoading, setIsImageLoading] = React.useState(true);
   const countBranch = branch?.length;
-
   const startDate = new Date(selectedDate?.from ?? new Date());
   const endDate = new Date(selectedDate?.to ?? new Date());
   const diffInMs = endDate.getTime() - startDate.getTime();
@@ -344,7 +343,6 @@ const MaterialReportTable = ({
         );
       },
     },
-
     {
       accessorKey: "material_variant",
       header: "ເລືອກແພັກໄຊ້",
@@ -379,17 +377,17 @@ const MaterialReportTable = ({
       },
     },
     {
-      accessorKey: "name",
-      size: 80,
+      accessorKey: "material_name",
+      size: 180,
       header: "ລາຍການ",
       cell: ({ row, table }) => {
         const selectedId = table.options.meta?.selectedVariants[row.id];
         const variant =
           row.original.all_stockrequisition.find((v) => v.id === selectedId) ||
           row.original.all_stockrequisition[0];
-        const name = row.getValue("name") as string;
+        const name = row.getValue("material_name") as string;
         return (
-          <div className="font-medium text-[11px]">
+          <div className="font-medium text-[11px] whitespace-normal break-words leading-tight">
             {name} {variant.variant_name}
           </div>
         );
