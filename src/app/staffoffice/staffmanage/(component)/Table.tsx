@@ -166,7 +166,7 @@ export function DataTableCompo({ data, branchs }: DataTableProps) {
         </Button>
       ),
       cell: ({ row }) => (
-        <div className="font-medium">{row.getValue("name")}</div>
+        <div className="font-medium font-lao">{row.getValue("name")}</div>
       ),
     },
     {

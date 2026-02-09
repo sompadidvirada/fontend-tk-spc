@@ -175,7 +175,7 @@ export function DataTableCompo({ data, branchs }: DataTableProps) {
         </Button>
       ),
       cell: ({ row }) => (
-        <div className="font-medium">{row.getValue("name")}</div>
+        <div className="font-medium font-lao">{row.getValue("name")}</div>
       ),
     },
     {
@@ -262,21 +262,37 @@ export function DataTableCompo({ data, branchs }: DataTableProps) {
         </Badge>
       ),
     },
-    {
-      accessorKey: "branch.name",
-      header: "ປະຈຳສາຂາ",
-      cell: ({ row }) => (
-        <Badge
-          variant="outline"
-          className={`px-2 py-1 font-lao flex w-fit items-center gap-1 border-gray-200 bg-green-50`}
-        >
-          <>
-            <Store className="h-3.5 w-3.5" />
-            {row.getValue("branch_name") || "ບໍ່ມີສາຂາ"}
-          </>
-        </Badge>
-      ),
-    },
+   {
+         accessorKey: "branch.name",
+         header: "ປະຈຳສາຂາ",
+         cell: ({ row }) => {
+           const branch = row.getValue("branch_name");
+   
+           if (!branch)
+             return (
+               <Badge
+                 variant="outline"
+                 className={`px-2 py-1 font-lao flex w-fit items-center gap-1 border-gray-200 bg-gray-100`}
+               >
+                 <>
+                   <Store className="h-3.5 w-3.5" />
+                   {"ບໍ່ມີສາຂາ"}
+                 </>
+               </Badge>
+             );
+           return (
+             <Badge
+               variant="outline"
+               className={`px-2 py-1 font-lao flex w-fit items-center gap-1 border-gray-200 bg-green-200`}
+             >
+               <>
+                 <Store className="h-3.5 w-3.5" />
+                 {branch}
+               </>
+             </Badge>
+           );
+         },
+       },
     {
       id: "actions",
       size: 80,
