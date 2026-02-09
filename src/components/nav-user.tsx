@@ -63,6 +63,12 @@ export function NavUser({
   const userAvatar =
     user.image && user.image.trim() !== "" ? user.image : undefined;
 
+  const roleLabels: Record<string, string> = {
+    ADMIN: "ແອັດມິນ",
+    STAFF_SPC: "ພະນັກງານຈັດຊື້",
+    STAFF_WH: "ພະນັກງານສາງ",
+  };
+
   return (
     <>
       <SidebarMenu>
@@ -84,10 +90,10 @@ export function NavUser({
                     {user.name?.charAt(0) || "U"}
                   </AvatarFallback>
                 </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
+                <div className="grid flex-1 text-left text-sm leading-tight font-lao">
                   <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs text-red-400 font-bold opacity-70">
-                    {user.role}
+                  <span className="truncate text-xs text-green-700 font-bold opacity-70">
+                    {roleLabels[user.role] || user.role}
                   </span>
                 </div>
                 <ChevronsUpDown className="ml-auto size-4" />
