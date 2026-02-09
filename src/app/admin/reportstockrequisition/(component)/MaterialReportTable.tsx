@@ -162,6 +162,41 @@ const MaterialReportTable = ({
       },
     },
     {
+      accessorKey: "material_name",
+      size: 180,
+      header: "ລາຍການ",
+      cell: ({ row, table }) => {
+        const selectedId = table.options.meta?.selectedVariants[row.id];
+        const variant =
+          row.original.all_stockrequisition.find((v) => v.id === selectedId) ||
+          row.original.all_stockrequisition[0];
+        const name = row.getValue("material_name") as string;
+        return (
+          <div className="font-medium text-[11px] whitespace-normal break-words leading-tight">
+            {name} {variant.variant_name}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "quantity_requisition",
+      header: "ຈຳນວນການເບີກ",
+      size: 160,
+      cell: ({ row, table }) => {
+        const selectedId = table.options.meta?.selectedVariants[row.id];
+        const variant =
+          row.original.all_stockrequisition.find((v) => v.id === selectedId) ||
+          row.original.all_stockrequisition[0];
+
+        return (
+          <div className="font-medium text-xs text-blue-600">
+            {variant?.quantity_requisition.toLocaleString()}{" "}
+            {`(${variant?.variant_name})`}
+          </div>
+        );
+      },
+    },
+    {
       accessorKey: "stock_remain",
       header: "ສະຕ໋ອກຄົງເຫຼືອ",
       size: 160,
@@ -377,23 +412,6 @@ const MaterialReportTable = ({
       },
     },
     {
-      accessorKey: "material_name",
-      size: 180,
-      header: "ລາຍການ",
-      cell: ({ row, table }) => {
-        const selectedId = table.options.meta?.selectedVariants[row.id];
-        const variant =
-          row.original.all_stockrequisition.find((v) => v.id === selectedId) ||
-          row.original.all_stockrequisition[0];
-        const name = row.getValue("material_name") as string;
-        return (
-          <div className="font-medium text-[11px] whitespace-normal break-words leading-tight">
-            {name} {variant.variant_name}
-          </div>
-        );
-      },
-    },
-    {
       accessorKey: "category_name",
       size: 160,
       header: ({ column }) => (
@@ -408,25 +426,6 @@ const MaterialReportTable = ({
       cell: ({ row }) => {
         const name = row.getValue("category_name") as string;
         return <div className="font-medium text-[11px]">{name}</div>;
-      },
-    },
-
-    {
-      accessorKey: "quantity_requisition",
-      header: "ຈຳນວນການເບີກ",
-      size: 160,
-      cell: ({ row, table }) => {
-        const selectedId = table.options.meta?.selectedVariants[row.id];
-        const variant =
-          row.original.all_stockrequisition.find((v) => v.id === selectedId) ||
-          row.original.all_stockrequisition[0];
-
-        return (
-          <div className="font-medium text-xs text-blue-600">
-            {variant?.quantity_requisition.toLocaleString()}{" "}
-            {`(${variant?.variant_name})`}
-          </div>
-        );
       },
     },
     {
@@ -489,7 +488,6 @@ const MaterialReportTable = ({
         );
       },
     },
-
     {
       accessorKey: "min_order",
       size: 180,
@@ -507,7 +505,6 @@ const MaterialReportTable = ({
         return <div className="font-medium text-[11px] px-3">{name}</div>;
       },
     },
-
     {
       accessorKey: "price",
       header: "ຕົ້ນທຶນ",
