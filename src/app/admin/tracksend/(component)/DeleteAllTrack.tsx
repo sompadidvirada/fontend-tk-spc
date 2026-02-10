@@ -26,14 +26,23 @@ const DeleteAllTrack = ({ date, value, setCheckBakery }: DeleteProps) => {
           onClick: () => {},
         },
       });
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
-      toast.error("ລອງໃຫ່ມພາຍຫຼັງ", {
-        cancel: {
-          label: "x",
-          onClick: () => {},
-        },
-      });
+      if (err.status === 405) {
+        toast.error("ບໍ່ສາມາດລົບຍ້ອນຫຼັງກາຍ 7 ວັນໄດ້", {
+          cancel: {
+            label: "x",
+            onClick: () => {},
+          },
+        });
+      } else {
+        toast.error("ລອງໃຫ່ມພາຍຫຼັງ", {
+          cancel: {
+            label: "x",
+            onClick: () => {},
+          },
+        });
+      }
     }
   };
   return (
