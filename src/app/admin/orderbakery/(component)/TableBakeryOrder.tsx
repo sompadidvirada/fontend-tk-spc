@@ -203,6 +203,7 @@ const TableBakeryOrder = ({
       header: "ຈຳນນວນສັ່ງລົງ",
       size: 190,
       cell: ({ row }) => {
+
         const id = row.original.id;
         const existingEntry = checkOrderBakery.find(
           (item) => item.bakery_detailId === id,
@@ -219,7 +220,7 @@ const TableBakeryOrder = ({
               </span>
               <EditOrderBakery
                 setCheckOrderBakery={setCheckOrderBakery}
-                id={id}
+                id={existingEntry.id}
               />
               <Button
                 size="sm"
