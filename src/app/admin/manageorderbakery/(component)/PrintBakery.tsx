@@ -13,33 +13,46 @@ const PrintBakery = ({
   supplyerId: string;
 }) => {
   const contentRef = React.useRef<HTMLDivElement>(null);
-  const reactToPrintFn = useReactToPrint({ contentRef });
   const [dataToPrint, setDataToPrint] = React.useState();
+  const [loading, setLoading] = React.useState(false);
 
-  useEffect(() => {
-    const fecthOrderPrint = async () => {
-      try {
-        const ress = await getOrderBakeryPrint({
-          order_at: selecDate,
-          supplyerId: supplyerId,
-        });
-        setDataToPrint(ress.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    if (selecDate && supplyerId) {
-      fecthOrderPrint();
+  const handlePrint = useReactToPrint({
+    contentRef,
+  });
+
+  const onPrintButtonClick = async () => {
+    setLoading(true);
+    try {
+      const ress = await getOrderBakeryPrint({
+        order_at: selecDate,
+        supplyerId: supplyerId,
+      });
+
+      setDataToPrint(ress.data);
+
+      // 3. IMPORTANT: Wait for React to render the data into the hidden div
+      // We use a small timeout to let the state update reflect in the DOM
+      setTimeout(() => {
+        handlePrint();
+        setLoading(false);
+      }, 500);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
     }
-  }, [selecDate, supplyerId]);
+  };
 
-
-  const isDisable = supplyerId && selecDate ? false : true;
+  const isDisable = !supplyerId || !selecDate || loading;
 
   return (
     <>
-      <Button variant="secondary" onClick={reactToPrintFn} disabled={isDisable}>
-        <Printer size={18} className="mr-2" /> ພິມອໍເດີສາຂາ
+      <Button
+        variant="secondary"
+        onClick={onPrintButtonClick}
+        disabled={isDisable}
+      >
+        <Printer size={18} className="mr-2" />
+        {loading ? "ກຳລັງໂຫຼດ..." : "ພິມອໍເດີສາຂາ"}
       </Button>
       <div className="hidden">
         <div ref={contentRef} className="p-8 font-lao">
