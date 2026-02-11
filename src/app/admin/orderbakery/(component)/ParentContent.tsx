@@ -127,7 +127,7 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
       bakery_detailId: item.bakery_detailId,
       order_at: date?.toLocaleDateString("en-CA"),
       branchId: Number(value),
-      order_set: Math.round(item.orderRec),
+      order_set: Math.max(1, Math.round(item.orderRec)),
     }));
 
     if (ordersToSave.length === 0) return;

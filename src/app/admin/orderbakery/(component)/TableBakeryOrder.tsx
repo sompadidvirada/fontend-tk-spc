@@ -203,7 +203,6 @@ const TableBakeryOrder = ({
       header: "ຈຳນນວນສັ່ງລົງ",
       size: 190,
       cell: ({ row }) => {
-
         const id = row.original.id;
         const existingEntry = checkOrderBakery.find(
           (item) => item.bakery_detailId === id,
@@ -278,10 +277,17 @@ const TableBakeryOrder = ({
         );
         return (
           <div className="font-medium text-green-600 text-xs">
-            <Badge className="bg-blue-50 text-blue-700">
-              <BadgeCheck data-icon="inline-start" />
-              {orderWant ? orderWant.order_want : 0 || 0}
-            </Badge>
+            {orderWant && orderWant.order_want !== 0 ? (
+              <Badge className="bg-blue-700 text-blue-50">
+                <BadgeCheck data-icon="inline-start" />
+                {orderWant.order_want}
+              </Badge>
+            ) : (
+              <Badge className="bg-blue-50 text-blue-700">
+                <BadgeCheck data-icon="inline-start" />
+                -
+              </Badge>
+            )}
           </div>
         );
       },

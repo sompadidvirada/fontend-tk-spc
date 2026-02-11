@@ -32,7 +32,6 @@ const ComponentPrint = React.forwardRef<HTMLDivElement, ComponentPrintProps>(
       ເຄັກ: "#eeb919ff", // e.g., Croissants (Yellow)
       ຄອປໂຟ: "#F2E9FF", // e.g., Croffles (Purple)
       ເຄື່ອງດື່ມ: "#ff8f2cff", // e.g., Choux (Orange)
-      // Add more IDs as needed from your database
     };
 
     if (!dataToPrint) {
