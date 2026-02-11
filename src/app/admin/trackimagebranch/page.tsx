@@ -128,7 +128,7 @@ export default function BranchImageTracker() {
   };
 
   const handleSavePhone = async () => {
-    if (!tempPhone || !editingBranch?.id) return;
+    if ( !editingBranch?.id) return;
 
     try {
       await addPhoneBranch({ phone: tempPhone }, Number(editingBranch.id));
