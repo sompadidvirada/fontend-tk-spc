@@ -16,30 +16,12 @@ const PrintBakery = ({
   const [dataToPrint, setDataToPrint] = React.useState();
   const [loading, setLoading] = React.useState(false);
 
-  const handlePrint = useReactToPrint({
-    contentRef,
-  });
-
-  const onPrintButtonClick = async () => {
-    setLoading(true);
-    try {
-      const ress = await getOrderBakeryPrint({
-        order_at: selecDate,
-        supplyerId: supplyerId,
-      });
-
-      setDataToPrint(ress.data);
-
-      // 3. IMPORTANT: Wait for React to render the data into the hidden div
-      // We use a small timeout to let the state update reflect in the DOM
-      setTimeout(() => {
-        handlePrint();
-        setLoading(false);
-      }, 500);
-    } catch (err) {
-      console.error(err);
-      setLoading(false);
-    }
+  const onPrintButtonClick = () => {
+    // Construct the URL with parameters
+    const url = `/print-bakery?date=${selecDate}&supplierId=${supplyerId}`;
+    
+    // Open in a new tab
+    window.open(url, "_blank");
   };
 
   const isDisable = !supplyerId || !selecDate || loading;

@@ -45,7 +45,7 @@ const ComponentPrint = React.forwardRef<HTMLDivElement, ComponentPrintProps>(
     return (
       <div
         ref={ref}
-        className="p-4 bg-white text-black print:p-0"
+        className="p-4 bg-white text-black print:p-9"
         style={{ fontFamily: "Noto Sans Lao" }}
       >
         {/* Title */}
