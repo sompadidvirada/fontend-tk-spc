@@ -229,83 +229,88 @@ export default function BranchImageTracker() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {branchsImages?.map((branch) => (
-              <TableRow key={branch.id} className="group">
-                <TableCell className="px-3">
-                  <div className="flex flex-col">
-                    <span className="font-medium text-slate-900">
-                      {branch.name}
-                    </span>
-                    <span className="text-xs text-slate-500 flex items-center gap-1">
-                      <Phone className="w-3 h-3" /> {branch.phonenumber}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="px-3">
-                  {branch.track_image_bakery.length > 0 ? (
-                    <Badge
-                      variant="secondary"
-                      className="bg-blue-50 text-blue-700 h-8 border-blue-100"
-                    >
-                      {branch.track_image_bakery.length} Photos Uploaded
-                    </Badge>
-                  ) : (
-                    <Badge
-                      variant="outline"
-                      className="text-slate-400 border-dashed"
-                    >
-                      No Uploads
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell className="px-3">
-                  <div className="flex items-center gap-3 w-50 justify-between">
-                    <span className="text-sm font-mono text-slate-600">
-                      {branch.phonenumber || "No Number"}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleOpenEdit(branch)}
-                      className="h-8 px-2 text-slate-500"
-                    >
-                      <Pencil className="w-3 h-3 mr-1" />
-                      {branch.phonenumber ? "ແກ້ໄຂເບີໂທ" : "ເພີ່ມເບີໂທ"}
-                    </Button>
-                  </div>
-                </TableCell>
-                <TableCell className="px-3">
-                  {branch.phonenumber ? (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-8 gap-2 text-green-100 bg-green-600 rounded-2xl border-green-200 hover:bg-green-50 hover:text-green-700 hover:border-green-300"
-                      onClick={() => openWhatsApp(branch.phonenumber)}
-                    >
-                      <MessageCircle className="w-3.5 h-3.5" />
-                      ສົ່ງຂໍ້ຄວາມ
-                    </Button>
-                  ) : (
-                    <span className="opacity-50">none</span>
-                  )}
-                </TableCell>
+            {branchsImages
+              ?.filter(
+                (branch) =>
+                  branch.name !== "ສາຂາ ເມືອງງາ" && branch.name !== "ສຳນັກງານໃຫ່ຍ",
+              ) // Filter out IDs 5 and 7
+              .map((branch) => (
+                <TableRow key={branch.id} className="group">
+                  <TableCell className="px-3">
+                    <div className="flex flex-col">
+                      <span className="font-medium text-slate-900">
+                        {branch.name}
+                      </span>
+                      <span className="text-xs text-slate-500 flex items-center gap-1">
+                        <Phone className="w-3 h-3" /> {branch.phonenumber}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="px-3">
+                    {branch.track_image_bakery.length > 0 ? (
+                      <Badge
+                        variant="secondary"
+                        className="bg-blue-50 text-blue-700 h-8 border-blue-100"
+                      >
+                        {branch.track_image_bakery.length} Photos Uploaded
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        className="text-slate-400 border-dashed"
+                      >
+                        No Uploads
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="px-3">
+                    <div className="flex items-center gap-3 w-50 justify-between">
+                      <span className="text-sm font-mono text-slate-600">
+                        {branch.phonenumber || "No Number"}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleOpenEdit(branch)}
+                        className="h-8 px-2 text-slate-500"
+                      >
+                        <Pencil className="w-3 h-3 mr-1" />
+                        {branch.phonenumber ? "ແກ້ໄຂເບີໂທ" : "ເພີ່ມເບີໂທ"}
+                      </Button>
+                    </div>
+                  </TableCell>
+                  <TableCell className="px-3">
+                    {branch.phonenumber ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 gap-2 text-green-100 bg-green-600 rounded-2xl border-green-200 hover:bg-green-50 hover:text-green-700 hover:border-green-300"
+                        onClick={() => openWhatsApp(branch.phonenumber)}
+                      >
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        ສົ່ງຂໍ້ຄວາມ
+                      </Button>
+                    ) : (
+                      <span className="opacity-50">none</span>
+                    )}
+                  </TableCell>
 
-                <TableCell className="text-right px-3">
-                  {branch.track_image_bakery.length === 0 ? (
-                    <span className="opacity-50">none</span>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSelectedBranch(branch)}
-                      className="hover:bg-blue-50 hover:text-blue-600"
-                    >
-                      <Eye className="w-4 h-4 mr-2" /> Review
-                    </Button>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
+                  <TableCell className="text-right px-3">
+                    {branch.track_image_bakery.length === 0 ? (
+                      <span className="opacity-50">none</span>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedBranch(branch)}
+                        className="hover:bg-blue-50 hover:text-blue-600"
+                      >
+                        <Eye className="w-4 h-4 mr-2" /> Review
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </div>
