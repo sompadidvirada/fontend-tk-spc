@@ -67,7 +67,7 @@ export default function PrintPage() {
       <div className="mt-4 no-print flex justify-center">
         <button 
           onClick={() => handlePrint()}
-          className="px-4 py-2 bg-blue-600 text-white rounded"
+          className="px-4 py-2 bg-blue-600 text-white rounded font-lao"
         >
           ກົດເພື່ອພິມອີກຄັ້ງ
         </button>
