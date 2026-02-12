@@ -35,12 +35,12 @@ const ImageBakery = () => {
   const [previews, setPreviews] = useState<string[]>([]);
   const [uploadedUrls, setUploadedUrls] = useState<any[]>([]);
   const [isUploading, setIsUploading] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const dateString = selectedDate ? format(selectedDate, "yyyy-MM-dd") : "";
 
   const today = startOfDay(new Date());
-  const selected = startOfDay(selectedDate);
+  const selected = startOfDay(selectedDate ? selectedDate : new Date());
   const daysDifference = differenceInDays(today, selected);
   const isTooOld = daysDifference > 1;
   const isFuture = daysDifference < 0;
@@ -89,6 +89,7 @@ const ImageBakery = () => {
 
   const handleUploadAll = async () => {
     if (fileObjects.length === 0) return toast.error("ກະລຸນາເລືອກຮູບກ່ອນ");
+    if (!selectedDate) return toast.error("ກະລຸນາເລືອກວັນທີກ່ອນ") 
 
     setIsUploading(true);
 
