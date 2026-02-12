@@ -28,12 +28,12 @@ const ComponentPrint = React.forwardRef<HTMLDivElement, ComponentPrintProps>(
   (props, ref) => {
     const { dataToPrint } = props;
     const CATEGORY_COLORS: Record<string, string> = {
-      ຄົວຊ່ອງ: "#53c8ffff",
-      ເຄັກ: "#eeb919ff",
-      ຄອປໂຟ: "#F2E9FF",
-      ເຄື່ອງດື່ມ: "#ff8f2cff",
-      'ເບເກີລີ້ ອຶ່ນໆ': "#ffa28c",
-      ທິມເບີລິ້ງ: "#ffa7fc"
+      ຄົວຊ່ອງ: "#FFECB3",
+      ເຄັກ: "#F8BBD0",
+      ຄອປໂຟ: "#DCEDC8",
+      ເຄື່ອງດື່ມ: "#B3E5FC",
+      "ເບເກີລີ້ ອຶ່ນໆ": "#E1BEE7",
+      ທິມເບີລິ້ງ: "#FFCCBC",
     };
 
     if (!dataToPrint) return <div ref={ref}>...</div>;
@@ -44,7 +44,7 @@ const ComponentPrint = React.forwardRef<HTMLDivElement, ComponentPrintProps>(
         className="p-10 bg-white font-lao"
         style={{ fontFamily: "Noto Sans Lao" }}
       >
-        <div className="border-[4px] border-double border-black p-4 mb-4 text-center">
+        <div className="border-[4px] border-double border-black p-4 mb-4 text-center bg-blue-200">
           <h1 className="text-2xl font-black italic">ລາຍງານການສັ່ງຊື້ສິນຄ້າ</h1>
           <p className="font-bold uppercase">
             Report Date: {format(new Date(dataToPrint.date), "dd/MM/yyyy")}
@@ -53,7 +53,7 @@ const ComponentPrint = React.forwardRef<HTMLDivElement, ComponentPrintProps>(
 
         <table className="w-full border-collapse">
           <thead>
-            <tr className="bg-yellow-400 border-[2px] border-black">
+            <tr className=" border-[2px] border-black">
               <th className="border-2 border-black p-2 text-left">
                 ລາຍການສິນຄ້າ
               </th>
@@ -67,7 +67,7 @@ const ComponentPrint = React.forwardRef<HTMLDivElement, ComponentPrintProps>(
                   </div>
                 </th>
               ))}
-              <th className="border-2 border-black p-2 bg-gray-100">ລວມ</th>
+              <th className="border-2 border-black p-2 ">ລວມ</th>
             </tr>
           </thead>
           <tbody>
@@ -97,7 +97,7 @@ const ComponentPrint = React.forwardRef<HTMLDivElement, ComponentPrintProps>(
                 </td>
               </tr>
             ))}
-            <tr className="bg-yellow-400 border-2 border-black font-black">
+            <tr className=" border-2 border-black font-black">
               <td className="p-2 text-right border-r-2 border-black">
                 TOTAL ALL
               </td>
