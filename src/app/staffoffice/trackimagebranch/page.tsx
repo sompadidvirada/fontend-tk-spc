@@ -229,7 +229,12 @@ export default function BranchImageTracker() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {branchsImages?.map((branch) => (
+            {branchsImages
+              ?.filter(
+                (branch) =>
+                  branch.name !== "ສາຂາ ເມືອງງາ" && branch.name !== "ສຳນັກງານໃຫ່ຍ",
+              ) // Filter out IDs 5 and 7
+              .map((branch) => (
               <TableRow key={branch.id} className="group">
                 <TableCell className="px-3">
                   <div className="flex flex-col">
