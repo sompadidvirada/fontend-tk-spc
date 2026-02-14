@@ -96,7 +96,8 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
         const baseDivisor = dayName === "Saturday" ? 10 : 11;
         const baseMultiplier = dayName === "Saturday" ? 3 : 4;
         orderRec = (totalSell / baseDivisor) * baseMultiplier;
-
+        orderRec = Math.round(orderRec);
+        
         const isAStatus = bake?.status === "A";
         const isBStatus = bake?.status === "B";
         const isWednesday = dayName === "Wednesday";
