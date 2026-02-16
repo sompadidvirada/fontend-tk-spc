@@ -12,7 +12,7 @@ import {
   Truck,
   X,
 } from "lucide-react";
-import React, { useRef, useState, useTransition } from "react";
+import React, { useCallback, useRef, useState, useTransition } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -61,6 +61,46 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
   const [isEditingPaymentDate, setIsEditingPaymentDate] = useState(false);
   const [isEditingDeliveryDate, setIsEditingDeliveryDate] = useState(false);
 
+  // 1. Wrap your event fetching logic in useCallback
+  const fetchEvents = useCallback(
+    async (
+      info: { startStr: string; endStr: string },
+      successCallback: (events: any[]) => void,
+      failureCallback: (error: any) => void,
+    ) => {
+      try {
+        const response = await getAllCalendarOrderSpc({
+          start: info.startStr,
+          end: info.endStr,
+          role: staff.role,
+          id: staff.id,
+        });
+
+        const formattedEvents = response.data.map((order: any) => ({
+          id: order.id,
+          title: order.supplier_spc.name,
+          start: order.plan_date,
+          allDay: true,
+          backgroundColor: getEventColor(
+            order.payment_status,
+            order.delivery_status,
+          ),
+          borderColor: "transparent",
+          extendedProps: {
+            ...order,
+            paymentStatus: order.payment_status,
+            deliveryStatus: order.delivery_status,
+          },
+        }));
+
+        successCallback(formattedEvents);
+      } catch (error: any) {
+        failureCallback(error);
+      }
+    },
+    [staff.id, staff.role],
+  );
+
   const handleUpdatePaymentDate = async (newDate: string) => {
     try {
       await updatePaymentDate(selectedEvent.id, {
@@ -78,13 +118,13 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
       toast.error("ບໍ່ສາມາດອັບເດດວັນທີໄດ້");
     }
   };
-  
+
   const handleUpdateDeliveryDate = async (newDate: string) => {
     try {
       await updateDeliveryDate(selectedEvent.id, {
         delivery_date: newDate,
       });
-      
+
       setSelectedEvent({ ...selectedEvent, delivery_date: newDate });
       setIsEditingDeliveryDate(false);
 
@@ -98,7 +138,7 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
   };
 
   // Helper to get color based on status
- const getEventColor = (payStatus: string, devStatus: string) => {
+  const getEventColor = (payStatus: string, devStatus: string) => {
     if (payStatus === "success" && devStatus === "success") return "#b700ff"; // Green
     if (devStatus === "success") return "#3b82f6"; // Blue
     if (payStatus === "success") return "#10b981"; // Blue
@@ -273,37 +313,7 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
           dateClick={handleDateClick}
           eventClick={handleEventClick}
           eventDrop={handleEventDrop}
-          events={async (info, successCallback, failureCallback) => {
-            try {
-              const response = await getAllCalendarOrderSpc({
-                start: info.startStr,
-                end: info.endStr,
-                role: staff.role,
-                id: staff.id,
-              });
-
-              const formattedEvents = response.data.map((order: any) => ({
-                id: order.id,
-                title: order.supplier_spc.name,
-                start: order.plan_date,
-                allDay: true,
-                backgroundColor: getEventColor(
-                  order.payment_status,
-                  order.delivery_status,
-                ),
-                borderColor: "transparent",
-                extendedProps: {
-                  ...order,
-                  paymentStatus: order.payment_status,
-                  deliveryStatus: order.delivery_status,
-                },
-              }));
-
-              successCallback(formattedEvents);
-            } catch (error: any) {
-              failureCallback(error);
-            }
-          }}
+          events={fetchEvents}
         />
       </div>
 
