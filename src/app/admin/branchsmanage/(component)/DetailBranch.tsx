@@ -61,6 +61,9 @@ const DetailBranch = ({ branchs }: DetailBranchProps) => {
                     <p className="text-sm text-muted-foreground">
                       ແຂວງ: {branch.province}
                     </p>
+                    <p className="text-sm text-muted-foreground">
+                      ໄອດີ: {branch.id}
+                    </p>
                   </div>
                 </div>
 
