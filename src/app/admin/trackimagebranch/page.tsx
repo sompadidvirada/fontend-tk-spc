@@ -255,7 +255,7 @@ export default function BranchImageTracker() {
                         variant="outline"
                         size="sm"
                         onClick={() => setSelectedBranch(branch)}
-                        className="hover:bg-blue-50 hover:text-blue-600"
+                        className="hover:bg-blue-50 hover:text-blue-600 w-full"
                       >
                         <Eye className="w-4 h-4 mr-2" /> Review
                       </Button>
