@@ -128,7 +128,7 @@ export default function BranchImageTracker() {
   };
 
   const handleSavePhone = async () => {
-    if ( !editingBranch?.id) return;
+    if (!editingBranch?.id) return;
 
     try {
       await addPhoneBranch({ phone: tempPhone }, Number(editingBranch.id));
@@ -232,7 +232,8 @@ export default function BranchImageTracker() {
             {branchsImages
               ?.filter(
                 (branch) =>
-                  branch.name !== "ສາຂາ ເມືອງງາ" && branch.name !== "ສຳນັກງານໃຫ່ຍ",
+                  branch.name !== "ສາຂາ ເມືອງງາ" &&
+                  branch.name !== "ສຳນັກງານໃຫ່ຍ",
               ) // Filter out IDs 5 and 7
               .map((branch) => (
                 <TableRow key={branch.id} className="group">
@@ -245,6 +246,20 @@ export default function BranchImageTracker() {
                         <Phone className="w-3 h-3" /> {branch.phonenumber}
                       </span>
                     </div>
+                  </TableCell>
+                  <TableCell className="text-right px-3">
+                    {branch.track_image_bakery.length === 0 ? (
+                      <span className="opacity-50">none</span>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedBranch(branch)}
+                        className="hover:bg-blue-50 hover:text-blue-600"
+                      >
+                        <Eye className="w-4 h-4 mr-2" /> Review
+                      </Button>
+                    )}
                   </TableCell>
                   <TableCell className="px-3">
                     {branch.track_image_bakery.length > 0 ? (
@@ -292,21 +307,6 @@ export default function BranchImageTracker() {
                       </Button>
                     ) : (
                       <span className="opacity-50">none</span>
-                    )}
-                  </TableCell>
-
-                  <TableCell className="text-right px-3">
-                    {branch.track_image_bakery.length === 0 ? (
-                      <span className="opacity-50">none</span>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSelectedBranch(branch)}
-                        className="hover:bg-blue-50 hover:text-blue-600"
-                      >
-                        <Eye className="w-4 h-4 mr-2" /> Review
-                      </Button>
                     )}
                   </TableCell>
                 </TableRow>
