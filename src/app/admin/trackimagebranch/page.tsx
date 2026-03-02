@@ -222,10 +222,10 @@ export default function BranchImageTracker() {
           <TableHeader>
             <TableRow className="bg-slate-50/50">
               <TableHead className="px-3">ຊື່ສາຂາ</TableHead>
-              <TableHead className="px-3">ສະຖານະອັປໂຫລດ</TableHead>
+              <TableHead className="text-right px-3">ເບີ່ງຮູບທັງໝົດ</TableHead>
               <TableHead className="px-3">ແກ້ໄຂເບີຕິດຕໍ່</TableHead>
               <TableHead className="px-3">ຕິດຕໍ່ສາຂາ</TableHead>
-              <TableHead className="text-right px-3">ເບີ່ງຮູບທັງໝົດ</TableHead>
+              <TableHead className="px-3">ສະຖານະອັປໂຫລດ</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
