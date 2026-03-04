@@ -26,7 +26,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Treekoff store",
-  description: "treekoff suuply chain hold and maintenance by sompadid virada",
+  description: "treekoff suuply chain hold and maintenance by BigTree Trading",
 };
 
 // This object controls the global viewport behavior

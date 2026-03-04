@@ -21,7 +21,7 @@ export default function LoginPage() {
         </div>
       </div>
       <p className="absolute bottom-4 right-4 text-white text-[10px] opacity-80 md:text-xs font-lao z-20">
-        Copyright © 2026 Sompadid virada. All rights reserved.
+        Copyright © 2026 BigTree Trading. All rights reserved.
       </p>
     </div>
   );

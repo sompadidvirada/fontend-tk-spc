@@ -37,7 +37,7 @@ const Page = () => {
           </CardHeader>
           <CardContent className="space-y-4 text-sm leading-relaxed font-lao">
             <p>
-              Welcome to <strong>Sompadid Virada</strong>. By accessing or using
+              Welcome to <strong>BigTree Trading</strong>. By accessing or using
               our website, application, or services (collectively, the
               “Service”), you agree to be bound by these Terms of Service.
             </p>
@@ -60,7 +60,7 @@ const Page = () => {
             </h2>
             <p>
               All content, trademarks, and materials provided through the
-              Service are owned by Sompadid Virada and protected by applicable
+              Service are owned by BigTree Trading and protected by applicable
               laws.
             </p>
 
@@ -74,7 +74,7 @@ const Page = () => {
               5. Limitation of Liability
             </h2>
             <p>
-              Sompadid Virada shall not be liable for any indirect or
+              BigTree Trading shall not be liable for any indirect or
               consequential damages arising from your use of the Service.
             </p>
 
@@ -98,7 +98,7 @@ const Page = () => {
 
       {/* Footer */}
       <p className="absolute bottom-4 right-4 text-white text-[12px] opacity-80 font-lao">
-        Copyright © 2026 Sompadid virada. All rights reserved.
+        Copyright © 2026 BigTree Trading. All rights reserved.
       </p>
     </div>
   );

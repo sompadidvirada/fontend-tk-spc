@@ -39,7 +39,7 @@ const ReportBakery = async () => {
       <ParentTable branchs={branchs} lang={lang} />
 
       <p className="absolute bottom-px right-4 text-black text-[12px] opacity-80 md:text-xs font-lao">
-        Copyright © 2026 Sompadid virada. All rights reserved.
+        Copyright © 2026 BigTree Trading. All rights reserved.
       </p>
     </div>
   );

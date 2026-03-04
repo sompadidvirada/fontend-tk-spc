@@ -38,7 +38,7 @@ const Page = () => {
 
           <CardContent className="space-y-4 text-sm leading-relaxed font-lao">
             <p>
-              This Privacy Policy explains how <strong>Sompadid Virada</strong>{" "}
+              This Privacy Policy explains how <strong>BigTree Trading</strong>{" "}
               collects, uses, and protects your personal information when you
               use our website, application, and services (collectively, the
               “Service”).
@@ -120,7 +120,7 @@ const Page = () => {
 
       {/* Footer */}
       <p className="absolute bottom-4 right-4 text-white text-[12px] opacity-80 font-lao">
-        Copyright © 2026 Sompadid virada. All rights reserved.
+        Copyright © 2026 BigTree Trading. All rights reserved.
       </p>
     </div>
   );

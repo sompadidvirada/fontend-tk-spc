@@ -33,7 +33,7 @@ const ProfileDetail = () => {
           height={34}
           className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover"
         />
-        <span className="font-semibold hidden md:block">sompadid virada</span>
+        <span className="font-semibold hidden md:block">BigTree Trading</span>
       </button>
 
       {openProfile && (
