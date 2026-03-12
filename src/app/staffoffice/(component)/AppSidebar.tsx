@@ -74,6 +74,10 @@ export function AppSidebar({ session, ...props }: AppSidebarProps) {
             url: "/staffoffice/tracksend",
           },
           {
+            title: "ລາຍງານເບເກີລີ້",
+            url: "/staffoffice/reportbakery"
+          },
+          {
             title: "ແຜນຈັດຊຶ້ປະຈຳເດືອນ",
             url: "/staffoffice/calendarorder",
           },
