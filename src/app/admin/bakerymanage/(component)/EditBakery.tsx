@@ -67,7 +67,7 @@ const EditBakery = ({
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>{trigger}</DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] w-[500px] h-[600px] overflow-auto">
           <DialogHeader>
             <DialogTitle className="font-lao text-left">
               ແກ້ໄຂຂໍ້ມູນ: {bakery_selected.name}
@@ -261,6 +261,7 @@ function ProfileForm({
             <SelectValue placeholder="ເລືອກບໍລິສັດ/ຮ້ານ" />
           </SelectTrigger>
           <SelectContent className="font-lao">
+            
             {supplyer &&
               supplyer?.map((item, i) => (
                 <SelectItem key={i} value={item.id.toString()}>

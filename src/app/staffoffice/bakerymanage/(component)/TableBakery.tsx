@@ -24,12 +24,14 @@ import {
   Loader2,
   MoreHorizontal,
   Search,
+  Store,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -54,6 +56,7 @@ import Image from "next/image";
 import EditBakery from "./EditBakery";
 import ChangeStatus from "./ChangeStatus";
 import EditStatufSellPerBranch from "./EditStatufSellPerBranch";
+import DeleteBakery from "./DeleteBakery";
 
 interface DataTableProps {
   data: Bakery_Detail[];
@@ -87,7 +90,12 @@ export type Category_Bakery = {
 };
 
 const TableBakery = ({ data, categoryBakery,supplyer }: DataTableProps) => {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = React.useState<SortingState>([
+    {
+      id:"status",
+      desc:false
+    }
+  ]);
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -298,6 +306,10 @@ const TableBakery = ({ data, categoryBakery,supplyer }: DataTableProps) => {
               {/*MANAGE BAEKERY SEND PER BRANCH */}
 
               <EditStatufSellPerBranch bakery_selected={bakery_selected} />
+
+              {/** DELETE THE BAKERY */}
+
+              <DeleteBakery bakery_selected={bakery_selected} />
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -465,7 +477,7 @@ const TableBakery = ({ data, categoryBakery,supplyer }: DataTableProps) => {
         </div>
       </div>
 
-      {/**DIALOG MODAL FOR IMAGE STAFF */}
+      {/**DIALOG MODAL FOR IMAGE  */}
       <Dialog
         open={!!selectedViewImage}
         onOpenChange={() => {

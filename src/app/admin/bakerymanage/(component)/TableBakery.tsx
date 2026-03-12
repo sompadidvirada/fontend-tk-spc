@@ -90,7 +90,12 @@ export type Category_Bakery = {
 };
 
 const TableBakery = ({ data, categoryBakery,supplyer }: DataTableProps) => {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = React.useState<SortingState>([
+    {
+      id:"status",
+      desc:false
+    }
+  ]);
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -472,7 +477,7 @@ const TableBakery = ({ data, categoryBakery,supplyer }: DataTableProps) => {
         </div>
       </div>
 
-      {/**DIALOG MODAL FOR IMAGE STAFF */}
+      {/**DIALOG MODAL FOR IMAGE  */}
       <Dialog
         open={!!selectedViewImage}
         onOpenChange={() => {
