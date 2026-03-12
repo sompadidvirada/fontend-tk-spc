@@ -25,6 +25,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { Button } from "@/components/ui/button";
 import {
   Eye,
@@ -33,9 +34,9 @@ import {
   MapPin,
   MessageCircle,
   Pencil,
-  CalendarIcon,
-  ChevronDownIcon,
   Trash2,
+  CalendarCog,
+  ChevronDown,
 } from "lucide-react";
 import Image from "next/image";
 import { Label } from "@/components/ui/label";
@@ -105,9 +106,9 @@ export default function BranchImageTracker() {
 
   useEffect(() => {
     const fecthBranchImage = async () => {
-      const ress = await getAllBranchImage({ track_date: dateString });
-      setBranchsImages(ress.data);
       try {
+        const ress = await getAllBranchImage({ track_date: dateString });
+        setBranchsImages(ress.data);
       } catch (err) {
         console.log(err);
       }
@@ -198,8 +199,8 @@ export default function BranchImageTracker() {
                   }).format(date)
                 : "ເລືອກວັນທີ"}
               <div className="flex">
-                <CalendarIcon />
-                <ChevronDownIcon />
+                <CalendarCog />
+                <ChevronDown />
               </div>
             </Button>
           </PopoverTrigger>
@@ -398,14 +399,24 @@ export default function BranchImageTracker() {
                       className="flex items-center justify-center"
                     >
                       <div className="relative w-full h-[600px] flex items-center justify-center">
-                        <Image
-                          src={img.image_name}
-                          alt={`${selectedBranch?.track_image_bakery} upload ${index + 1}`}
-                          fill
-                          className="object-contain"
-                          sizes="(max-width: 768px) 100vw, 800px"
-                          priority={index === 0} // Load the first image immediately
-                        />
+                        <TransformWrapper
+                          initialScale={1}
+                          minScale={1}
+                          maxScale={5}
+                          wheel={{ step: 0.2 }}
+                          doubleClick={{ disabled: true }}
+                        >
+                          <TransformComponent wrapperClass="!w-full !h-full flex items-center justify-center">
+                            <Image
+                              src={img.image_name}
+                              alt={`upload ${index + 1}`}
+                              width={800}
+                              height={600}
+                              className="object-contain"
+                            />
+                          </TransformComponent>
+                        </TransformWrapper>
+
                         <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
                           <Badge
                             variant="outline"
@@ -432,6 +443,7 @@ export default function BranchImageTracker() {
           </div>
         </DialogContent>
       </Dialog>
+
       {/**DIALOG CONFIRM DELETE IMAGE PREVIEW */}
 
       <AlertDialog

@@ -69,6 +69,7 @@
     "react-number-format": "^5.4.4",
     "react-redux": "^9.2.0",
     "react-to-print": "^3.2.0",
+    "react-zoom-pan-pinch": "^3.7.0",
     "rechart": "^0.0.1",
     "recharts": "^2.15.4",
     "redux-persist": "^6.0.0",
