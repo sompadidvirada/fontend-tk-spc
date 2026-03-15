@@ -398,21 +398,22 @@ export default function BranchImageTracker() {
                       key={index}
                       className="flex items-center justify-center"
                     >
-                      <div className="relative w-full h-[600px] flex items-center justify-center">
+                      <div className="relative w-full h-[700px] flex items-center justify-center">
                         <TransformWrapper
                           initialScale={1}
                           minScale={1}
                           maxScale={5}
+                          centerOnInit
                           wheel={{ step: 0.2 }}
-                          doubleClick={{ disabled: true }}
                         >
-                          <TransformComponent wrapperClass="!w-full !h-full flex items-center justify-center">
+                          <TransformComponent wrapperClass="!w-full !h-[700px] flex">
                             <Image
                               src={img.image_name}
                               alt={`upload ${index + 1}`}
+                              className="max-h-[580px] max-w-full object-contain"
+                              draggable={false}
                               width={800}
-                              height={600}
-                              className="object-contain"
+                              height={800}
                             />
                           </TransformComponent>
                         </TransformWrapper>
