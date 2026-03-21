@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Edit2, Trash2, MapPin } from "lucide-react";
 import EditBranch from "./EditBranch";
+import { DeleteBranch } from "./DeleteBranch";
 
 type Branch = {
   id: number;
@@ -70,14 +71,7 @@ const DetailBranch = ({ branchs }: DetailBranchProps) => {
                 <div className="flex gap-2">
                   <EditBranch branch={branch} />
 
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
-                    disabled
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                  <DeleteBranch branch={branch}/>
                 </div>
               </div>
             ))}

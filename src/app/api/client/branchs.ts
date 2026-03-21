@@ -19,3 +19,9 @@ export const updateDetailBranch = (form: {name: string, province: string, locati
         withCredentials: true
     })
 }
+
+export const deleteBranch = (id: number) => {
+    return axios.delete(`${URL}/branchs/deletebranch/${id}`, {
+        withCredentials: true
+    })
+}
