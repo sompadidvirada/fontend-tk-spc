@@ -105,7 +105,6 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
         if (
           totalSell >= totalSend &&
           item.L1_Sell >= item.L1_Send &&
-          item.L2_Sell >= item.L2_Send &&
           item.L1_Exp <= 0
         ) {
           if (isAStatus) valueadd = isWednesday ? 3 : 2;
