@@ -15,7 +15,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     if (!staff?.id) return;
 
     // Use ws:// for local development, wss:// for production
-    const wsUrl = `ws://${URL}/ws?userId=${staff.id}`;
+    const wsUrl = `ws://api.treekoff.store/ws?userId=${staff.id}`;
     const newSocket = new WebSocket(wsUrl);
 
     newSocket.onopen = () => {
