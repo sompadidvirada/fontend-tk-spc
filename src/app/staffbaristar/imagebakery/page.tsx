@@ -106,11 +106,11 @@ const ImageBakery = () => {
 
     try {
       const response = await insertImageTrack(formData);
+      console.log(response)
 
       if (response.status === 200) {
         toast.success("ອັບໂຫຼດຮູບພາບສຳເລັດ!");
-        // Set the state to the URLs returned from your backend
-        setUploadedUrls((prev) => [...prev, ...response.data]);
+        setUploadedUrls((prev) => [...prev, ...response.data.data]);
         // Clear local previews and files since upload is done
         setPreviews([]);
         setFileObjects([]);
