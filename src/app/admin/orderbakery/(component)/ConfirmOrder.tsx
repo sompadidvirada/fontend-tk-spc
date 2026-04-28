@@ -2,7 +2,10 @@ import { Button } from "@/components/ui/button";
 import { CheckCheck } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { updateConfirmSttAdmin } from "@/app/api/client/order_bakery";
+import {
+  deleteConfirmOrderBaristar,
+  updateConfirmSttAdmin,
+} from "@/app/api/client/order_bakery";
 import { checkConfirmStatus } from "@/app/api/client/baristar";
 
 export interface ConfirmOrders {
@@ -15,12 +18,11 @@ export interface ConfirmOrders {
 interface Prop {
   selectDate: Date | undefined;
   value: string;
-  supplyerId: string 
+  supplyerId: string;
 }
 
 const ConfirmOrder = ({ selectDate, value, supplyerId }: Prop) => {
-  const [confirmStt, setConfirmStt] = useState<ConfirmOrders>();
-
+  const [confirmStt, setConfirmStt] = useState<ConfirmOrders | null>();
 
   useEffect(() => {
     const fecthData = async () => {
@@ -30,6 +32,7 @@ const ConfirmOrder = ({ selectDate, value, supplyerId }: Prop) => {
           confirm_date: dateTo,
           branchId: Number(value),
         });
+        console.log(ress);
         setConfirmStt(ress.data);
       } catch (err) {
         console.log(err);
@@ -59,6 +62,17 @@ const ConfirmOrder = ({ selectDate, value, supplyerId }: Prop) => {
     }
   };
 
+  const handleDelteCfBaristar = async (id: number) => {
+    try {
+      const ress = await deleteConfirmOrderBaristar(id);
+      console.log(ress);
+      setConfirmStt(null);
+    } catch (err) {
+      console.log(err);
+      toast.error("error");
+    }
+  };
+
   return (
     <>
       {confirmStt?.admin_confirm_stt ? (
@@ -78,6 +92,16 @@ const ConfirmOrder = ({ selectDate, value, supplyerId }: Prop) => {
           onClick={() => handleUpdateConfirmStt(true, confirmStt?.id)}
         >
           <CheckCheck className="mr-1 h-4 w-4 " /> ຢືນຢັນອໍເດີ
+        </Button>
+      )}
+      {confirmStt != null && confirmStt.baristar_confirm_stt == true && (
+        <Button
+          variant="outline"
+          className="font-lao bg-red-300 text-red-800"
+          disabled={confirmStt?.baristar_confirm_stt ? false : true}
+          onClick={() => handleDelteCfBaristar(confirmStt?.id)}
+        >
+          <CheckCheck className="mr-1 h-4 w-4 " /> cancel CF BR
         </Button>
       )}
     </>

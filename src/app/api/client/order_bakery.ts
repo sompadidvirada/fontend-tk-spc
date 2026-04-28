@@ -84,3 +84,9 @@ export const deleteAllOrderBakery = (form: {order_at:string | undefined, branchI
     withCredentials: true
   })
 }
+
+export const deleteConfirmOrderBaristar = (id : number) => {
+  return axios.delete(`${URL}/orderbakery/deleteconfirmorderbaristar/${id}`, {
+    withCredentials: true
+  })
+}

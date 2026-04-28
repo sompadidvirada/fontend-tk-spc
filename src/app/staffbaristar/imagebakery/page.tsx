@@ -53,6 +53,7 @@ const ImageBakery = () => {
           track_date: dateString,
           branchId: staff_detail.branchId,
         });
+        console.log(ress)
         setUploadedUrls(ress.data);
       } catch (err) {
         console.log(err);
@@ -109,7 +110,7 @@ const ImageBakery = () => {
       if (response.status === 200) {
         toast.success("ອັບໂຫຼດຮູບພາບສຳເລັດ!");
         // Set the state to the URLs returned from your backend
-        setUploadedUrls((prev) => [...prev, ...response.data.data]);
+        setUploadedUrls((prev) => [...prev, ...response.data]);
         // Clear local previews and files since upload is done
         setPreviews([]);
         setFileObjects([]);
