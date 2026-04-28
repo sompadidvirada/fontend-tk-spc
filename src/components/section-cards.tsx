@@ -127,7 +127,7 @@ export function SectionCards() {
             <CardDescription>{t.expTitle}</CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-xl">
               {isLoading ? <Skeleton className="h-8 w-32" /> : 
-                `${(dataCard?.current.expTotal || 0).toLocaleString()} ${t.currency}`}
+                `${(dataCard?.current.expTotal.toFixed(2) || 0).toLocaleString()} ${t.currency}`}
             </CardTitle>
             <CardAction>
               <Badge variant="outline">
