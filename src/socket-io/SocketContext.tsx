@@ -4,6 +4,8 @@ import { useStaffStore } from "@/store/staff"; // Import your store
 
 const SocketContext = createContext<WebSocket | null>(null);
 
+const URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const staff = useStaffStore((s) => s.staff);
