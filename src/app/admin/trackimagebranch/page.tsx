@@ -393,7 +393,8 @@ export default function BranchImageTracker() {
             {selectedBranch && selectedBranch.track_image_bakery.length > 0 ? (
               <Carousel setApi={setApi} className="w-full h-full">
                 <CarouselContent>
-                  {selectedBranch.track_image_bakery.map((img, index) => (
+                  {selectedBranch.track_image_bakery.map((img, index) => 
+                  (
                     <CarouselItem
                       key={index}
                       className="flex items-center justify-center"
@@ -408,7 +409,7 @@ export default function BranchImageTracker() {
                         >
                           <TransformComponent wrapperClass="!w-full !h-[700px] flex">
                             <Image
-                              src={img.image_name}
+                              src={img?.image_name}
                               alt={`upload ${index + 1}`}
                               className="max-h-[580px] max-w-full object-contain"
                               draggable={false}

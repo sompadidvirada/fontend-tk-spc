@@ -57,8 +57,3 @@ export const createCategoryBakery = (name: { name: string }) => {
   });
 };
 
-export const deleteCategoryBakery = (id: number) => {
-  return axios.delete(`${URL}/managebakery/deletecategory/${id}`, {
-    withCredentials: true,
-  });
-};

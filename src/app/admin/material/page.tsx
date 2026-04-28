@@ -70,7 +70,7 @@ const Material = async () => {
       {/**button for manage material */}
       <div className="flex flex-col lg:flex-row justify-between px-5 mt-5 gap-4">
         <div className="grid grid-cols-1  md:flex md:flex-row gap-3 h-6 md:h-10">
-          <AddMaterial />
+          <AddMaterial category={category}/>
           <AddCategoryMaterial />
           <AddSupplyer />
         </div>

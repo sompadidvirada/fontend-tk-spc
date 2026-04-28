@@ -143,6 +143,12 @@ export const insertTrackingExp = (form: Track_Bakery_Exp) => {
   });
 };
 
+export const editTrackexp = (form: {quantity: number}, id: number | string) => {
+  return axios.put(`${URL}/managetracking/updatetrackexp/${id}`, form, {
+    withCredentials: true
+  })
+}
+
 export const getTrackingExp = (form: {
   branchId: number;
   date: string | undefined;

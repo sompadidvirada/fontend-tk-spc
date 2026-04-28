@@ -377,7 +377,7 @@ const ProfilePage = () => {
                   : "text-green-600",
               )}
             >
-              {reportSendExp ? reportSendExp.loss_rate_percent : 0}%
+              {reportSendExp ? reportSendExp.loss_rate_percent.toFixed(2) : 0}%
             </span>
           </div>
           <div className="w-24 h-2 bg-slate-200 rounded-full overflow-hidden">

@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Bakery_Exp } from "./Parent";
+import EditTrackExp from "./EditTrackExp";
 
 interface TableDataProp {
   selectedDate: Date | undefined;
@@ -88,7 +89,7 @@ const TableData = ({
 
     try {
       const ress = await insertTrackingExp(dataToApi);
-      const responesFromApi = ress.data.data;
+      const responesFromApi = ress.data;
 
       setCheckBakery((prev) => {
         return [...prev, responesFromApi];
@@ -177,10 +178,10 @@ const TableData = ({
               <span className="w-24 font-bold text-blue-600">
                 ຍອດທີ່ບັນທືກ. ({existingEntry.quantity})
               </span>
-              {/* <EditTrackSend
+              <EditTrackExp
                 id={existingEntry.id}
                 setCheckBakery={setCheckBakery}
-              /> */}
+              />
               <Button
                 size="sm"
                 variant="outline"

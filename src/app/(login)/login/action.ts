@@ -1,11 +1,9 @@
 // app/(auth)/login/action.ts
 "use server";
 
-import { redirect } from "next/navigation";
 import { LoginSchema, type ActionState } from "./schema";
 import axios from "axios";
-import { createSession, decrypt } from "@/app/(lib)/session";
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 const URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function loginAction(
@@ -32,11 +30,12 @@ export async function loginAction(
     const response = await axios.post(
       `${URL}/authentication/login`,
       {
-        phoen_number: phone_number,
+        phonenumber: phone_number,
         password: password,
       },
       { withCredentials: true },
     );
+
     const cookieHeader = response.headers["set-cookie"];
 
     if (cookieHeader) {

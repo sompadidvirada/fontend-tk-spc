@@ -11,6 +11,7 @@ import { CheckCheck, Loader2, RotateCcw, Wand } from "lucide-react";
 import TableBakeryOrder, { BakeryDetail } from "./TableBakeryOrder";
 import { Card } from "@/components/ui/card";
 import {
+  deleteAllOrderBakery,
   getDataOrderBakery,
   getOrderBakery,
   insertManyOrderBakery,
@@ -26,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Supplyer } from "../../bakerymanage/(component)/TableBakery";
+import { useRouter } from "next/navigation";
 
 export interface DataBranchProps {
   branchs: Branch_type[];
@@ -77,7 +79,7 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
     Data_Order_Bakery[]
   >([]);
   const [previousOrder, setPreviousOrder] = React.useState<Order_Bakery[]>([]);
-
+  const router = useRouter()
   const result = React.useMemo(() => {
     const dayName = date?.toLocaleDateString("en-US", { weekday: "long" });
 
@@ -150,6 +152,7 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
     });
   };
 
+
   React.useEffect(() => {
     const fecthData = async () => {
       setLoading(true);
@@ -168,7 +171,7 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
           getOrderBakery({ branchId: Number(value), order_at: dateTo }),
         ]);
 
-        setBakerys(bakerysRes.data.data);
+        setBakerys(bakerysRes.data);
         setCheckDataOrder(DataOrderRes.data);
         setCheckOrderBakery(orderBakery.data.current);
         setPreviousOrder(orderBakery.data.previous);
@@ -183,6 +186,19 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
       fecthData();
     }
   }, [date, value, supplyerId]);
+
+  const handleDelteALL = async () => {
+    try{
+      await deleteAllOrderBakery({order_at: date?.toLocaleDateString("en-Ca"), branchId: Number(value)})
+      setCheckOrderBakery([])
+      setPreviousOrder([]);
+      toast.success("delete all order success")
+    }catch(err) {
+      console.log(err)
+      toast.error("try agian later")
+    }
+  }
+
 
   return (
     <>
@@ -216,9 +232,9 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
             </SelectContent>
           </Select>
 
-          <ConfirmOrder selectDate={date} value={value} />
+          <ConfirmOrder selectDate={date} value={value} supplyerId={supplyerId}/>
           <>
-            <Button variant="outline" className="font-lao">
+            <Button variant="outline" className="font-lao" onClick={handleDelteALL}>
               <RotateCcw className="mr-1 h-4 w-4" />
               ລົບອໍເດີທັງຫມົດ
             </Button>

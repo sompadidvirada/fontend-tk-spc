@@ -57,7 +57,7 @@ interface Prop {
   category: Category_Material[];
 }
 
-const AddMaterial = ({}) => {
+const AddMaterial = (category: Prop) => {
   const [open, setOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -215,12 +215,12 @@ const AddMaterial = ({}) => {
 
     startTransition(async () => {
       try {
-        await createMaterail(data);
+        const ress = await createMaterail(data);
         handleClose();
         router.refresh();
       } catch (error) {
         console.error("Upload failed", error);
-        toast.error("ລອງໃຫ່ມພາຍຫລັງ.")
+        toast.error("ລອງໃຫ່ມພາຍຫລັງ.");
       }
     });
   };
@@ -292,9 +292,16 @@ const AddMaterial = ({}) => {
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="ເລືອກໝວດໝູ່..." />
                 </SelectTrigger>
-                <SelectContent className="font-lao">
-                  <SelectItem value="1">ວັດຖຸດິບສາງກະຈາຍ</SelectItem>
-                  <SelectItem value="2">ວັດຖຸດິບຈັດສົ່ງໜ້າຮ້ານ</SelectItem>
+                <SelectContent>
+                  {category.category.map((cat) => (
+                    <SelectItem
+                      key={cat.id}
+                      value={cat.id.toString()}
+                      className="font-lao"
+                    >
+                      {cat.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

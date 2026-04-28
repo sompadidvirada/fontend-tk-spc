@@ -135,7 +135,7 @@ const DetailSupplyer = ({ supplyers }: { supplyers: Supplyer[] }) => {
                 <TableRow key={item.id}>
                   <TableCell>
                     <Image
-                      src={item.image || ""}
+                      src={item.image || "/images/login-bg.jpg"}
                       alt=""
                       width={40}
                       height={40}

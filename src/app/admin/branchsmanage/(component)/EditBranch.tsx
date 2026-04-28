@@ -28,20 +28,33 @@ type Branch = {
 
 const EditBranch = ({ branch }: { branch: Branch }) => {
   const [open, setOpen] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: branch.name,
     province: branch.province,
     location: { lat: branch.lat, lng: branch.lng },
   });
+  const [location, setLocation] = useState({
+    lat: branch.lat,
+    lng: branch.lng,
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Logic to update branch via API
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    const payload = {
+      name: formData.get("name") as string,
+      province: formData.get("province") as string,
+      location: location, // from map picker state
+    };
     try {
-      await updateDetailBranch(formData, branch.id);
-      router.refresh()
-      toast.success("ອັປເດດສາຂາສຳເລັດ")
+      await updateDetailBranch(payload, branch.id);
+      router.refresh();
+      toast.success("ອັປເດດສາຂາສຳເລັດ");
     } catch (err) {
       console.log(err);
     } finally {
@@ -67,19 +80,20 @@ const EditBranch = ({ branch }: { branch: Branch }) => {
         <form onSubmit={handleSubmit} className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Label htmlFor="name">ຊື່ສາຂາ</Label>
-            <Input id="name" defaultValue={branch.name} />
+            <Input id="name" name="name" defaultValue={branch.name} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="province">ແຂວງ</Label>
-            <Input id="province" defaultValue={branch.province} />
+            <Input
+              id="province"
+              name="province"
+              defaultValue={branch.province}
+            />
           </div>
           <div className="flex flex-col gap-2 mb-2">
             <div className="grid gap-2">
               <Label>ເລືອກສະຖານທີ່ໃນແຜນທີ່ (ຄລິກເພື່ອປ່ຽນ)</Label>
-              <BranchLocationPicker
-                value={formData.location}
-                onChange={(val) => setFormData({ ...formData, location: val })}
-              />
+              <BranchLocationPicker value={location} onChange={setLocation} />
               <div className="grid grid-cols-2 gap-2 mt-1">
                 <div className="text-[10px] bg-slate-100 p-1 rounded text-center">
                   Lat: {formData?.location?.lat?.toFixed(6)}

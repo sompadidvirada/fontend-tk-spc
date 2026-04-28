@@ -35,7 +35,7 @@ const ParentTable = ({ branchs }: DataBranchProps) => {
           getBakerySend({ branchId: Number(value), date: dateTo }),
         ]);
 
-        setBakerys(bakerysRes.data.data);
+        setBakerys(bakerysRes.data);
         setCheckBakery(soldRes.data);
       } catch (err) {
         console.log(err);
@@ -46,6 +46,7 @@ const ParentTable = ({ branchs }: DataBranchProps) => {
       fecthData();
     }
   }, [date, value]);
+  
   return (
     <>
       <div className="flex flex-col lg:flex-row justify-between px-5 mt-5 gap-4">

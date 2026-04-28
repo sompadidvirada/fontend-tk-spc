@@ -15,9 +15,10 @@ export interface ConfirmOrders {
 interface Prop {
   selectDate: Date | undefined;
   value: string;
+  supplyerId: string 
 }
 
-const ConfirmOrder = ({ selectDate, value }: Prop) => {
+const ConfirmOrder = ({ selectDate, value, supplyerId }: Prop) => {
   const [confirmStt, setConfirmStt] = useState<ConfirmOrders>();
 
 
@@ -34,10 +35,10 @@ const ConfirmOrder = ({ selectDate, value }: Prop) => {
         console.log(err);
       }
     };
-    if (selectDate && value) {
+    if (selectDate && value && supplyerId) {
       fecthData();
     }
-  }, [selectDate, value]);
+  }, [selectDate, value, supplyerId]);
 
   const handleUpdateConfirmStt = async (
     admin_stt: boolean,

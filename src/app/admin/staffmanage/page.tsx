@@ -7,6 +7,7 @@ import { getAllBranch } from "@/app/api/server/branchs";
 const StaffManage = async () => {
   const staffData = await getStaff();
   const branchs = await getAllBranch()
+
   return (
     <div className="mx-3 min-h-[80vh] pb-3 relative mt-3">
       {/* Header Section */}

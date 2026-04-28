@@ -67,6 +67,7 @@ const EditMaterialVariant = ({ material, isOpen, onClose, onSuccess }: any) => {
     setLoading(true);
     try {
       const ress = await createMaterialVariant({ materialId: material.id });
+      console.log(ress)
 
       const newVariantFromDB = ress.data;
       setVariants((prev) => [...prev, newVariantFromDB]);

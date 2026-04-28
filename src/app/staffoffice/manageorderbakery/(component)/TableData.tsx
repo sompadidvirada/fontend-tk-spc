@@ -76,58 +76,75 @@ const TableData = ({ supllyers }: { supllyers: Supplyer[] }) => {
   const socket = useSocket();
   useEffect(() => {
     if (!socket) return;
-    const handleUpdateBaristar = (data: any) => {
-      if (data.date === selecDate) {
-        toast.success(`${data.branchName} ກົດຢືນຢັນອໍເດີ!`);
 
-        setTrackOrder((prev) => {
-          const exists = prev.find(
-            (item) => item.branchId === data.data.branchId,
-          );
+    const handleMessage = (event: MessageEvent) => {
+      try {
+        const msg = JSON.parse(event.data);
 
-          if (exists) {
-            return prev.map((item) =>
-              item.branchId === data.data.branchId
-                ? {
-                    ...item,
-                    baristar_confirm_stt: data.data.baristar_confirm_stt,
-                  }
-                : item,
-            );
-          } else {
-            return [...prev, data];
-          }
-        });
+        // msg.event comes from your Go Hub (e.g., eventType string)
+        switch (msg.event) {
+          case "baristar_confirm_stt":
+            const baristarData = msg.data;
+            // Check if date matches the selected date in your UI
+            if (baristarData.date === selecDate) {
+              toast.success(`${baristarData.branchName} ກົດຢືນຢັນອໍເດີ!`);
+
+              setTrackOrder((prev) => {
+                const exists = prev.find(
+                  (item) => item.branchId === baristarData.data.branchId,
+                );
+                if (exists) {
+                  return prev.map((item) =>
+                    item.branchId === baristarData.data.branchId
+                      ? {
+                          ...item,
+                          baristar_confirm_stt:
+                            baristarData.data.baristar_confirm_stt,
+                        }
+                      : item,
+                  );
+                }
+                return [...prev, baristarData];
+              });
+            }
+            break;
+
+          case "admin_confirm_stt":
+            const adminData = msg.data;
+            const socketDateOnly = adminData.confirm_date.split("T")[0];
+            if (socketDateOnly === selecDate) {
+              setTrackOrder((prev) => {
+                const exists = prev.find(
+                  (item) => item.branchId === adminData.branchId,
+                );
+                if (exists) {
+                  return prev.map((item) =>
+                    item.branchId === adminData.branchId
+                      ? {
+                          ...item,
+                          admin_confirm_stt: adminData.admin_confirm_stt,
+                        }
+                      : item,
+                  );
+                }
+                return [...prev, adminData];
+              });
+            }
+            break;
+        }
+      } catch (err) {
+        console.error("Failed to parse socket message:", err);
       }
     };
-    const handleUpdateAdmin = (data: any) => {
-      const socketDateOnly = data.confirm_date.split("T")[0];
-      if (socketDateOnly === selecDate) {
-        setTrackOrder((prev) => {
-          const exists = prev.find((item) => item.branchId === data.branchId);
 
-          if (exists) {
-            return prev.map((item) =>
-              item.branchId === data.branchId
-                ? {
-                    ...item,
-                    admin_confirm_stt: data.admin_confirm_stt,
-                  }
-                : item,
-            );
-          } else {
-            return [...prev, data];
-          }
-        });
-      }
-    };
-    socket.on("baristar_confirm_stt", handleUpdateBaristar);
-    socket.on("admin_confirm_stt", handleUpdateAdmin);
+    // 1. Start listening using native event listener
+    socket.addEventListener("message", handleMessage);
+
+    // 2. Stop listening when the component unmounts or dependencies change
     return () => {
-      socket.off("baristar_confirm_stt", handleUpdateBaristar);
-      socket.off("admin_confirm_stt", handleUpdateAdmin);
+      socket.removeEventListener("message", handleMessage);
     };
-  }, [socket, date]);
+  }, [socket, selecDate]); // Added selecDate so the logic stays synced with your calendar
 
   return (
     <>
@@ -135,20 +152,20 @@ const TableData = ({ supllyers }: { supllyers: Supplyer[] }) => {
         {/* 2. Controlled Select component */}
         <div>
           <Select onValueChange={setSupplyerId} value={supplyerId}>
-          <SelectTrigger className="border-slate-200 w-full bg-secondary">
-            <SelectValue placeholder="ເລືອກບໍລິສັດ/ຮ້ານ" />
-          </SelectTrigger>
-          <SelectContent className="font-lao">
-            {supllyers &&
-              supllyers?.map((item, i) => (
-                <SelectItem key={i} value={item.id.toString()}>
-                  {item.name}
-                </SelectItem>
-              ))}
-          </SelectContent>
-        </Select>
+            <SelectTrigger className="border-slate-200 w-full bg-secondary">
+              <SelectValue placeholder="ເລືອກບໍລິສັດ/ຮ້ານ" />
+            </SelectTrigger>
+            <SelectContent className="font-lao">
+              {supllyers &&
+                supllyers?.map((item, i) => (
+                  <SelectItem key={i} value={item.id.toString()}>
+                    {item.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
         </div>
-        
+
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -171,7 +188,7 @@ const TableData = ({ supllyers }: { supllyers: Supplyer[] }) => {
             />
           </PopoverContent>
         </Popover>
-        <PrintBakery selecDate={selecDate} supplyerId={supplyerId}/>
+        <PrintBakery selecDate={selecDate} supplyerId={supplyerId} />
       </div>
       {/* --- EXCEPTION TABLE --- */}
       <Card className="border-none shadow-xl shadow-slate-200/60 overflow-hidden bg-white">

@@ -78,3 +78,9 @@ export const getOrderBakeryPrint = (form: {order_at: string | undefined, supplye
     withCredentials: true
   })
 }
+
+export const deleteAllOrderBakery = (form: {order_at:string | undefined, branchId: number}) => {
+  return axios.post(`${URL}/orderbakery/deleteallorderbakery`, form, {
+    withCredentials: true
+  })
+}

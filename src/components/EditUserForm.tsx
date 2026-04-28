@@ -63,7 +63,7 @@ const EditUserForm = ({
     defaultValues: {
       name: user.name || "",
       image: user.image || "",
-      birthdate: user.birth_date ? new Date(user.birth_date) : undefined,
+      birthdate: user.birthdate ? new Date(user.birthdate) : undefined,
     },
   });
 
@@ -108,7 +108,7 @@ const EditUserForm = ({
           phonenumber: response.data.user.phone_number,
           role: response.data.user.role,
           image: response.data.user.image,
-          birthdate: response.data.user.birth_date,
+          birthdate: response.data.user.birthdate,
           branchId: response.data.user.branchId,
           branch_name: response.data.user.branch_name,
         });

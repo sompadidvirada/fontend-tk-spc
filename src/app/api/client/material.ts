@@ -40,3 +40,9 @@ export const updateMaterial = (form: FormData, id:number) => {
         withCredentials: true
     })
 }
+
+export const deleteMaterail = (id: number) => {
+  return axios.delete(`${URL}/material/deletematerial/${id}`, {
+    withCredentials: true
+  })
+}

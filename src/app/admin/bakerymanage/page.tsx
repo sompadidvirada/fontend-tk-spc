@@ -11,6 +11,8 @@ const BakeryManage = async () => {
   const bakeryData = await getAllBakery();
   const categoryBakery = await getAllCategoryBakery();
   const supplyer = await getSupplyer()
+
+
   return (
     <div className="mx-3 min-h-[80vh] pb-3 relative mt-3">
       {/* Header Section */}

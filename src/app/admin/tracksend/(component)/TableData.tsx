@@ -65,7 +65,7 @@ const TableData = ({
 
     try {
       const ress = await insertTrackSend(dataToApi);
-      const newBakeryEntry = ress.data.data;
+      const newBakeryEntry = ress.data;
       setCheckBakery((prev) => {
         return [...prev, newBakeryEntry];
       });

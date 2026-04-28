@@ -51,8 +51,7 @@ const ParentTable = ({ branchs }: DataBranchProps) => {
           getBakerysAvailable({ branchId: Number(value) }),
           getBakerySold({ branchId: Number(value), date: dateTo }),
         ]);
-
-        setBakerys(bakerysRes.data.data);
+        setBakerys(bakerysRes.data);
         setCheckBakery(soldRes.data);
       } catch (err) {
         console.log(err);
@@ -63,6 +62,7 @@ const ParentTable = ({ branchs }: DataBranchProps) => {
       fecthData();
     }
   }, [date, value]);
+
 
   return (
     <>

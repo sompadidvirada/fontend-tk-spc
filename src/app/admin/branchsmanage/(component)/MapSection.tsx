@@ -36,7 +36,6 @@ const MapSection = ({ branchs }: { branchs: Branch[] }) => {
     setValue(branch.name);
     setOpen(false);
   };
-
   return (
     <div className="space-y-4">
       {/* Searchable Select Menu on top of the map */}

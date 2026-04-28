@@ -10,25 +10,22 @@ import {
   getDetailReport,
   markAsRead,
 } from "@/app/api/client/track_report_baristar";
-import { JWTPayload } from "jose";
 import { useSocket } from "@/socket-io/SocketContext";
 import { useStaffStore } from "@/store/staff";
-
-
 
 const Navbar = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const staff = useStaffStore((s)=>s.staff)
+  const staff = useStaffStore((s) => s.staff);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [selectedReport, setSelectedReport] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const socket = useSocket();
 
-
-
   const fetchNotification = async () => {
     const id = staff?.id;
+
+    if (staff?.role != "ADMIN") return;
     if (!id) return;
     try {
       const ress = await checkNotification({ staffId: Number(id) });
@@ -40,7 +37,7 @@ const Navbar = () => {
   };
 
   const handleNotificationClick = async (reportId: number) => {
-    const staffId = Number(staff?.id)
+    const staffId = Number(staff?.id);
 
     try {
       // Mark as read in background
@@ -65,21 +62,21 @@ const Navbar = () => {
 
   useEffect(() => {
     if (!socket) return;
-    // Listen for the event from the backend
-    socket.on("new_report_notification", (newReport) => {
-      // Check if report is already in the list to avoid duplicates
-      setNotifications((prev) => {
-        const exists = prev.find((n) => n.id === newReport.id);
-        if (exists) return prev;
-        return [newReport, ...prev]; // Add new report to the top
-      });
 
-      // Optional: Play a notification sound
-      // new Audio('/notification-sound.mp3').play();
-    });
+    // Define the message handler
+    const handleMessage = (event: MessageEvent) => {
+      const msg = JSON.parse(event.data);
+      if (msg.event === "NEW_BAKERY_REPORT") {
+        setNotifications((prev) => [msg.data, ...prev]);
+      }
+    };
 
+    // Add the listener
+    socket.addEventListener("message", handleMessage);
+
+    // Cleanup: Remove the listener so we don't get duplicates on re-renders
     return () => {
-      socket.off("new_report_notification");
+      socket.removeEventListener("message", handleMessage);
     };
   }, [socket]);
 

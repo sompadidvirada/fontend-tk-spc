@@ -45,6 +45,9 @@ import { Button } from "@/components/ui/button";
 import EditMaterial from "./EditMaterial";
 import EditMaterialVariant from "./EditMaterialVariant";
 import { Supplyer_Spc } from "./DetailSupplyer";
+import { deleteMaterail } from "@/app/api/client/material";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface Prop {
   materials: Material[];
@@ -58,6 +61,7 @@ const TableMaterial = ({ materials, category, supplyer_spc }: Prop) => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
+  const router = useRouter()
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isEditOpen2, setIsEditOpen2] = useState(false);
@@ -100,12 +104,19 @@ const TableMaterial = ({ materials, category, supplyer_spc }: Prop) => {
     setIsEditOpen2(true); // Open the modal
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (window.confirm("ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບ?")) {
       // Call your API delete function here
     }
+    try {
+      await deleteMaterail(id);
+      router.refresh()
+      toast.success("ລົບລາຍການວັດຖຸດິບສຳເລັດ");
+    } catch (err) {
+      console.log(err);
+      toast.error("ລອງໃຫ່ມພາຍຫລັງ");
+    }
   };
-
   return (
     <div className="space-y-4">
       {/* Search Bar */}
@@ -151,8 +162,7 @@ const TableMaterial = ({ materials, category, supplyer_spc }: Prop) => {
             setIsEditOpen(false);
             setEditingMaterial(null);
           }}
-          onSuccess={() => {
-          }}
+          onSuccess={() => {}}
         />
       )}
       {editingMaterialVariant && (
@@ -163,8 +173,7 @@ const TableMaterial = ({ materials, category, supplyer_spc }: Prop) => {
             setIsEditOpen2(false);
             setEditingMaterialVariant(null);
           }}
-          onSuccess={() => {
-          }}
+          onSuccess={() => {}}
         />
       )}
 

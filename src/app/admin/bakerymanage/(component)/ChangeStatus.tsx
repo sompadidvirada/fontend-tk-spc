@@ -134,7 +134,7 @@ function ProfileForm({
     const id = formData.get("id") as string;
     startTransition(async () => {
       try {
-        await changeStatusBakery(status, id);
+        const ress = await changeStatusBakery(status, id);
         toast.success(`ອັບເດດລາຍການສຳເລັດ`, {
           cancel: {
             label: "x",
