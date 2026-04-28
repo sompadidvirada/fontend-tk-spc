@@ -13,7 +13,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     if (!staff?.id) return;
 
     // Use ws:// for local development, wss:// for production
-    const wsUrl = `ws://localhost:3009/ws?userId=${staff.id}`;
+    const wsUrl = `ws://${URL}/ws?userId=${staff.id}`;
     const newSocket = new WebSocket(wsUrl);
 
     newSocket.onopen = () => {
