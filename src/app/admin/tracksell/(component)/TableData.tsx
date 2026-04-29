@@ -76,6 +76,7 @@ const TableData = ({
     return new Intl.NumberFormat("en-US").format(value);
   };
 
+
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;

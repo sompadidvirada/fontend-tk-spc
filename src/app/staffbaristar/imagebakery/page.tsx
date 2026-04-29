@@ -106,7 +106,6 @@ const ImageBakery = () => {
 
     try {
       const response = await insertImageTrack(formData);
-      console.log(response)
 
       if (response.status === 200) {
         toast.success("ອັບໂຫຼດຮູບພາບສຳເລັດ!");
