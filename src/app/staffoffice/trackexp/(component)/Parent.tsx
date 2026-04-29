@@ -43,7 +43,7 @@ const Parent = ({ branchs }: DataBranchProps) => {
           getBakerysAvailable({ branchId: Number(value) }),
           getTrackingExp({ branchId: Number(value), date: dateTo }),
         ]);
-        setBakerys(bakerysRes.data.data);
+        setBakerys(bakerysRes.data);
         setCheckBakery(soldRes.data);
       } catch (err) {
         console.log(err);
