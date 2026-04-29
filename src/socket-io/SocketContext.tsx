@@ -11,28 +11,50 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const staff = useStaffStore((s) => s.staff);
 
   useEffect(() => {
-    // Only connect if we have a staff ID
     if (!staff?.id) return;
 
-    // Use ws:// for local development, wss:// for production
-    const wsUrl = `wss://api.treekoff.store/ws?userId=${staff.id}`;
-    const newSocket = new WebSocket(wsUrl);
+    let heartbeatInterval: NodeJS.Timeout;
+    
+    // Wrap connection in a function so we can call it again if it fails
+    const connect = () => {
+      const wsUrl = `wss://api.treekoff.store/ws?userId=${staff.id}`;
+      const newSocket = new WebSocket(wsUrl);
 
-    newSocket.onopen = () => {
-      console.log("✅ [Global WS] Connected to Go Backend");
+      newSocket.onopen = () => {
+        console.log("✅ [Global WS] Connected to Go Backend");
+        
+        // Start heartbeat when opened
+        heartbeatInterval = setInterval(() => {
+          if (newSocket.readyState === WebSocket.OPEN) {
+            newSocket.send(JSON.stringify({ type: "ping" }));
+          }
+        }, 30000);
+      };
+
+      newSocket.onclose = (event) => {
+        console.log("🚫 [Global WS] Disconnected");
+        clearInterval(heartbeatInterval);
+        
+        // Auto-reconnect logic: try again in 3 seconds if not a normal logout
+        if (event.wasClean === false) {
+           setTimeout(connect, 3000);
+        }
+      };
+
+      setSocket(newSocket);
     };
 
-    newSocket.onclose = () => {
-      console.log("🚫 [Global WS] Disconnected");
-    };
+    connect();
 
-    setSocket(newSocket);
-
-    // Cleanup: Close the pipe when the app unmounts or user logs out
     return () => {
-      newSocket.close();
+      clearInterval(heartbeatInterval);
+      // We don't want the auto-reconnect to fire when we manually logout
+      setSocket((prev) => {
+        prev?.close();
+        return null;
+      });
     };
-  }, [staff?.id]); // Reconnect only if the staff ID changes
+  }, [staff?.id]);
 
   return (
     <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
