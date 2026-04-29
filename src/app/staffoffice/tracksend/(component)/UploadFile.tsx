@@ -108,7 +108,7 @@ const UploadFile = ({
     try {
       const ress = await uploadTrackingSend(finalPayload);
 
-      const dataFromUploadRespone = ress.data.data;
+      const dataFromUploadRespone = ress.data;
       setCheckBakery(dataFromUploadRespone);
       toast.success(`ອັປໂຫລດເບເກີລີ້ຈຳນວນ ${itemsToUpdate.length} ລາຍການສຳເລັດ.`);
     } catch (err) {

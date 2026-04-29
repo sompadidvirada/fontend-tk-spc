@@ -116,7 +116,7 @@ const UploadFile = ({
     try {
       // Logic for API will go here:
       const ress = await uploadFileTrackingSell(finalPayload);
-      const dataFromUploadRespone = ress.data.data;
+      const dataFromUploadRespone = ress.data;
       setCheckBakery(dataFromUploadRespone);
       toast.success(`ອັປໂຫລດຍອດຂາຍ ${itemsToUpdate.length} ລາຍການ ສຳເລັດ!`);
     } catch (err) {
