@@ -127,12 +127,12 @@ export function SectionCards() {
             <CardDescription>{t.expTitle}</CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-xl">
               {isLoading ? <Skeleton className="h-8 w-32" /> : 
-                `${(dataCard?.current.expTotal.toFixed(2) || 0).toLocaleString()} ${t.currency}`}
+                `${(dataCard?.current.expTotal || 0).toLocaleString()} ${t.currency}`}
             </CardTitle>
             <CardAction>
               <Badge variant="outline">
                 {dataCard && dataCard.changes.exp >= 0 ? <IconTrendingUp /> : <IconTrendingDown />}
-                {isLoading ? <Skeleton className="w-12 h-3" /> : `${dataCard?.changes.exp || 0} %`}
+                {isLoading ? <Skeleton className="w-12 h-3" /> : `${dataCard?.changes.exp.toFixed(2) || 0} %`}
               </Badge>
             </CardAction>
           </CardHeader>
