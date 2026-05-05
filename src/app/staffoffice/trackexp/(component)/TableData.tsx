@@ -88,7 +88,7 @@ const TableData = ({
 
     try {
       const ress = await insertTrackingExp(dataToApi);
-      const responesFromApi = ress.data.data;
+      const responesFromApi = ress.data;
 
       setCheckBakery((prev) => {
         return [...prev, responesFromApi];
