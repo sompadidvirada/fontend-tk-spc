@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { DateRange } from "react-day-picker";
 import { BakeryData } from "./TableReport";
 
@@ -39,6 +39,11 @@ const ComponentToPrint = React.forwardRef<HTMLDivElement, PrintReportProps>(
       totals.sendQty > 0
         ? ((totals.expQty / totals.sendQty) * 100).toFixed(2)
         : "0";
+
+        const sortedData = useMemo(() => {
+      if (!data) return [];
+      return [...data].sort((a, b) => b.send.qty - a.send.qty);
+    }, [data]);
 
     return (
       <div ref={ref} className="p-10 font-lao text-black bg-white">
@@ -102,7 +107,7 @@ const ComponentToPrint = React.forwardRef<HTMLDivElement, PrintReportProps>(
             </tr>
           </thead>
           <tbody>
-            {data.map((item) => (
+            {sortedData.map((item) => (
               <tr key={item.id}>
                 <td className="border border-gray-400 p-2 font-medium">
                   <div className="flex items-center gap-3">
