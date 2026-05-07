@@ -212,7 +212,7 @@ const TableReport = ({ data }: DataProps) => {
       size: 80,
       cell: ({ row }) => (
         <div className="text-xs text-red-500 font-bold">
-          {row.original.percentExp}%
+          {row.original.percentExp == 0 ? 0 : row.original.percentExp.toFixed(2)}%
         </div>
       ),
     },

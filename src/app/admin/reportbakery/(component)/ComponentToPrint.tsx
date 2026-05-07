@@ -3,13 +3,14 @@ import { DateRange } from "react-day-picker";
 import { BakeryData } from "./TableReport";
 
 interface PrintReportProps {
+  branchId: string;
   data: BakeryData[];
   branchName: string;
   dateRange: DateRange | undefined;
 }
 
 const ComponentToPrint = React.forwardRef<HTMLDivElement, PrintReportProps>(
-  ({ data, branchName, dateRange }, ref) => {
+  ({ branchId, data, branchName, dateRange }, ref) => {
     const formatCurrency = (num: number) =>
       new Intl.NumberFormat("en-US").format(num);
 
@@ -65,7 +66,7 @@ const ComponentToPrint = React.forwardRef<HTMLDivElement, PrintReportProps>(
             ໃບລາຍງານສັງລວມເບເກີຣີ່
           </h1>
           <p className="text-sm mt-2">
-            ສາຂາ: {branchName === "all" ? "ທຸກສາຂາ" : branchName || "ທຸກສາຂາ"}
+            ສາຂາ: {branchId === "all" ? "ທຸກສາຂາ" : branchName || "ທຸກສາຂາ"}
           </p>
           <p className="text-sm">
             ວັນທີ: {dateRange?.from?.toLocaleDateString("en-Ca")} -{" "}
@@ -139,7 +140,7 @@ const ComponentToPrint = React.forwardRef<HTMLDivElement, PrintReportProps>(
                 </td>
 
                 <td className="border border-gray-400 p-2 text-right">
-                  {item.percentExp}%
+                  {item.percentExp == 0 ? 0 : item.percentExp.toFixed(2)}%
                 </td>
               </tr>
             ))}

@@ -19,7 +19,6 @@ export default function PrintPage() {
   // Initialize the print hook
   const handlePrint = useReactToPrint({
     contentRef,
-    // Optional: add a title for the PDF file name
     documentTitle: `Bakery_Order_${selecDate}`,
   });
 
@@ -37,10 +36,8 @@ export default function PrintPage() {
     }
   }, [selecDate, supplyerId]);
 
-  // Trigger print once data is loaded and DOM is rendered
   useEffect(() => {
     if (!loading && data) {
-      // Small delay to ensure React has finished painting the ComponentPrint
       const timer = setTimeout(() => {
         handlePrint();
       }, 300);
@@ -58,12 +55,10 @@ export default function PrintPage() {
 
   return (
     <div className="p-8">
-      {/* Container that react-to-print will target */}
       <div ref={contentRef} className="font-lao">
         <ComponentPrint dataToPrint={data} />
       </div>
-      
-      {/* Optional: Visual button for the user if they cancel the first dialog */}
+    
       <div className="mt-4 no-print flex justify-center">
         <button 
           onClick={() => handlePrint()}

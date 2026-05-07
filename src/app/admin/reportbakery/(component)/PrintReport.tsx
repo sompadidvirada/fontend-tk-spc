@@ -1,42 +1,47 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Printer } from "lucide-react";
 import React from "react";
-import { useReactToPrint } from "react-to-print";
-import { BakeryData } from "./TableReport";
-import ComponentToPrint from "./ComponentToPrint";
 import { DateRange } from "react-day-picker";
 
 interface DataProp {
-  report: BakeryData[];
-  branchName: string;
+  branchId: string;
+  branchName: string; // This is your 'value' (branchId)
   dateRange: DateRange | undefined;
-  lang?: string
+  lang?: string;
 }
 
-const PrintReport =  ({ report, branchName, dateRange, lang }: DataProp) => {
-  const contentRef = React.useRef<HTMLDivElement>(null);
-  const reactToPrintFn = useReactToPrint({ contentRef });
+const PrintReport = ({branchId, branchName, dateRange, lang }: DataProp) => {
+  
+  const handleOpenPrintTab = () => {
+    if (!dateRange?.from || !dateRange?.to || !branchId) return;
+
+    // Format dates to YYYY-MM-DD
+    const start = dateRange.from.toLocaleDateString("en-CA");
+    const end = dateRange.to.toLocaleDateString("en-CA");
+
+    // Build the URL
+    const params = new URLSearchParams({
+      start,
+      end,
+      branchId: branchId,
+      branchName: branchName,
+      lang: lang || "EN"
+    });
+
+    window.open(`/print-bakery-report?${params.toString()}`, "_blank");
+  };
+
   return (
-    <>
-      <Button
-        variant="outline"
-        className="text-xs font-lao bg-blue-300 border-gray-400/20"
-        onClick={reactToPrintFn}
-        disabled={dateRange?.from && dateRange?.to && branchName ? false : true}
-      >
-        <Printer /> {lang === "LA" ? "ປິ່ນລາຍງານ" : "Print report"}
-      </Button>
-      <div className="hidden">
-        <div ref={contentRef} className="p-8 font-lao">
-          <ComponentToPrint
-            ref={contentRef}
-            data={report}
-            branchName={branchName}
-            dateRange={dateRange}
-          />
-        </div>
-      </div>
-    </>
+    <Button
+      variant="outline"
+      className="text-xs font-lao bg-blue-300 border-gray-400/20"
+      onClick={handleOpenPrintTab}
+      disabled={!(dateRange?.from && dateRange?.to && branchId)}
+    >
+      <Printer className="mr-2 h-4 w-4" /> 
+      {lang === "LA" ? "ປິ່ນລາຍງານ" : "Print report"}
+    </Button>
   );
 };
 

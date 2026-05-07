@@ -3,16 +3,17 @@ import DateRanges from "@/components/DateRanges";
 import React from "react";
 import { DataBranchProps } from "../../tracksell/(component)/ParentTable";
 import SelectBranch from "../../tracksell/(component)/SelectBranch";
-import PrintReport from "./PrintReport";
 import { DateRange } from "react-day-picker";
 import { getReportBakery } from "@/app/api/client/trackingbakery";
 import TableReport, { BakeryData } from "./TableReport";
+import PrintReport from "./PrintReport";
 
 const ParentTable = ({ branchs, lang }: DataBranchProps) => {
   const [value, setValue] = React.useState("");
   const [range, setRange] = React.useState<DateRange | undefined>();
   const [report, setReport] = React.useState<BakeryData[] | []>([]);
-
+  const selectedBranchData = branchs.find((b) => String(b.id) === value);
+  const branchNameLabel = selectedBranchData ? selectedBranchData.name : "";
 
   React.useEffect(() => {
     const fecthReportBake = async () => {
@@ -47,7 +48,12 @@ const ParentTable = ({ branchs, lang }: DataBranchProps) => {
             setValue={setValue}
             isForReport={true}
           />
-          <PrintReport report={report} branchName={value} dateRange={range} lang={lang}/>{" "}
+          <PrintReport
+            branchId={value}
+            branchName={branchNameLabel}
+            dateRange={range}
+            lang={lang}
+          />{" "}
           <DateRanges range={range} setRange={setRange} />
         </div>
       </div>
