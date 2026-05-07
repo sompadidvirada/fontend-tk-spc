@@ -18,3 +18,9 @@ export const getCardBakeryReport = (form: {startDate: string | undefined, endDat
         withCredentials: true
     })
 }
+
+export const getReport3monthBakery = (form: {date: string}) => {
+    return axios.post(`${URL}/managereportbakery/report3month`, form, {
+        withCredentials:true
+    })
+}

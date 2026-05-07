@@ -38,6 +38,10 @@ const ReportBakery = async () => {
        */}
       <ParentTable branchs={branchs} lang={lang} />
 
+      {/**print report past 3 month */}
+
+      
+
       <p className="absolute bottom-px right-4 text-black text-[12px] opacity-80 md:text-xs font-lao">
         Copyright © 2026 BigTree Trading. All rights reserved.
       </p>

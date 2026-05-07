@@ -1,6 +1,6 @@
-"use client";
 import { Button } from "@/components/ui/button";
 import { Printer } from "lucide-react";
+import React from "react";
 import { DateRange } from "react-day-picker";
 
 interface DataProp {
@@ -10,8 +10,7 @@ interface DataProp {
   lang?: string;
 }
 
-const PrintReport = ({branchId, branchName, dateRange, lang }: DataProp) => {
-  
+const Print3MonthReport = ({ branchId, branchName, dateRange }: DataProp) => {
   const handleOpenPrintTab = () => {
     if (!dateRange?.from || !dateRange?.to || !branchId) return;
 
@@ -25,23 +24,21 @@ const PrintReport = ({branchId, branchName, dateRange, lang }: DataProp) => {
       end,
       branchId: branchId,
       branchName: branchName,
-      lang: lang || "EN"
     });
 
-    window.open(`/print-bakery-report?${params.toString()}`, "_blank");
+    window.open(`/print-bakery-report-3month?${params.toString()}`, "_blank");
   };
-
   return (
     <Button
       variant="outline"
-      className="text-xs font-lao bg-blue-300 border-gray-400/20"
+      className="text-xs font-lao bg-yellow-300 border-gray-400/20"
       onClick={handleOpenPrintTab}
       disabled={!(dateRange?.from && dateRange?.to && branchId)}
     >
-      <Printer className="mr-2 h-4 w-4" /> 
-      {lang === "LA" ? "ປິ່ນລາຍງານ" : "Print report"}
+      <Printer className="mr-2 h-4 w-4" />
+        ປີ່ນລາຍງານ 3 ເດືອນ
     </Button>
   );
 };
 
-export default PrintReport;
+export default Print3MonthReport;

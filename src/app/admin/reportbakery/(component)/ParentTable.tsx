@@ -7,6 +7,7 @@ import { DateRange } from "react-day-picker";
 import { getReportBakery } from "@/app/api/client/trackingbakery";
 import TableReport, { BakeryData } from "./TableReport";
 import PrintReport from "./PrintReport";
+import Print3MonthReport from "./Print3MonthReport";
 
 const ParentTable = ({ branchs, lang }: DataBranchProps) => {
   const [value, setValue] = React.useState("");
@@ -54,6 +55,7 @@ const ParentTable = ({ branchs, lang }: DataBranchProps) => {
             dateRange={range}
             lang={lang}
           />{" "}
+          <Print3MonthReport branchId={value} branchName={branchNameLabel} dateRange={range} />
           <DateRanges range={range} setRange={setRange} />
         </div>
       </div>
