@@ -25,3 +25,9 @@ export const deleteImageTrack = (id:number) => {
         withCredentials: true
     })
 }
+
+export const clearImagesTrack = (form:{date: string}) => {
+    return axios.post(`${URL}/imagetrack/clearimages`, form, {
+        withCredentials:true
+    })
+}

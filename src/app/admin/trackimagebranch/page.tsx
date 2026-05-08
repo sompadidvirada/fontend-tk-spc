@@ -49,6 +49,7 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import {
+  clearImagesTrack,
   deleteImageTrack,
   getAllBranchImage,
 } from "@/app/api/client/tracking_image";
@@ -66,6 +67,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 
 interface Branch {
   id: string;
@@ -94,6 +96,8 @@ export default function BranchImageTracker() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [targetImageId, setTargetImageId] = useState<number>();
   const router = useRouter();
+  const [isClearImages, setIsClearImages] = useState(false)
+  const [isLoad, setIsload] = useState(false)
 
   // Listen for slide changes
   useEffect(() => {
@@ -175,6 +179,21 @@ export default function BranchImageTracker() {
     }
   };
 
+  const handleClearImage = async () => {
+    try{
+      setIsload(true)
+      const ress = await clearImagesTrack({date: dateString})
+      toast.success(`ລ້າງຮູບພາບຕິດຕາມເບເກີລີ້ຈາກວັນທີ ${dateString} ຍ້ອນຫລັງສຳເລັດ`)
+      setBranchsImages([])
+    }catch(err) {
+      console.log(err)
+      toast.error("ລອງໃຫ່ມພາຍຫລັງ")
+    } finally {
+      setIsClearImages(false)
+      setIsload(false)
+    }
+  }
+
   return (
     <div className="px-8 w-full mx-auto mt-3">
       <div className="flex justify-between items-end mb-6 font-lao">
@@ -183,7 +202,11 @@ export default function BranchImageTracker() {
           <p className="text-slate-500">ກວດສອບຮູບພາບເບເກີລີ້ຂອງແຕ່ລະສາຂາ</p>
         </div>
       </div>
-      <div className="w-full flex justify-end my-2">
+      <div className="w-full flex justify-between my-2">
+        {/**clear image button `it's gonna delete the image from the date you select from the calendar backward`  */}
+        <Button variant="destructive" className="font-lao" disabled={isLoad} onClick={()=> setIsClearImages(true)}>
+          {isLoad ? <Spinner /> : "CLEAR IMAGE"}
+        </Button>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -393,8 +416,7 @@ export default function BranchImageTracker() {
             {selectedBranch && selectedBranch.track_image_bakery.length > 0 ? (
               <Carousel setApi={setApi} className="w-full h-full">
                 <CarouselContent>
-                  {selectedBranch.track_image_bakery.map((img, index) => 
-                  (
+                  {selectedBranch.track_image_bakery.map((img, index) => (
                     <CarouselItem
                       key={index}
                       className="flex items-center justify-center"
@@ -469,6 +491,32 @@ export default function BranchImageTracker() {
               }}
             >
               ຢືນຢັນການລົບ
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/** dialog clear image */}
+
+      <AlertDialog
+        open={isClearImages}
+        onOpenChange={setIsClearImages}
+      >
+        <AlertDialogContent className="font-lao">
+          <AlertDialogHeader>
+            <AlertDialogTitle>ລ້າງຮູບພາບການຕິດຕາມເບເກີລີ້</AlertDialogTitle>
+            <AlertDialogDescription>
+              ຈະເປັນການລົບຮູບພາບທຸກສາຂາຈາກວັນທີ {dateString} ຍ້ອນຫລັງທັງໝົດ
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>ຍົກເລີກ</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleClearImage}
+              disabled={isLoad}
+            >
+              {isLoad ? <Spinner /> : "ຢືນຢັນການລົບ"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
