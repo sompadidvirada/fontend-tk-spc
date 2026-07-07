@@ -24,6 +24,7 @@ const TableReport: React.FC<TableReportProps> = ({ data = [] }) => {
   const t = {
     branch: lang === "LA" ? "ສາຂາ" : "Branch",
     image: lang === "LA" ? "ຮູບພາບ" : "Image",
+    total: lang === "LA" ? "ທັງຫມົດ" : "Total",
     item: lang === "LA" ? "ລາຍການ" : "Item Name",
     cost: lang === "LA" ? "ຕົ້ນທຶນ" : "Cost",
     sellPrice: lang === "LA" ? "ລາຄາຂາຍ" : "Retail Price",
@@ -127,11 +128,17 @@ const TableReport: React.FC<TableReportProps> = ({ data = [] }) => {
                 </div>
               </th>
             ))}
+            <th
+              colSpan={3}
+              className="p-2 text-center text-xs font-bold uppercase tracking-wider text-primary border-l border-gray-300 bg-blue-50/50 w-100"
+            >
+              <div className="py-4 flex items-center justify-center">
+                <span>{t.total}</span>
+              </div>
+            </th>
           </tr>
 
-          {/* Row 2: Sub-Metrics */}
           <tr className="bg-gray-50 border-b border-gray-200">
-            {/* Note: No extra th needed here because the Branch th above has rowSpan={2} */}
             {uniqueProducts.map((product) => (
               <React.Fragment key={`sub-${product.productId}`}>
                 <th className="p-2 text-center text-[11px] font-semibold text-gray-500 w-16">
@@ -145,39 +152,72 @@ const TableReport: React.FC<TableReportProps> = ({ data = [] }) => {
                 </th>
               </React.Fragment>
             ))}
+            <React.Fragment>
+              <th className="p-2 text-center text-[11px] font-semibold text-gray-500 w-16">
+                {t.sendQty}
+              </th>
+              <th className="p-2 text-center text-[11px] font-semibold text-gray-500 w-16">
+                {t.soldQty}
+              </th>
+              <th className="p-2 text-center text-[11px] font-semibold text-gray-500 border-r border-gray-200 last:border-r-0 w-16">
+                {t.expQty}
+              </th>
+            </React.Fragment>
           </tr>
         </thead>
 
         <tbody>
-          {rows.map((row) => (
-            <tr
-              key={row.branchId}
-              className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
-            >
-              {/* ADDED: sticky left-0 z-10 bg-white 👇 */}
-              <td className="p-3 text-xs font-medium text-gray-900 border-r border-gray-200 sticky left-0 z-10 bg-blue-400 group-hover:bg-gray-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
-                {row.branchName}
-              </td>
+          {rows.map((row) => {
+            // Calculate running branch totals across all dynamic product metrics
+            let totalSell = 0;
+            let totalSend = 0;
+            let totalExp = 0;
 
-              {uniqueProducts.map((product) => {
-                const productData = row.products[product.productId];
-                return (
-                  <React.Fragment key={`${row.branchId}-${product.productId}`}>
-                    <td className="p-2 text-center text-xs text-gray-600">
-                      {productData?.send ?? 0}
-                    </td>
-                    <td className="p-2 text-center text-xs text-gray-600">
-                      {productData?.sell ?? 0}
-                    </td>
+            return (
+              <tr
+                key={row.branchId}
+                className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+              >
+                <td className="p-3 text-xs font-medium text-gray-900 border-r border-gray-200 sticky left-0 z-10 bg-white group-hover:bg-gray-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                  {row.branchName}
+                </td>
+                {/* Render normal product matrix data */}
+                {uniqueProducts.map((product) => {
+                  const productData = row.products[product.productId];
 
-                    <td className="p-2 text-center text-xs text-gray-600 border-r border-gray-200 last:border-r-0">
-                      {productData?.exp ?? 0}
-                    </td>
-                  </React.Fragment>
-                );
-              })}
-            </tr>
-          ))}
+                  // Accumulate values into totals safely
+                  totalSell += productData?.sell ?? 0;
+                  totalSend += productData?.send ?? 0;
+                  totalExp += productData?.exp ?? 0;
+
+                  return (
+                    <React.Fragment
+                      key={`${row.branchId}-${product.productId}`}
+                    >
+                      <td className="p-2 text-center text-xs text-gray-600">
+                        {productData?.sell ?? 0}
+                      </td>
+                      <td className="p-2 text-center text-xs text-gray-600">
+                        {productData?.send ?? 0}
+                      </td>
+                      <td className="p-2 text-center text-xs text-gray-600 border-r border-gray-200 last:border-r-0">
+                        {productData?.exp ?? 0}
+                      </td>
+                    </React.Fragment>
+                  );
+                })}
+                <td className="p-2 text-center text-xs font-bold text-gray-900 bg-blue-50/20  border-r border-gray-300">
+                  {totalSend}
+                </td>{" "}
+                <td className="p-2 text-center text-xs font-bold text-gray-900 bg-blue-50/20  border-r border-gray-300">
+                  {totalSell}
+                </td>
+                <td className="p-2 text-center text-xs font-bold text-gray-900 bg-blue-50/20">
+                  {totalExp}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
