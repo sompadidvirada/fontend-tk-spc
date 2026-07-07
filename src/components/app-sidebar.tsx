@@ -32,6 +32,7 @@ export function AppSidebar({ session, ...props }: AppSidebarProps) {
     overview: lang === "LA" ? "ລາຍງານພາບລວມ" : "Overview Report",
     allReports: lang === "LA" ? "ລາຍງານລວມທັງໝົດ" : "General Dashboard",
     bakeryReport: lang === "LA" ? "ລາຍງານເບເກີລີ້" : "Bakery Report",
+    bakeryReportNew: lang === "LA" ? "ລາຍງານເບເກີລີ້ New" : "Bakery Report New",
     materialReport: lang === "LA" ? "ລາຍງານການເບີກວັດຖຸດິບ" : "Material Requisition Report",
     
     procurement: lang === "LA" ? "ຈັດການພະແນກຈັດຊື້" : "Procurement Dept",
@@ -72,6 +73,7 @@ export function AppSidebar({ session, ...props }: AppSidebarProps) {
         items: [
           { title: t.allReports, url: "/admin/dashboard" },
           { title: t.bakeryReport, url: "/admin/reportbakery" },
+          { title: t.bakeryReportNew, url: "/admin/reportbakerylong" },
         ],
       },
       {

@@ -24,3 +24,9 @@ export const getReport3monthBakery = (form: {date: string}) => {
         withCredentials:true
     })
 }
+
+export const getReportBakeryNew = (form:{start: string, end: string, supplyerId: number}) => {
+    return axios.post(`${URL}/managereportbakery/reportbakerynew`, form, {
+        withCredentials: true
+    })
+}
