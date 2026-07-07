@@ -194,11 +194,12 @@ const TableReport: React.FC<TableReportProps> = ({ data = [] }) => {
                     <React.Fragment
                       key={`${row.branchId}-${product.productId}`}
                     >
-                      <td className="p-2 text-center text-xs text-gray-600">
-                        {productData?.sell.toLocaleString() ?? 0}
-                      </td>
+                      
                       <td className="p-2 text-center text-xs text-gray-600">
                         {productData?.send.toLocaleString() ?? 0}
+                      </td>
+                      <td className="p-2 text-center text-xs text-gray-600">
+                        {productData?.sell.toLocaleString() ?? 0}
                       </td>
                       <td className="p-2 text-center text-xs text-gray-600 border-r border-gray-200 last:border-r-0">
                         {productData?.exp.toLocaleString() ?? 0}
