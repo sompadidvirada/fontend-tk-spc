@@ -195,25 +195,25 @@ const TableReport: React.FC<TableReportProps> = ({ data = [] }) => {
                       key={`${row.branchId}-${product.productId}`}
                     >
                       <td className="p-2 text-center text-xs text-gray-600">
-                        {productData?.sell ?? 0}
+                        {productData?.sell.toLocaleString() ?? 0}
                       </td>
                       <td className="p-2 text-center text-xs text-gray-600">
-                        {productData?.send ?? 0}
+                        {productData?.send.toLocaleString() ?? 0}
                       </td>
                       <td className="p-2 text-center text-xs text-gray-600 border-r border-gray-200 last:border-r-0">
-                        {productData?.exp ?? 0}
+                        {productData?.exp.toLocaleString() ?? 0}
                       </td>
                     </React.Fragment>
                   );
                 })}
                 <td className="p-2 text-center text-xs font-bold text-gray-900 bg-blue-50/20  border-r border-gray-300">
-                  {totalSend}
+                  {totalSend.toLocaleString()}
                 </td>{" "}
                 <td className="p-2 text-center text-xs font-bold text-gray-900 bg-blue-50/20  border-r border-gray-300">
-                  {totalSell}
+                  {totalSell.toLocaleString()}
                 </td>
                 <td className="p-2 text-center text-xs font-bold text-gray-900 bg-blue-50/20">
-                  {totalExp}
+                  {totalExp.toLocaleString()}
                 </td>
               </tr>
             );
