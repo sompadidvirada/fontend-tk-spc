@@ -95,7 +95,7 @@ const TableData = ({
 
     try {
       const ress = await sendTrackBakerySell(dataToApi);
-      const newBakeryEntry = ress.data.data;
+      const newBakeryEntry = ress.data;
       setCheckBakery((prev) => {
         return [...prev, newBakeryEntry];
       });
