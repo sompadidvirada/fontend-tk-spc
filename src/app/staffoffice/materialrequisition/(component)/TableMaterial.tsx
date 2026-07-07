@@ -97,7 +97,7 @@ const TableMaterial = ({ selectedDate, data, value, loading, check, setCheck }: 
       date: dateToSend,
       branchId: Number(value),
       quantity: Number(formData.get("quantity")),
-      base_quantity: Number(formData.get("base_quantity")),
+      base_quantity: Number(formData.get("base_quantity")) * Number(formData.get("quantity")),
       price_kip: Number(formData.get("price_kip")),
       sell_price_kip: Number(formData.get("sell_price_kip")),
       price_bath: Number(formData.get("price_bath")),
