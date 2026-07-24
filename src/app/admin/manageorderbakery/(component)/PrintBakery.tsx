@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Printer } from "lucide-react";
-import React, { useEffect } from "react";
-import { useReactToPrint } from "react-to-print";
+import React from "react";
 import ComponentPrint from "./ComponentPrint";
-import { getOrderBakeryPrint } from "@/app/api/client/order_bakery";
+import ComponentPrint2 from "./ComponentPrint2";
 
 const PrintBakery = ({
   selecDate,
@@ -12,19 +11,21 @@ const PrintBakery = ({
   selecDate: string;
   supplyerId: string;
 }) => {
-  const contentRef = React.useRef<HTMLDivElement>(null);
-  const [dataToPrint, setDataToPrint] = React.useState();
-  const [loading, setLoading] = React.useState(false);
-
   const onPrintButtonClick = () => {
-    // Construct the URL with parameters
     const url = `/print-bakery?date=${selecDate}&supplierId=${supplyerId}`;
-    
+
+    window.open(url, "_blank");
+  };
+
+  const onPrintButtonClick2 = () => {
+    // Construct the URL with parameters
+    const url = `/print-bakery2?date=${selecDate}&supplierId=${supplyerId}`;
+
     // Open in a new tab
     window.open(url, "_blank");
   };
 
-  const isDisable = !supplyerId || !selecDate || loading;
+  const isDisable = !supplyerId || !selecDate;
 
   return (
     <>
@@ -34,13 +35,16 @@ const PrintBakery = ({
         disabled={isDisable}
       >
         <Printer size={18} className="mr-2" />
-        {loading ? "ກຳລັງໂຫຼດ..." : "ພິມອໍເດີສາຂາ"}
+        ພິມອໍເດີສາຂາ
       </Button>
-      <div className="hidden">
-        <div ref={contentRef} className="p-8 font-lao">
-          <ComponentPrint ref={contentRef} dataToPrint={dataToPrint} />
-        </div>
-      </div>
+      <Button
+        variant="default"
+        onClick={onPrintButtonClick2}
+        disabled={isDisable}
+      >
+        <Printer size={18} className="mr-2" />
+        ພິມອໍເດີສຳລັບ bakery house
+      </Button>
     </>
   );
 };
