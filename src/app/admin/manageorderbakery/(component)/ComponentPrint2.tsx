@@ -47,7 +47,7 @@ const ComponentPrint2 = React.forwardRef<HTMLDivElement, ComponentPrintProps>(
       >
         {/* Main Report Header */}
         <div className="border-[4px] border-double border-black p-4 mb-6 text-center bg-blue-200">
-          <h1 className="text-2xl font-black italic">ລາຍງານການສັ່ງຊື້ສິນຄ້າ1231</h1>
+          <h1 className="text-2xl font-black italic">ລາຍງານການສັ່ງຊື້ສິນຄ້າ</h1>
           <p className="font-bold uppercase">
             Report Date: {format(new Date(dataToPrint.date), "dd/MM/yyyy")}
           </p>
