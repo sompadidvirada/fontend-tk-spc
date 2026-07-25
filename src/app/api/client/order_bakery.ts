@@ -1,4 +1,5 @@
 import axios from "axios";
+import { number, string } from "zod";
 const URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export interface BakeryOrderInput {
@@ -87,6 +88,12 @@ export const deleteAllOrderBakery = (form: {order_at:string | undefined, branchI
 
 export const deleteConfirmOrderBaristar = (id : number) => {
   return axios.delete(`${URL}/orderbakery/deleteconfirmorderbaristar/${id}`, {
+    withCredentials: true
+  })
+}
+
+export const getImagesToOrderBakery = (form:{branch_id : number, date : string}) => {
+  return axios.post(`${URL}/orderbakery/getimagestoorderbakery`, form, {
     withCredentials: true
   })
 }
