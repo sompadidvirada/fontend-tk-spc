@@ -57,13 +57,17 @@ const ComponentPrint = React.forwardRef<HTMLDivElement, ComponentPrintProps>(
               <th className="border-2 border-black p-2 text-left">
                 ລາຍການສິນຄ້າ
               </th>
-              {dataToPrint.branches.map((branch) => (
-                <th
-                  key={branch.id}
-                  className="border-2 border-black p-1 text-[12px] h-24 w-10"
-                >
-                  <div className="rotate-180 [writing-mode:vertical-lr] mx-auto font-bold">
-                    {branch.name}
+              {dataToPrint.branches.map((branch, i) => (
+                <th key={branch.id} className="border-2 border-black p-0 w-10">
+                  {/* Number */}
+                  <div className=" py-1 text-center font-bold">
+                    {i + 1}
+                  </div>
+                  {/* Branch name */}
+                  <div className="h-[72px] flex items-center justify-center">
+                    <div className="rotate-180 [writing-mode:vertical-lr] font-bold text-[12px]">
+                      {branch.name}
+                    </div>
                   </div>
                 </th>
               ))}
