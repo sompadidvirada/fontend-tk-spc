@@ -1,17 +1,10 @@
 "use client";
 import React from "react";
-import {
-  getBakerysAvailable,
-} from "@/app/api/client/trackingbakery";
+import { getBakerysAvailable } from "@/app/api/client/trackingbakery";
 import CalendarCompo from "../../tracksell/(component)/Calendar";
 import SelectBranch from "../../tracksell/(component)/SelectBranch";
 import { Button } from "@/components/ui/button";
-import {
-  Loader2,
-  Maximize2,
-  RotateCcw,
-  Wand,
-} from "lucide-react";
+import { Loader2, Maximize2, RotateCcw, Wand } from "lucide-react";
 import TableBakeryOrder, { BakeryDetail } from "./TableBakeryOrder";
 import { Card } from "@/components/ui/card";
 import {
@@ -44,8 +37,6 @@ export interface BakeryImageItem {
   id: string;
   url: string;
 }
-
-
 
 export interface DataBranchProps {
   branchs: Branch_type[];
@@ -82,8 +73,55 @@ export type Order_Bakery = {
   bakery_detailId: number;
   branchId: number;
 };
+const ImageGalleryItem = ({
+  src,
+  index,
+  onSelect,
+}: {
+  src: string;
+  index: number;
+  onSelect: () => void;
+}) => {
+  const [isLoaded, setIsLoaded] = React.useState(false);
 
-const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
+  return (
+    <div
+      onClick={onSelect}
+      className="relative cursor-zoom-in shrink-0 w-28 h-28 rounded-lg overflow-hidden border border-slate-200 shadow-xs group bg-slate-100"
+    >
+      {/* Skeleton shown while individual image file is downloading */}
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-slate-200 animate-pulse" />
+      )}
+
+      <img
+        src={src}
+        alt="Bakery upload"
+        onLoad={() => setIsLoaded(true)}
+        className={`w-full h-full object-cover transition-opacity duration-300 ${
+          isLoaded ? "opacity-100" : "opacity-0"
+        }`}
+      />
+
+      {/* Hover Overlay */}
+      {isLoaded && (
+        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-1.5">
+          <span className="text-[10px] text-white font-medium">
+            #{index + 1}
+          </span>
+          <button
+            type="button"
+            className="p-1 bg-white/80 hover:bg-white text-slate-800 rounded transition-colors"
+          >
+            <Maximize2 className="w-3 h-3" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
   const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [value, setValue] = React.useState("");
   const [supplyerId, setSupplyerId] = React.useState("");
@@ -103,6 +141,7 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
   >([]);
   const [previousOrder, setPreviousOrder] = React.useState<Order_Bakery[]>([]);
   const router = useRouter();
+
   const result = React.useMemo(() => {
     const dayName = date?.toLocaleDateString("en-US", { weekday: "long" });
 
@@ -161,7 +200,6 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
       try {
         await insertManyOrderBakery({ orders: ordersToSave });
 
-        // OPTIONAL: Re-fetch or update checkOrderBakery state here to reflect changes
         const updatedOrder = await getOrderBakery({
           branchId: Number(value),
           order_at: date?.toLocaleDateString("en-CA"),
@@ -176,7 +214,7 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
   };
 
   React.useEffect(() => {
-    const fecthData = async () => {
+    const fetchData = async () => {
       if (!date) return;
       setLoading(true);
       try {
@@ -202,41 +240,37 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
         setPreviousOrder(orderBakery.data.previous);
         setImageTrack(imageTrackres.data);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
     if (date && value && supplyerId) {
-      fecthData();
+      fetchData();
     }
   }, [date, value, supplyerId]);
-
-
-  console.log(imageTrack)
 
   const handleDelteALL = async () => {
     try {
       await deleteAllOrderBakery({
-        order_at: date?.toLocaleDateString("en-Ca"),
+        order_at: date?.toLocaleDateString("en-CA"),
         branchId: Number(value),
       });
       setCheckOrderBakery([]);
       setPreviousOrder([]);
       toast.success("delete all order success");
     } catch (err) {
-      console.log(err);
-      toast.error("try agian later");
+      console.error(err);
+      toast.error("try again later");
     }
   };
 
   return (
     <>
-      {" "}
       <div className="flex flex-col lg:flex-row mb-5 justify-between gap-4">
         {/* Buttons: Stacked on mobile, row on desktop */}
-        <div className="grid grid-cols-1  md:flex md:flex-row gap-3 h-6 md:h-10 font-lao">
+        <div className="grid grid-cols-1 md:flex md:flex-row gap-3 h-6 md:h-10 font-lao">
           <CalendarCompo
             selectedDate={date}
             onDateChange={setDate}
@@ -248,7 +282,6 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
             setValue={setValue}
             isForReport={false}
           />
-          {/* 2. Controlled Select component */}
           <Select onValueChange={setSupplyerId} value={supplyerId}>
             <SelectTrigger className="border-slate-200 w-full bg-secondary">
               <SelectValue placeholder="ເລືອກບໍລິສັດ/ຮ້ານ" />
@@ -268,68 +301,64 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
             value={value}
             supplyerId={supplyerId}
           />
-          <>
-            <Button
-              variant="outline"
-              className="font-lao"
-              onClick={handleDelteALL}
-            >
-              <RotateCcw className="mr-1 h-4 w-4" />
-              ລົບອໍເດີທັງຫມົດ
-            </Button>
-          </>
-          <>
-            <Button
-              variant="outline"
-              className="font-lao"
-              onClick={handleAutoSaveAll}
-              disabled={isPending || !date || !value}
-            >
-              {isPending ? (
-                <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-              ) : (
-                <Wand className="mr-1 h-4 w-4" />
-              )}
-              ໃຊ້ຈຳນວນແນະນຳ
-            </Button>
-          </>
+          <Button
+            variant="outline"
+            className="font-lao"
+            onClick={handleDelteALL}
+          >
+            <RotateCcw className="mr-1 h-4 w-4" />
+            ລົບອໍເດີທັງຫມົດ
+          </Button>
+          <Button
+            variant="outline"
+            className="font-lao"
+            onClick={handleAutoSaveAll}
+            disabled={isPending || !date || !value}
+          >
+            {isPending ? (
+              <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+            ) : (
+              <Wand className="mr-1 h-4 w-4" />
+            )}
+            ໃຊ້ຈຳນວນແນະນຳ
+          </Button>
         </div>
       </div>
-      {/** Image bakery upload from baristar */}
+
+      {/** Image bakery upload from barista */}
       <div className="w-full bg-white rounded-xl border border-slate-200/80 p-4 shadow-sm my-4 font-lao">
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm font-medium text-slate-700">
-            ຮູບພາບຈາກບາຣິສຕ້າ ({imageTrack.length})
+            ຮູບພາບຈາກບາຣິສຕ້າ ({loading ? "..." : imageTrack.length})
           </span>
         </div>
 
         <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-slate-200">
-          {imageTrack.map((src, index) => (
-            <div
-              key={index}
-              onClick={() => setSelectedViewImage(src.url)}
-              className="relative cursor-zoom-in shrink-0 w-28 h-28 rounded-lg overflow-hidden border border-slate-200 shadow-xs group"
-            >
-              <img
-                src={src.url}
-                alt="Bakery upload"
-                className="w-full h-full object-cover"
+          {/* 1. Global API Loading: Show Skeletons */}
+          {loading ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="shrink-0 w-28 h-28 rounded-lg border border-slate-200 bg-slate-200 animate-pulse"
               />
-              <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-1.5">
-                <span className="text-[10px] text-white font-medium">
-                  #{index + 1}
-                </span>
-                <button
-                  type="button"
-                  className="p-1 bg-white/80 hover:bg-white text-slate-800 rounded transition-colors"
-                >
-                  <Maximize2 className="w-3 h-3" />
-                </button>
-              </div>
-            </div>
-          ))}
+            ))
+          ) : imageTrack.length > 0 ? (
+            /* 2. Success State: Render Images with double-buffered loaders */
+            imageTrack.map((src, index) => (
+              <ImageGalleryItem
+                key={index}
+                src={src.url}
+                index={index}
+                onSelect={() => setSelectedViewImage(src.url)}
+              />
+            ))
+          ) : (
+            /* 3. Empty State */
+            <p className="text-xs text-slate-400 py-2">ບໍ່ມີຮູບພາບ</p>
+          )}
         </div>
       </div>
+
       <Card className="@container/card bg-gray-200 border-none shadow-none">
         {/** TABLE ORDER BAKERY */}
         <TableBakeryOrder
@@ -344,12 +373,13 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
           loading={loading}
         />
       </Card>
-      {/**DIALOG MODAL FOR IMAGE  */}
+
+      {/** DIALOG MODAL FOR IMAGE */}
       <Dialog
         open={!!selectedViewImage}
         onOpenChange={() => {
           setSelectedViewImage(null);
-          setIsImageLoading(true); // Reset loading state when closed
+          setIsImageLoading(true);
         }}
       >
         <DialogContent className="max-w-3xl border-none bg-transparent p-0 shadow-none flex items-center justify-center">
@@ -358,7 +388,6 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
           </DialogHeader>
 
           <div className="relative h-[80vh] w-full flex items-center justify-center">
-            {/* 1. THE SPINNER (Displays only when isImageLoading is true) */}
             {isImageLoading && (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/10 rounded-lg">
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -368,7 +397,6 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
               </div>
             )}
 
-            {/* 2. THE IMAGE */}
             {selectedViewImage && (
               <Image
                 src={selectedViewImage}
@@ -377,7 +405,7 @@ const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
                 className={`object-contain transition-opacity duration-500 ${
                   isImageLoading ? "opacity-0" : "opacity-100"
                 }`}
-                onLoadingComplete={() => setIsImageLoading(false)} // THE TRIGGER
+                onLoadingComplete={() => setIsImageLoading(false)}
                 sizes="(max-width: 1200px) 100vw, 1200px"
                 priority
               />
