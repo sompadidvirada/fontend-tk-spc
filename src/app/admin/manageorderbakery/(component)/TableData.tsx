@@ -22,13 +22,17 @@ import {
   AlertCircle,
   CalendarIcon,
   CheckCircle2,
+  FileSpreadsheet,
   Printer,
   Store,
   XCircle,
 } from "lucide-react";
 import { Branch_type } from "../../tracksell/(component)/ParentTable";
 import { toast } from "sonner";
-import { getTrackingOrderBakery } from "@/app/api/client/order_bakery";
+import {
+  getOrderBakeryPrint,
+  getTrackingOrderBakery,
+} from "@/app/api/client/order_bakery";
 import { useSocket } from "@/socket-io/SocketContext";
 import PrintBakery from "./PrintBakery";
 import {
@@ -39,6 +43,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Supplyer } from "../../bakerymanage/(component)/TableBakery";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 interface Track_Order_Branch {
   branchId: number;
@@ -55,7 +61,7 @@ const TableData = ({ supllyers }: { supllyers: Supplyer[] }) => {
   const [trackOrder, setTrackOrder] = useState<Track_Order_Branch[]>([]);
   const [open, setOpen] = useState(false);
   const [supplyerId, setSupplyerId] = React.useState("");
-
+  const [isExporting, setIsExporting] = useState(false);
   useEffect(() => {
     const fecthTrackingOrder = async () => {
       try {
@@ -141,6 +147,119 @@ const TableData = ({ supllyers }: { supllyers: Supplyer[] }) => {
     };
   }, [socket, selecDate]); // Added selecDate so the filter updates when you change the calendar
 
+  //excel handler export
+
+  const handleExportExcel = async () => {
+    try {
+      setIsExporting(true);
+
+      // Fetch the print data for the selected date and supplier
+      const res = await getOrderBakeryPrint({
+        order_at: selecDate,
+        supplyerId: supplyerId,
+      });
+
+      const reportData = res?.data;
+
+      // Validate data existence
+      if (
+        !reportData ||
+        !reportData.branches ||
+        !reportData.tableData ||
+        reportData.tableData.length === 0
+      ) {
+        toast.warning("ບໍ່ມີຂໍ້ມູນສໍາລັບການ Export");
+        return;
+      }
+
+      const formattedDate = format(date, "dd/MM/yyyy");
+      const sheetData: any[][] = [];
+
+      // 1. Report Title & Date Headers
+      sheetData.push(["ລາຍງານການສັ່ງຊື້ສິນຄ້າ"]);
+      sheetData.push([`Report Date: ${formattedDate}`]);
+      sheetData.push([]); // Empty row space
+
+      // 2. Table Header - Row 1 (Branch Numbers)
+      const headerRow1 = ["ລາຍການສິນຄ້າ"];
+      reportData.branches.forEach((_: any, index: number) =>
+        headerRow1.push(`${index + 1}`),
+      );
+      headerRow1.push("ລວມ");
+      sheetData.push(headerRow1);
+
+      // 3. Table Header - Row 2 (Branch Names)
+      const headerRow2 = [""];
+      reportData.branches.forEach((b: any) => headerRow2.push(b.name));
+      headerRow2.push("");
+      sheetData.push(headerRow2);
+
+      // 4. Data Rows
+      reportData.tableData.forEach((row: any) => {
+        const rowData: (string | number)[] = [row.bakeryName];
+
+        reportData.branches.forEach((branch: any) => {
+          const val = row[`branch_${branch.id}`];
+          rowData.push(val && val !== 0 ? val : "");
+        });
+
+        rowData.push(row.total || 0);
+        sheetData.push(rowData);
+      });
+
+      // 5. Total All Row
+      const totalRow: (string | number)[] = ["TOTAL ALL"];
+      reportData.branches.forEach((branch: any) => {
+        const branchTotal = reportData.tableData.reduce(
+          (sum: number, r: any) =>
+            sum + (Number(r[`branch_${branch.id}`]) || 0),
+          0,
+        );
+        totalRow.push(branchTotal);
+      });
+
+      const grandTotal = reportData.tableData.reduce(
+        (sum: number, r: any) => sum + (Number(r.total) || 0),
+        0,
+      );
+      totalRow.push(grandTotal);
+      sheetData.push(totalRow);
+
+      // 6. Generate Worksheet and Set Column Widths
+      const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+
+      const colWidths = [{ wch: 32 }]; // Column A width (Bakery Item Name)
+      reportData.branches.forEach(() => colWidths.push({ wch: 16 })); // Branch columns width
+      colWidths.push({ wch: 16 }); // Total column width
+      worksheet["!cols"] = colWidths;
+
+      // 7. Download File
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Order_Report");
+
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+
+      const dataBlob = new Blob([excelBuffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+      });
+
+      saveAs(
+        dataBlob,
+        `Bakery_Order_Report_${format(date, "yyyy-MM-dd")}.xlsx`,
+      );
+
+      toast.success("Export Excel ສຳເລັດ!");
+    } catch (error) {
+      console.error(error);
+      toast.error("ເກີດຂໍ້ຜິດພາດໃນການ Export Excel");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <>
       <div className="flex gap-3 my-3 w-full justify-end">
@@ -184,6 +303,18 @@ const TableData = ({ supllyers }: { supllyers: Supplyer[] }) => {
           </PopoverContent>
         </Popover>
         <PrintBakery selecDate={selecDate} supplyerId={supplyerId} />
+
+        {/* this is where i want my export excel button to be*/}
+        <div>
+          <Button
+            onClick={handleExportExcel}
+            disabled={!isExporting && selecDate && supplyerId ? false : true}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 font-bold"
+          >
+            <FileSpreadsheet className="h-4 w-4" />
+            {isExporting ? "ກຳລັງ Export..." : "Export Excel"}
+          </Button>
+        </div>
       </div>
       {/* --- EXCEPTION TABLE --- */}
       <Card className="border-none shadow-xl shadow-slate-200/60 overflow-hidden bg-white">
