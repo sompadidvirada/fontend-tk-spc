@@ -37,7 +37,7 @@ const ComponentToPrint = React.forwardRef<HTMLDivElement, PrintReportProps>(
 
     const totalExpPercent =
       totals.sendQty > 0
-        ? ((totals.expQty / totals.sendQty) * 100).toFixed(2)
+        ? ((totals.totalExpCost / totals.totalSendCost) * 100).toFixed(2)
         : "0";
 
         const sortedData = useMemo(() => {
