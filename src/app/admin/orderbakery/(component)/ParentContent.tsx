@@ -87,13 +87,12 @@ const ImageGalleryItem = ({
   return (
     <div
       onClick={onSelect}
-      className="relative cursor-zoom-in shrink-0 w-28 h-28 rounded-lg overflow-hidden border border-slate-200 shadow-xs group bg-slate-100"
+      className="relative cursor-zoom-in shrink-0 w-48 h-48 rounded-lg overflow-hidden border border-slate-200 shadow-xs group bg-slate-100"
     >
       {/* Skeleton shown while individual image file is downloading */}
       {!isLoaded && (
         <div className="absolute inset-0 bg-slate-200 animate-pulse" />
       )}
-
       <img
         src={src}
         alt="Bakery upload"
