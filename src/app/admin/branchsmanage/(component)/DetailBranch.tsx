@@ -16,6 +16,8 @@ import { DeleteBranch } from "./DeleteBranch";
 
 type Branch = {
   id: number;
+  upload_id: number;
+  state_id: number;
   name: string;
   province: string;
   lat: number;
@@ -32,6 +34,8 @@ const DetailBranch = ({ branchs }: DetailBranchProps) => {
     const event = new CustomEvent("map-jump", { detail: { lat, lng } });
     window.dispatchEvent(event);
   };
+
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -64,6 +68,12 @@ const DetailBranch = ({ branchs }: DetailBranchProps) => {
                     </p>
                     <p className="text-sm text-muted-foreground">
                       ໄອດີ: {branch.id}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      upload ໄອດີ: {branch.upload_id ? branch.upload_id : <span className="text-red-500"> ຍັງບໍ່ໄດ້ລະບຸ</span>}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      ໄອດີ ແຂວງ: {branch.state_id ? branch.state_id : <span className="text-red-500"> ຍັງບໍ່ໄດ້ລະບຸ</span>}
                     </p>
                   </div>
                 </div>

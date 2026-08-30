@@ -8,6 +8,8 @@ import MapSection from "./(component)/MapSection";
 
 const page = async () => {
   const branchs = await getAllBranch()
+
+  
   return (
     <div className="mx-3 min-h-[80vh] pb-3 relative mt-3">
       {/* Header Section */}

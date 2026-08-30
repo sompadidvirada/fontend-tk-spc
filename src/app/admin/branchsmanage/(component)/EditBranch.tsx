@@ -20,6 +20,8 @@ import { useRouter } from "next/navigation";
 
 type Branch = {
   id: number;
+  upload_id: number;
+  state_id: number;
   name: string;
   province: string;
   lat: number;
@@ -31,6 +33,8 @@ const EditBranch = ({ branch }: { branch: Branch }) => {
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: branch.name,
+    upload_id: branch.upload_id,
+    state_id: branch.state_id,
     province: branch.province,
     location: { lat: branch.lat, lng: branch.lng },
   });
@@ -48,6 +52,8 @@ const EditBranch = ({ branch }: { branch: Branch }) => {
 
     const payload = {
       name: formData.get("name") as string,
+      upload_id: formData.get("upload_id") as string,
+      state_id: formData.get("state_id") as string,
       province: formData.get("province") as string,
       location: location, // from map picker state
     };
@@ -88,6 +94,22 @@ const EditBranch = ({ branch }: { branch: Branch }) => {
               id="province"
               name="province"
               defaultValue={branch.province}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="province">upload ໄອດີ</Label>
+            <Input
+              id="upload_id"
+              name="upload_id"
+              defaultValue={branch.upload_id}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="province">ໄອດີ ແຂວງ</Label>
+            <Input
+              id="state_id"
+              name="state_id"
+              defaultValue={branch.state_id}
             />
           </div>
           <div className="flex flex-col gap-2 mb-2">
