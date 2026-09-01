@@ -21,6 +21,7 @@ import { DateRange } from "react-day-picker";
 import { getBakerySellReport } from "@/app/api/client/dashboard";
 import { Branch_type } from "@/app/admin/tracksell/(component)/ParentTable";
 import { useUIStore } from "@/store/ui";
+import BranchMultiSelect from "@/app/admin/dashboard/(component)/BranchMultiSelect";
 export const description = "An interactive area chart";
 
 type DashboardChartData = {
@@ -33,6 +34,16 @@ export function ChartAreaInteractive({ branchs }: { branchs: Branch_type[] }) {
   const [dataLineChart, setDataLineChart] = React.useState<
     DashboardChartData[]
   >([]);
+
+  const [selectedBranchIds, setSelectedBranchIds] = React.useState<number[]>(
+    [],
+  );
+
+  React.useEffect(() => {
+    setSelectedBranchIds(branchs.map((branch) => branch.id));
+  }, [branchs]);
+
+  console.log(dataLineChart);
 
   const dynamicConfig = React.useMemo(() => {
     const config: ChartConfig = {
@@ -92,6 +103,15 @@ export function ChartAreaInteractive({ branchs }: { branchs: Branch_type[] }) {
           <span className="@[540px]/card:hidden">{t.last3Months}</span>
         </CardDescription>
         <CardAction>
+          <DateRanges range={range} setRange={setRange} />
+        </CardAction>
+        <CardAction className="flex gap-2">
+          <BranchMultiSelect
+            branches={branchs}
+            selectedBranchIds={selectedBranchIds}
+            setSelectedBranchIds={setSelectedBranchIds}
+          />
+
           <DateRanges range={range} setRange={setRange} />
         </CardAction>
       </CardHeader>
@@ -199,16 +219,18 @@ export function ChartAreaInteractive({ branchs }: { branchs: Branch_type[] }) {
                 return null;
               }}
             />
-            {branchs.map((branch, index) => (
-              <Area
-                key={branch.id}
-                dataKey={branch.name} // This must match the key in your JSON objects
-                type="monotone"
-                stroke={dynamicConfig[branch.name].color}
-                fill={dynamicConfig[branch.name].color}
-                fillOpacity={0.4}
-              />
-            ))}
+            {branchs
+              .filter((branch) => selectedBranchIds.includes(branch.id))
+              .map((branch) => (
+                <Area
+                  key={branch.id}
+                  dataKey={branch.name}
+                  type="monotone"
+                  stroke={dynamicConfig[branch.name].color}
+                  fill={dynamicConfig[branch.name].color}
+                  fillOpacity={0.4}
+                />
+              ))}
           </AreaChart>
         </ChartContainer>
       </CardContent>
