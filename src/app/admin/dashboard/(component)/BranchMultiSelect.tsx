@@ -46,6 +46,17 @@ export default function BranchMultiSelect({
   const selectedBranches = branches.filter((branch) =>
     selectedBranchIds.includes(branch.id),
   );
+
+  const allSelected =
+    branches.length > 0 && selectedBranchIds.length === branches.length;
+
+  const toggleAllBranches = () => {
+    if (allSelected) {
+      setSelectedBranchIds([]);
+    } else {
+      setSelectedBranchIds(branches.map((branch) => branch.id));
+    }
+  };
   return (
     <Popover open={open} onOpenChange={setOpen}>
       {" "}
@@ -57,11 +68,11 @@ export default function BranchMultiSelect({
           className="w-[220px] justify-between font-lao"
         >
           <span className="truncate">
-            {selectedBranches.length === 0
-              ? "ເລືອກສາຂາ"
-              : selectedBranches.length === branches.length
+            {selectedBranchIds.length === 0
+              ? "ບໍ່ໄດ້ເລືອກສາຂາ"
+              : allSelected
                 ? "ທຸກສາຂາ"
-                : `ເລືອກ ${selectedBranches.length} ສາຂາ`}
+                : `ເລືອກ ${selectedBranchIds.length} ສາຂາ`}
           </span>
 
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -74,6 +85,21 @@ export default function BranchMultiSelect({
           <CommandEmpty className="font-lao">ບໍ່ພົບສາຂາ</CommandEmpty>
 
           <CommandGroup className="max-h-[300px] overflow-y-auto">
+            {/* Select All / Unselect All */}
+            <CommandItem
+              onSelect={toggleAllBranches}
+              className="font-lao font-semibold"
+            >
+              <Check
+                className={`mr-2 h-4 w-4 ${
+                  allSelected ? "opacity-100" : "opacity-0"
+                }`}
+              />
+
+              {allSelected ? "ຍົກເລີກທັງໝົດ" : "ເລືອກທັງໝົດ"}
+            </CommandItem>
+
+            {/* Branches */}
             {branches.map((branch) => {
               const selected = selectedBranchIds.includes(branch.id);
 
