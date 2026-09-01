@@ -24,7 +24,7 @@ export interface DataBranchProps {
 }
 
 export type Branch_type = {
-  id: string;
+  id: number;
   name: string;
   phonenumber: string;
   province: string;
