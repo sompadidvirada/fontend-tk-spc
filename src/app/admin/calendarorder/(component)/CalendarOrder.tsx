@@ -18,49 +18,92 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { Supplyer_Spc } from "../../material/(component)/DetailSupplyer";
-import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { cn } from "@/lib/utils";
 import { useStaffStore } from "@/store/staff";
 import {
-  createCalendarOrderSpc,
   deleteCalendarOrderSpc,
   getAllCalendarOrderSpc,
   updateCalendarOrderDate,
   updateDeliveryDate,
+  updateDescriptionCalendar,
   updatePaymentDate,
   updateStatusCalendarOrderSpc,
 } from "@/app/api/client/calendar_order";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
+import AddEventCalendar, { Material } from "./AddEventCalendar";
 
 interface Prop {
   supplyer_spc: Supplyer_Spc[];
+  materials: Material[];
 }
 
-const CalendarOrder = ({ supplyer_spc }: Prop) => {
+const mockEvents = [
+  {
+    id: "1",
+    title: "ບໍລິສັດ ດີຈີຕອນ ລາວ ເທັກໂນໂລຊີ",
+    start: "2026-09-05",
+    extendedProps: {
+      planDate: "2026-09-05",
+      payment_date: "2026-09-04T00:00:00.000Z",
+      delivery_date: "2026-09-06T00:00:00.000Z",
+      paymentStatus: "success",
+      deliveryStatus: "pending",
+      po_link: "https://example.com/po-document.pdf",
+      description:
+        "ກະລຸນາກວດເຊັກສິນຄ້າກ່ອນເຊັນຮັບ. (Please verify items upon arrival)",
+      products: [
+        {
+          id: "p1",
+          name: "ນ້ຳດື່ມບໍລິສຸດ 1.5L",
+          image:
+            "https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=150&auto=format&fit=crop&q=80",
+          orderQuantity: 10,
+          packSize: "Pack of 6",
+        },
+        {
+          id: "p2",
+          name: "ເມັດກາເຟອາຣາບິກາ 500g",
+          image:
+            "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=150&auto=format&fit=crop&q=80",
+          orderQuantity: 5,
+          packSize: "500g Bag",
+        },
+      ],
+    },
+  },
+];
+
+interface Product {
+  id?: string | number;
+  name: string;
+  image?: string;
+  orderQuantity?: number;
+  quantity?: number;
+  packSize: string;
+}
+const CalendarOrder = ({ supplyer_spc, materials }: Prop) => {
   const staff = useStaffStore((state) => state.staff);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
-  const [open, setOpen] = useState(false);
   const calendarRef = useRef<FullCalendar>(null);
   const [isEditingPaymentDate, setIsEditingPaymentDate] = useState(false);
   const [isEditingDeliveryDate, setIsEditingDeliveryDate] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
+  const [formData, setFormData] = useState({
+    title: "",
+    supplier_spcId: "",
+    description: "",
+    po_link: "",
+    plan_date: "",
+    payment_date: "",
+    delivery_date: "",
+    payment_status: "pending",
+    delivery_status: "pending",
+    staff_officeId: staff.id,
+    items: [],
+  });
 
   // 1. Wrap your event fetching logic in useCallback
   const fetchEvents = useCallback(
@@ -80,11 +123,12 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
         const formattedEvents = response.data.map((order: any) => ({
           id: order.id,
           title: order.supplier_spc.name,
-          start: order.plan_date,
+          start: order.delivery_date,
           allDay: true,
           backgroundColor: getEventColor(
             order.payment_status,
             order.delivery_status,
+            order.delivery_date, // 👈 Pass delivery_date here
           ),
           borderColor: "transparent",
           extendedProps: {
@@ -139,25 +183,29 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
   };
 
   // Helper to get color based on status
-  const getEventColor = (payStatus: string, devStatus: string) => {
-    if (payStatus === "success" && devStatus === "success") return "#b700ff"; // Green
-    if (devStatus === "success") return "#3b82f6"; // Blue
-    if (payStatus === "success") return "#10b981"; // Blue
-    return "#000000"; // Slate/Gray for pending
-  };
+  const getEventColor = (
+    payStatus: string,
+    devStatus: string,
+    deliveryDateStr?: string,
+  ) => {
+    if (deliveryDateStr) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Strip time so we strictly compare dates
 
-  const [formData, setFormData] = useState({
-    title: "",
-    supplier_spcId: "",
-    description: "",
-    po_link: "",
-    plan_date: "",
-    payment_date: "",
-    delivery_date: "",
-    payment_status: "pending",
-    delivery_status: "pending",
-    staff_officeId: staff.id,
-  });
+      const deliveryDate = new Date(deliveryDateStr);
+      deliveryDate.setHours(0, 0, 0, 0);
+
+      if (deliveryDate.getTime() < today.getTime() && devStatus != "success") {
+        return "#ef4444";
+      }
+    }
+
+    // Existing status checks
+    if (payStatus === "success" && devStatus === "success") return "#00bbff"; // Purple
+    if (devStatus === "success") return "#3b82f6"; // Blue
+    if (payStatus === "success") return "#10b981"; // Green
+    return "#bfb521"; // Black / Pending
+  };
 
   const handleDateClick = (info: any) => {
     setFormData({
@@ -171,53 +219,21 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
       payment_status: "pending",
       delivery_status: "pending",
       staff_officeId: staff.id,
+      items: [],
     });
     setIsAddModalOpen(true);
   };
 
-  const handleEventClick = (info: any) => {
+  const handleEventClick = (clickInfo: { event: any }) => {
+    const event = clickInfo.event;
+
     setSelectedEvent({
-      id: info.event.id,
-      title: info.event.title,
-      ...info.event.extendedProps,
-      po_link: info.event.extendedProps.po_link,
-      planDate: info.event.startStr,
+      id: event.id,
+      title: event.title,
+      ...event.extendedProps, // Flattens planDate, products, paymentStatus, etc.
     });
+
     setIsDetailModalOpen(true);
-  };
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.supplier_spcId) return toast.error("ກະລຸນາເລືອກບໍລິສັດກ່ອນ.");
-    const supplierName =
-      supplyer_spc.find((s) => s.id === formData.supplier_spcId)?.name ||
-      "ບໍ່ລະບຸ";
-
-    const payload = {
-      title: supplierName,
-      supplier_spcId: formData.supplier_spcId,
-      description: formData.description,
-      po_link: formData.po_link,
-      plan_date: formData.plan_date,
-      payment_date: formData.payment_date,
-      delivery_date: formData.delivery_date,
-      staff_officeId: staff.id,
-    };
-
-    try {
-      await createCalendarOrderSpc(payload);
-
-      // 1. Get the Calendar API instance via ref
-      const calendarApi = calendarRef.current?.getApi();
-
-      calendarApi?.refetchEvents();
-
-      setIsAddModalOpen(false);
-      toast.success("ບັນທຶກແຜນການສຳເລັດ");
-    } catch (error) {
-      console.error(error);
-      toast.error("ບໍ່ສາມາດບັນທຶກໄດ້");
-    }
   };
 
   const updateStatus = async (type: "paymentStatus" | "deliveryStatus") => {
@@ -250,9 +266,19 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
     const eventId = info.event.id;
     const newDate = info.event.startStr; // FullCalendar gives us 'YYYY-MM-DD'
 
+    const newColor = getEventColor(
+      info.event.extendedProps.paymentStatus,
+      info.event.extendedProps.deliveryStatus,
+      newDate,
+    );
+
+    info.event.setProp("backgroundColor", newColor);
+
     try {
       // 1. Update the database
       await updateCalendarOrderDate(eventId, newDate);
+
+      info.event.setExtendedProp("delivery_date", newDate);
 
       // 2. Success feedback
       toast.success(`ຍ້າຍ ${info.event.title} ໄປວັນທີ ${newDate} ສຳເລັດ`);
@@ -262,6 +288,12 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
     } catch (error) {
       // 3. If backend fails, move the event back to where it was
       info.revert();
+      const oldColor = getEventColor(
+        info.event.extendedProps.paymentStatus,
+        info.event.extendedProps.deliveryStatus,
+        info.oldEvent.startStr,
+      );
+      info.event.setProp("backgroundColor", oldColor);
       console.error(error);
       toast.error("ບໍ່ສາມາດຍ້າຍວັນທີໄດ້");
     }
@@ -271,6 +303,27 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
 
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [tempDescription, setTempDescription] = useState("");
+  const [tempDeliveryDate, setTempDeliveryDate] = useState<string>("");
+  const [tempPayDate, setTempPayDate] = useState<string>("");
+
+  const handleUpdateDescription = async (
+    tempDescription: string,
+    id: string,
+  ) => {
+    try {
+      await updateDescriptionCalendar({ description: tempDescription, id: id });
+
+      setSelectedEvent((prev: any) =>
+        prev ? { ...prev, description: tempDescription } : null,
+      );
+      setIsEditingDescription(false);
+      toast.success("ອັບເດດໝາຍເຫດສຳເລັດ");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const handleDelete = async () => {
     startTransition(async () => {
@@ -320,150 +373,22 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
 
       {/* --- MODAL 1: ADD EVENT (Keep previous logic) --- */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4">
-            <h3 className="font-bold text-lg border-b pb-2">ເພີ່ມແຜນໃໝ່</h3>
-            <Label>ບໍລິສັດຜູ້ສະໜອງ</Label>
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={open}
-                  className="w-full justify-between font-lao bg-white"
-                >
-                  {/* Search by ID, display by Name */}
-                  {formData.supplier_spcId
-                    ? supplyer_spc.find(
-                        (spc) => spc.id.toString() === formData.supplier_spcId,
-                      )?.name
-                    : "ເລືອກບໍລິສັດຜູ້ສະໜອງ..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-
-              {/* Use Portal to ensure it floats above the z-[100] modal */}
-              <PopoverContent
-                className="w-full p-0 font-lao z-[110]"
-                align="start"
-              >
-                <Command shouldFilter={true}>
-                  <CommandInput placeholder="ຄົ້ນຫາຊື່ຜູ້ສະໜອງ..." />
-                  <CommandList>
-                    <CommandEmpty>ບໍ່ພົບຂໍ້ມູນຜູ້ສະໜອງ.</CommandEmpty>
-                    <CommandGroup>
-                      {supplyer_spc.map((spc) => (
-                        <CommandItem
-                          key={spc.id}
-                          // IMPORTANT: The value is what the search input looks at
-                          value={spc.name}
-                          onSelect={() => {
-                            // Set the ID in your form, but close the popover
-                            setFormData({
-                              ...formData,
-                              supplier_spcId: spc.id.toString(),
-                            });
-                            setOpen(false);
-                          }}
-                          className="cursor-pointer"
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              formData.supplier_spcId === spc.id.toString()
-                                ? "opacity-100"
-                                : "opacity-0",
-                            )}
-                          />
-                          <div className="flex items-center gap-2">
-                            {spc.image && (
-                              <img
-                                src={spc.image}
-                                className="h-5 w-5 rounded-full object-cover"
-                                alt=""
-                              />
-                            )}
-                            <span>{spc.name}</span>
-                          </div>
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-xs font-bold">ວັນທີຊຳລະ</label>
-                <input
-                  type="date"
-                  value={formData.payment_date}
-                  className="w-full border p-2 rounded-lg"
-                  onChange={(e) =>
-                    setFormData({ ...formData, payment_date: e.target.value })
-                  }
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs font-bold">ວັນທີສົ່ງເຄື່ອງ</label>
-                <input
-                  type="date"
-                  value={formData.delivery_date}
-                  className="w-full border p-2 rounded-lg"
-                  onChange={(e) =>
-                    setFormData({ ...formData, delivery_date: e.target.value })
-                  }
-                />
-              </div>
-            </div>{" "}
-            <div className="space-y-1 col-span-2">
-              <label className="text-xs font-bold">
-                ລິ້ງເອກະສານ PO (ຖ້າມີ)
-              </label>
-              <div className="relative">
-                <input
-                  type="url"
-                  placeholder="https://..."
-                  value={formData.po_link}
-                  className="w-full border p-2 rounded-lg pl-8 text-sm"
-                  onChange={(e) =>
-                    setFormData({ ...formData, po_link: e.target.value })
-                  }
-                />
-                <FileText
-                  size={14}
-                  className="absolute left-2.5 top-3 text-slate-400"
-                />
-              </div>
-            </div>
-            <textarea
-              placeholder="ໝາຍເຫດ..."
-              className="w-full border rounded-lg p-2 text-sm"
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-            ></textarea>
-            <button
-              onClick={handleSave}
-              className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold"
-            >
-              ບັນທຶກ
-            </button>
-            <button
-              onClick={() => setIsAddModalOpen(false)}
-              className="w-full text-slate-400 py-1"
-            >
-              ຍົກເລີກ
-            </button>
-          </div>
-        </div>
+        <AddEventCalendar
+          staff={staff}
+          formData={formData}
+          supplyer_spc={supplyer_spc}
+          calendarRef={calendarRef}
+          setIsAddModalOpen={setIsAddModalOpen}
+          setFormData={setFormData}
+          materials={materials}
+        />
       )}
 
-      {/* --- MODAL 2: DETAIL VIEW (New UI) --- */}
       {/* MODAL 2: DETAIL VIEW (With Interactive Status Update) */}
       {isDetailModalOpen && selectedEvent && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
           <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+            {/* close button */}
             <div className="p-6 bg-slate-900 text-white flex justify-between items-center">
               <h3 className="text-xl font-bold">{selectedEvent.title}</h3>
               <X
@@ -471,8 +396,8 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
                 onClick={() => setIsDetailModalOpen(false)}
               />
             </div>
-
-            <div className="p-8 space-y-8">
+            {/** content dialog */}
+            <div className="p-8 space-y-8 max-h-[80vh] overflow-y-auto">
               <div className="relative space-y-8">
                 <div className="absolute left-[19px] top-2 bottom-2 w-0.5 bg-slate-100"></div>
 
@@ -486,7 +411,7 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
                       ວັນທີອໍເດີ
                     </p>
                     <p className="text-lg font-bold">
-                      {selectedEvent.planDate}
+                      {selectedEvent.payment_date?.split("T")[0]}
                     </p>
                   </div>
                 </div>
@@ -518,10 +443,20 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
                             defaultValue={
                               selectedEvent.payment_date?.split("T")[0]
                             }
-                            onChange={(e) =>
-                              handleUpdatePaymentDate(e.target.value)
-                            }
+                            onChange={(e) => setTempPayDate(e.target.value)}
                           />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (tempPayDate) {
+                                handleUpdatePaymentDate(tempPayDate);
+                              }
+                              setIsEditingPaymentDate(false);
+                            }}
+                            className="px-2.5 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm"
+                          >
+                            ບັນທຶກ
+                          </button>
                           <button
                             onClick={() => setIsEditingPaymentDate(false)}
                             className="text-xs text-slate-400 underline"
@@ -584,17 +519,30 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
                         <div className="flex items-center gap-2 mt-1">
                           <input
                             type="date"
-                            className="border rounded-lg px-2 py-1 text-sm font-bold text-slate-700 outline-blue-500"
+                            className="border border-slate-200 bg-white rounded-lg px-2 py-1 text-sm font-bold text-slate-700 outline-blue-500 shadow-sm"
                             defaultValue={
                               selectedEvent.delivery_date?.split("T")[0]
                             }
                             onChange={(e) =>
-                              handleUpdateDeliveryDate(e.target.value)
+                              setTempDeliveryDate(e.target.value)
                             }
                           />
                           <button
+                            type="button"
+                            onClick={() => {
+                              if (tempDeliveryDate) {
+                                handleUpdateDeliveryDate(tempDeliveryDate);
+                              }
+                              setIsEditingDeliveryDate(false);
+                            }}
+                            className="px-2.5 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm"
+                          >
+                            ບັນທຶກ
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => setIsEditingDeliveryDate(false)}
-                            className="text-xs text-slate-400 underline"
+                            className="px-2 py-1 text-xs font-bold text-slate-400 hover:text-slate-600"
                           >
                             ຍົກເລີກ
                           </button>
@@ -602,7 +550,12 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
                       ) : (
                         <div
                           className="flex items-center gap-2 cursor-pointer group"
-                          onClick={() => setIsEditingDeliveryDate(true)}
+                          onClick={() => {
+                            setTempDeliveryDate(
+                              selectedEvent.delivery_date?.split("T")[0] || "",
+                            );
+                            setIsEditingDeliveryDate(true);
+                          }}
                         >
                           <p className="text-lg font-bold">
                             {selectedEvent.delivery_date?.split("T")[0]}
@@ -660,14 +613,156 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
               )}
 
               {/* Description Box (Normal Text) */}
-              {selectedEvent.description && (
-                <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
-                  <div className="flex items-center gap-2 mb-2 text-slate-600 font-bold text-sm">
+              {/* Description Box */}
+              <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2 text-slate-600 font-bold text-sm">
                     <Info size={16} /> ໝາຍເຫດເພີ່ມເຕີມ:
                   </div>
-                  <p className="text-slate-600 leading-relaxed break-words whitespace-pre-wrap">
-                    {selectedEvent.description}
+
+                  {!isEditingDescription && (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingDescription(true)}
+                      className="flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-2 py-1 rounded-lg transition-colors cursor-pointer"
+                    >
+                      <Edit3 size={14} />
+                      {selectedEvent.description ? "ແກ້ໄຂ" : "ເພີ່ມໝາຍເຫດ"}
+                    </button>
+                  )}
+                </div>
+
+                {isEditingDescription ? (
+                  <div className="space-y-3 mt-2">
+                    <textarea
+                      rows={3}
+                      className="w-full p-3 text-sm bg-white border border-slate-200 rounded-xl outline-blue-500 font-medium text-slate-700 resize-none"
+                      defaultValue={selectedEvent.description || ""}
+                      placeholder="ປ້ອນໝາຍເຫດເພີ່ມເຕີມ..."
+                      onChange={(e) => setTempDescription(e.target.value)}
+                    />
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingDescription(false)}
+                        className="px-3 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-200/60 rounded-lg transition-colors"
+                      >
+                        ຍົກເລີກ
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleUpdateDescription(
+                            tempDescription,
+                            selectedEvent.id,
+                          )
+                        }
+                        className="px-3 py-1.5 text-xs font-bold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                      >
+                        ບັນທຶກ
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p
+                    onClick={() => setIsEditingDescription(true)}
+                    className="text-slate-600 text-sm leading-relaxed break-words whitespace-pre-wrap cursor-pointer hover:text-slate-900 transition-colors"
+                  >
+                    {selectedEvent.description || (
+                      <span className="text-slate-400 italic">
+                        ບໍ່ມີໝາຍເຫດ...
+                      </span>
+                    )}
                   </p>
+                )}
+              </div>
+
+              {/* Product List Section */}
+              {((selectedEvent.items && selectedEvent.items.length > 0) ||
+                (selectedEvent.products &&
+                  selectedEvent.products.length > 0)) && (
+                <div className="space-y-3">
+                  <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">
+                    ລາຍການສິນຄ້າ (
+                    {selectedEvent.items?.length ||
+                      selectedEvent.products?.length ||
+                      0}
+                    )
+                  </p>
+                  <div className="space-y-2">
+                    {(selectedEvent.items || selectedEvent.products).map(
+                      (item: any, index: number) => {
+                        // Resolve item properties across nested relations or flat product objects
+                        const variant = item.material_variant || item.variant;
+                        const materialName =
+                          item.material_name ||
+                          variant?.material?.name ||
+                          item.name ||
+                          "ສິນຄ້າ";
+                        const variantName =
+                          variant?.variant_name || item.variant_name;
+                        const image =
+                          item.image ||
+                          variant?.image ||
+                          variant?.material?.image ||
+                          "/placeholder.png";
+
+                        const qty =
+                          item.qty ?? item.orderQuantity ?? item.quantity ?? 0;
+                        const baseQty = item.base_qty ?? item.baseQuantity;
+
+                        return (
+                          <div
+                            key={item.id || index}
+                            className="flex items-center gap-4 bg-slate-50 border border-slate-100 p-3 rounded-2xl"
+                          >
+                            {image ? (
+                              <img
+                                src={image}
+                                alt={materialName}
+                                className="w-12 h-12 object-cover rounded-xl border border-slate-200 bg-white shrink-0"
+                              />
+                            ) : (
+                              <div className="w-12 h-12 rounded-xl bg-slate-200 shrink-0 flex items-center justify-center text-lg">
+                                📦
+                              </div>
+                            )}
+
+                            <div className="flex-1 min-w-0">
+                              <p className="font-bold text-slate-800 text-sm truncate">
+                                {materialName}
+                                {variantName && (
+                                  <span className="text-slate-500 font-normal">
+                                    {" "}
+                                    - {variantName}
+                                  </span>
+                                )}
+                              </p>
+                              <div className="flex items-center gap-3 mt-1 text-xs text-slate-500 font-medium">
+                                <span>
+                                  ຈຳນວນ:{" "}
+                                  <strong className="text-slate-800 font-bold">
+                                    {qty}
+                                  </strong>
+                                </span>
+                                {baseQty !== undefined && (
+                                  <>
+                                    <span>•</span>
+                                    <span>
+                                      ຈຳນວນທັງໝົດ:{" "}
+                                      <strong className="text-blue-600 font-bold">
+                                        {baseQty}
+                                      </strong>
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      },
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -690,7 +785,6 @@ const CalendarOrder = ({ supplyer_spc }: Prop) => {
           </div>
         </div>
       )}
-
       {isDeleteConfirmOpen && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl w-full max-w-xs p-6 shadow-2xl animate-in fade-in zoom-in duration-200">

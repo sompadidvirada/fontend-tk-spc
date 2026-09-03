@@ -21,12 +21,12 @@ export const getAllCalendarOrderSpc = (params: {
 
 export const updateCalendarOrderDate = async (
   id: string,
-  plan_date: string,
+  delivery_date: string,
 ) => {
   const response = await axios.patch(
     `${URL}/calendarorder/updatecalendarorderspc/${id}`,
     {
-      plan_date,
+      delivery_date,
     },
     {
       withCredentials: true,
@@ -63,5 +63,11 @@ export const updatePaymentDate = async (id: string, form: {payment_date: string}
 export const updateDeliveryDate = async (id:string, form: {delivery_date: string}) => {
   return axios.patch(`${URL}/calendarorder/updatedeliverydate/${id}`, form, {
     withCredentials: true
+  })
+}
+
+export const updateDescriptionCalendar = async (form : {description: string, id: string}) => {
+  return axios.post(`${URL}/calendarorder/updatedescriptioncalendar`, form, {
+    withCredentials:true
   })
 }
