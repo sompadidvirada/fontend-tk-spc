@@ -1,9 +1,12 @@
 import { CalendarFold } from "lucide-react";
 import CalendarOrder from "./(component)/CalendarOrder";
 import { getSupplyerSpc } from "@/app/api/server/supplyer";
+import { useSession } from "@/app/staffbaristar/SessionProvider";
+import { getAllMaterial } from "@/app/api/server/material";
 
 const CalendarOrderSpc = async () => {
   const supplyer_spc = await getSupplyerSpc();
+  const materials = await getAllMaterial()
   return (
     <div className="flex flex-1 flex-col relative px-4 font-lao mt-3">
       <div className="px-4 lg:px-6 mb-4">
@@ -18,7 +21,7 @@ const CalendarOrderSpc = async () => {
 
       {/**FULLCALENDAR FOR ORDER SPC */}
 
-      <CalendarOrder supplyer_spc={supplyer_spc} />
+      <CalendarOrder supplyer_spc={supplyer_spc} materials={materials}/>
     </div>
   );
 };
