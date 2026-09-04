@@ -10,9 +10,10 @@ import {
   FileText,
   Info,
   Truck,
+  User,
   X,
 } from "lucide-react";
-import React, { useCallback, useRef, useState, useTransition } from "react";
+import React, { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -32,6 +33,7 @@ import {
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
 import AddEventCalendar, { Material } from "./AddEventCalendar";
+import { IconMoneybag } from "@tabler/icons-react";
 
 interface Prop {
   supplyer_spc: Supplyer_Spc[];
@@ -91,6 +93,27 @@ const CalendarOrder = ({ supplyer_spc, materials }: Prop) => {
   const [isEditingDeliveryDate, setIsEditingDeliveryDate] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
+  useEffect(() => {
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      setIsDetailModalOpen(false);
+      // Optional: reset inline editing states if active
+      setIsEditingPaymentDate(false);
+      setIsEditingDeliveryDate(false);
+      setIsEditingDescription(false);
+    }
+  };
+
+  if (isDetailModalOpen) {
+    window.addEventListener("keydown", handleKeyDown);
+  }
+
+  // Cleanup event listener when modal closes or unmounts
+  return () => {
+    window.removeEventListener("keydown", handleKeyDown);
+  };
+}, [isDetailModalOpen]);
+
   const [formData, setFormData] = useState({
     title: "",
     supplier_spcId: "",
@@ -120,6 +143,8 @@ const CalendarOrder = ({ supplyer_spc, materials }: Prop) => {
           id: staff.id,
         });
 
+        console.log(response);
+
         const formattedEvents = response.data.map((order: any) => ({
           id: order.id,
           title: order.supplier_spc.name,
@@ -137,6 +162,8 @@ const CalendarOrder = ({ supplyer_spc, materials }: Prop) => {
             deliveryStatus: order.delivery_status,
           },
         }));
+
+        console.log(response);
 
         successCallback(formattedEvents);
       } catch (error: any) {
@@ -384,407 +411,394 @@ const CalendarOrder = ({ supplyer_spc, materials }: Prop) => {
         />
       )}
 
-      {/* MODAL 2: DETAIL VIEW (With Interactive Status Update) */}
-      {isDetailModalOpen && selectedEvent && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
-          <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
-            {/* close button */}
-            <div className="p-6 bg-slate-900 text-white flex justify-between items-center">
-              <h3 className="text-xl font-bold">{selectedEvent.title}</h3>
-              <X
-                className="cursor-pointer"
-                onClick={() => setIsDetailModalOpen(false)}
-              />
-            </div>
-            {/** content dialog */}
-            <div className="p-8 space-y-8 max-h-[80vh] overflow-y-auto">
-              <div className="relative space-y-8">
-                <div className="absolute left-[19px] top-2 bottom-2 w-0.5 bg-slate-100"></div>
+     {/* MODAL 2: DETAIL VIEW (Two-Column Split Layout) */}
+{isDetailModalOpen && selectedEvent && (
+  <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
+    <div className="bg-white rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[85vh] animate-in fade-in zoom-in duration-300">
+      
+      {/* LEFT COLUMN: Order Info, Dates, Statuses & Description */}
+      <div className="md:w-5/12 bg-slate-50 border-r border-slate-200/80 p-6 flex flex-col justify-between overflow-y-auto space-y-6 shrink-0">
+        <div className="space-y-6">
+          {/* Header Title */}
+          <div>
+            <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider">
+              ລາຍລະອຽດອໍເດີ
+            </span>
+            <h3 className="text-xl font-bold text-slate-800 break-words">
+              {selectedEvent.title}
+            </h3>
+          </div>
 
-                {/* Plan Date */}
-                <div className="relative flex items-center gap-6">
-                  <div className="z-10 w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center border-2 border-blue-500">
-                    <CalendarIcon size={18} className="text-blue-600" />
+          {/* Created By Staff */}
+          <div className="flex items-center gap-3 bg-white p-3 rounded-2xl border border-slate-100 shadow-sm">
+            <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 border border-purple-100">
+              <User size={18} />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[10px] text-slate-400 uppercase font-bold">
+                ຜູ້ສ້າງ / Created By
+              </p>
+              <p className="text-sm font-bold text-slate-700 truncate">
+                {selectedEvent.staff_office?.name ||
+                  selectedEvent.staff_name ||
+                  selectedEvent.staff?.name ||
+                  "ບໍ່ລະບຸຜູ້ສ້າງ"}
+              </p>
+            </div>
+          </div>
+
+          {/* Dates & Statuses Section */}
+          <div className="space-y-4">
+            <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">
+              ກຳນົດເວລາ ແລະ ສະຖານະ
+            </p>
+
+            {/* Plan Date */}
+            <div className="flex items-center gap-3 bg-white p-3 rounded-2xl border border-slate-100 shadow-sm">
+              <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
+                <CalendarIcon size={18} />
+              </div>
+              <div>
+                <p className="text-[10px] text-slate-400 uppercase font-bold">
+                  ວັນທີອໍເດີ (Plan Date)
+                </p>
+                <p className="text-sm font-bold text-slate-800">
+                  {selectedEvent.plan_date?.split("T")[0] ||
+                    selectedEvent.payment_date?.split("T")[0]}
+                </p>
+              </div>
+            </div>
+
+            {/* Payment Date & Status */}
+            <div className="bg-white p-3 rounded-2xl border border-slate-100 shadow-sm space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border ${selectedEvent.paymentStatus === "success" ? "bg-green-50 text-green-600 border-green-100" : "bg-slate-50 text-slate-400 border-slate-100"}`}>
+                    <CreditCard size={18} />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-400 uppercase font-bold">
-                      ວັນທີອໍເດີ
+                    <p className="text-[10px] text-slate-400 uppercase font-bold">
+                      ວັນທີຊຳລະ (Pay Date)
                     </p>
-                    <p className="text-lg font-bold">
-                      {selectedEvent.payment_date?.split("T")[0]}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Payment Status Row */}
-                <div className="relative flex items-center justify-between">
-                  <div className="flex items-center gap-6">
-                    <div
-                      className={`z-10 w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${selectedEvent.paymentStatus === "success" ? "bg-green-50 border-green-500" : "bg-slate-50 border-slate-300"}`}
-                    >
-                      <CreditCard
-                        size={18}
-                        className={
-                          selectedEvent.paymentStatus === "success"
-                            ? "text-green-600"
-                            : "text-slate-400"
-                        }
-                      />
-                    </div>
-                    <div>
-                      <p className="text-xs text-slate-400 uppercase font-bold">
-                        ການຊຳລະ
-                      </p>
-                      {isEditingPaymentDate ? (
-                        <div className="flex items-center gap-2 mt-1">
-                          <input
-                            type="date"
-                            className="border rounded-lg px-2 py-1 text-sm font-bold text-slate-700 outline-blue-500"
-                            defaultValue={
-                              selectedEvent.payment_date?.split("T")[0]
-                            }
-                            onChange={(e) => setTempPayDate(e.target.value)}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (tempPayDate) {
-                                handleUpdatePaymentDate(tempPayDate);
-                              }
-                              setIsEditingPaymentDate(false);
-                            }}
-                            className="px-2.5 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm"
-                          >
-                            ບັນທຶກ
-                          </button>
-                          <button
-                            onClick={() => setIsEditingPaymentDate(false)}
-                            className="text-xs text-slate-400 underline"
-                          >
-                            ຍົກເລີກ
-                          </button>
-                        </div>
-                      ) : (
-                        <div
-                          className="flex items-center gap-2 cursor-pointer group"
-                          onClick={() => setIsEditingPaymentDate(true)}
-                        >
-                          <p className="text-lg font-bold">
-                            {selectedEvent.payment_date?.split("T")[0]}
-                          </p>
-                          <Edit3
-                            size={14}
-                            className="text-slate-300 group-hover:text-blue-500 transition-colors"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => updateStatus("paymentStatus")}
-                    className={`flex items-center cursor-pointer gap-2 px-4 py-1.5 rounded-full text-xs font-bold transition-all ${selectedEvent.paymentStatus === "success" ? "bg-green-500 text-white shadow-lg shadow-green-100" : "bg-slate-100 text-slate-500"}`}
-                  >
-                    {selectedEvent.paymentStatus === "success" ? (
-                      <>
-                        <CheckCircle2 size={14} /> ສຳເລັດ
-                      </>
-                    ) : (
-                      <>
-                        <Clock size={14} /> ລໍຖ້າ...
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                {/* Delivery Status Row */}
-                <div className="relative flex items-center justify-between">
-                  <div className="flex items-center gap-6">
-                    <div
-                      className={`z-10 w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${selectedEvent.deliveryStatus === "success" ? "bg-green-50 border-green-500" : "bg-slate-50 border-slate-300"}`}
-                    >
-                      <Truck
-                        size={18}
-                        className={
-                          selectedEvent.deliveryStatus === "success"
-                            ? "text-green-600"
-                            : "text-slate-400"
-                        }
-                      />
-                    </div>
-                    <div>
-                      <p className="text-xs text-slate-400 uppercase font-bold">
-                        ການຈັດສົ່ງ
-                      </p>
-                      {isEditingDeliveryDate ? (
-                        <div className="flex items-center gap-2 mt-1">
-                          <input
-                            type="date"
-                            className="border border-slate-200 bg-white rounded-lg px-2 py-1 text-sm font-bold text-slate-700 outline-blue-500 shadow-sm"
-                            defaultValue={
-                              selectedEvent.delivery_date?.split("T")[0]
-                            }
-                            onChange={(e) =>
-                              setTempDeliveryDate(e.target.value)
-                            }
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (tempDeliveryDate) {
-                                handleUpdateDeliveryDate(tempDeliveryDate);
-                              }
-                              setIsEditingDeliveryDate(false);
-                            }}
-                            className="px-2.5 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm"
-                          >
-                            ບັນທຶກ
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setIsEditingDeliveryDate(false)}
-                            className="px-2 py-1 text-xs font-bold text-slate-400 hover:text-slate-600"
-                          >
-                            ຍົກເລີກ
-                          </button>
-                        </div>
-                      ) : (
-                        <div
-                          className="flex items-center gap-2 cursor-pointer group"
+                    {isEditingPaymentDate ? (
+                      <div className="flex items-center gap-1 mt-1">
+                        <input
+                          type="date"
+                          className="border rounded-md px-1.5 py-0.5 text-xs font-bold text-slate-700 outline-blue-500"
+                          defaultValue={selectedEvent.payment_date?.split("T")[0]}
+                          onChange={(e) => setTempPayDate(e.target.value)}
+                        />
+                        <button
+                          type="button"
                           onClick={() => {
-                            setTempDeliveryDate(
-                              selectedEvent.delivery_date?.split("T")[0] || "",
-                            );
-                            setIsEditingDeliveryDate(true);
+                            if (tempPayDate) handleUpdatePaymentDate(tempPayDate);
+                            setIsEditingPaymentDate(false);
                           }}
+                          className="px-2 py-0.5 text-xs font-bold text-white bg-blue-600 rounded"
                         >
-                          <p className="text-lg font-bold">
-                            {selectedEvent.delivery_date?.split("T")[0]}
-                          </p>
-                          <Edit3
-                            size={14}
-                            className="text-slate-300 group-hover:text-blue-500 transition-colors"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => updateStatus("deliveryStatus")}
-                    className={`flex cursor-pointer items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold transition-all ${selectedEvent.deliveryStatus === "success" ? "bg-green-500 text-white shadow-lg shadow-green-100" : "bg-slate-100 text-slate-500"}`}
-                  >
-                    {selectedEvent.deliveryStatus === "success" ? (
-                      <>
-                        <CheckCircle2 size={14} /> ສຳເລັດ
-                      </>
+                          ບັນທຶກ
+                        </button>
+                        <button
+                          onClick={() => setIsEditingPaymentDate(false)}
+                          className="text-xs text-slate-400 underline"
+                        >
+                          ຍົກເລີກ
+                        </button>
+                      </div>
                     ) : (
-                      <>
-                        <Clock size={14} /> ລໍຖ້າ...
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* PO Link Section */}
-              {selectedEvent.po_link && (
-                <div className="bg-blue-50/50 rounded-2xl p-4 border border-blue-100 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-blue-500 p-2 rounded-lg text-white">
-                      <FileText size={20} />
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-blue-500 uppercase font-black">
-                        PO Document
-                      </p>
-                      <p className="text-sm font-bold text-slate-700 truncate max-w-[150px]">
-                        {selectedEvent.po_link}
-                      </p>
-                    </div>
-                  </div>
-                  <a
-                    href={selectedEvent.po_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-white border border-blue-200 text-blue-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-600 hover:text-white transition-all shadow-sm"
-                  >
-                    ເປີດເບິ່ງໄຟລ໌
-                  </a>
-                </div>
-              )}
-
-              {/* Description Box (Normal Text) */}
-              {/* Description Box */}
-              <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2 text-slate-600 font-bold text-sm">
-                    <Info size={16} /> ໝາຍເຫດເພີ່ມເຕີມ:
-                  </div>
-
-                  {!isEditingDescription && (
-                    <button
-                      type="button"
-                      onClick={() => setIsEditingDescription(true)}
-                      className="flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-2 py-1 rounded-lg transition-colors cursor-pointer"
-                    >
-                      <Edit3 size={14} />
-                      {selectedEvent.description ? "ແກ້ໄຂ" : "ເພີ່ມໝາຍເຫດ"}
-                    </button>
-                  )}
-                </div>
-
-                {isEditingDescription ? (
-                  <div className="space-y-3 mt-2">
-                    <textarea
-                      rows={3}
-                      className="w-full p-3 text-sm bg-white border border-slate-200 rounded-xl outline-blue-500 font-medium text-slate-700 resize-none"
-                      defaultValue={selectedEvent.description || ""}
-                      placeholder="ປ້ອນໝາຍເຫດເພີ່ມເຕີມ..."
-                      onChange={(e) => setTempDescription(e.target.value)}
-                    />
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setIsEditingDescription(false)}
-                        className="px-3 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-200/60 rounded-lg transition-colors"
+                      <div
+                        className="flex items-center gap-1.5 cursor-pointer group"
+                        onClick={() => setIsEditingPaymentDate(true)}
                       >
-                        ຍົກເລີກ
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleUpdateDescription(
-                            tempDescription,
-                            selectedEvent.id,
-                          )
-                        }
-                        className="px-3 py-1.5 text-xs font-bold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-                      >
-                        ບັນທຶກ
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <p
-                    onClick={() => setIsEditingDescription(true)}
-                    className="text-slate-600 text-sm leading-relaxed break-words whitespace-pre-wrap cursor-pointer hover:text-slate-900 transition-colors"
-                  >
-                    {selectedEvent.description || (
-                      <span className="text-slate-400 italic">
-                        ບໍ່ມີໝາຍເຫດ...
-                      </span>
-                    )}
-                  </p>
-                )}
-              </div>
-
-              {/* Product List Section */}
-              {((selectedEvent.items && selectedEvent.items.length > 0) ||
-                (selectedEvent.products &&
-                  selectedEvent.products.length > 0)) && (
-                <div className="space-y-3">
-                  <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">
-                    ລາຍການສິນຄ້າ (
-                    {selectedEvent.items?.length ||
-                      selectedEvent.products?.length ||
-                      0}
-                    )
-                  </p>
-                  <div className="space-y-2">
-                    {(selectedEvent.items || selectedEvent.products).map(
-                      (item: any, index: number) => {
-                        // Resolve item properties across nested relations or flat product objects
-                        const variant = item.material_variant || item.variant;
-                        const materialName =
-                          item.material_name ||
-                          variant?.material?.name ||
-                          item.name ||
-                          "ສິນຄ້າ";
-                        const variantName =
-                          variant?.variant_name || item.variant_name;
-                        const image =
-                          item.image ||
-                          variant?.image ||
-                          variant?.material?.image ||
-                          "/placeholder.png";
-
-                        const qty =
-                          item.qty ?? item.orderQuantity ?? item.quantity ?? 0;
-                        const baseQty = item.base_qty ?? item.baseQuantity;
-
-                        return (
-                          <div
-                            key={item.id || index}
-                            className="flex items-center gap-4 bg-slate-50 border border-slate-100 p-3 rounded-2xl"
-                          >
-                            {image ? (
-                              <img
-                                src={image}
-                                alt={materialName}
-                                className="w-12 h-12 object-cover rounded-xl border border-slate-200 bg-white shrink-0"
-                              />
-                            ) : (
-                              <div className="w-12 h-12 rounded-xl bg-slate-200 shrink-0 flex items-center justify-center text-lg">
-                                📦
-                              </div>
-                            )}
-
-                            <div className="flex-1 min-w-0">
-                              <p className="font-bold text-slate-800 text-sm truncate">
-                                {materialName}
-                                {variantName && (
-                                  <span className="text-slate-500 font-normal">
-                                    {" "}
-                                    - {variantName}
-                                  </span>
-                                )}
-                              </p>
-                              <div className="flex items-center gap-3 mt-1 text-xs text-slate-500 font-medium">
-                                <span>
-                                  ຈຳນວນ:{" "}
-                                  <strong className="text-slate-800 font-bold">
-                                    {qty}
-                                  </strong>
-                                </span>
-                                {baseQty !== undefined && (
-                                  <>
-                                    <span>•</span>
-                                    <span>
-                                      ຈຳນວນທັງໝົດ:{" "}
-                                      <strong className="text-blue-600 font-bold">
-                                        {baseQty}
-                                      </strong>
-                                    </span>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      },
+                        <p className="text-sm font-bold text-slate-800">
+                          {selectedEvent.payment_date?.split("T")[0]}
+                        </p>
+                        <Edit3 size={12} className="text-slate-300 group-hover:text-blue-500" />
+                      </div>
                     )}
                   </div>
                 </div>
-              )}
+                <button
+                  onClick={() => updateStatus("paymentStatus")}
+                  className={`flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-bold ${selectedEvent.paymentStatus === "success" ? "bg-green-500 text-white" : "bg-slate-100 text-slate-500"}`}
+                >
+                  {selectedEvent.paymentStatus === "success" ? <CheckCircle2 size={12} /> : <Clock size={12} />}
+                  {selectedEvent.paymentStatus === "success" ? "ສຳເລັດ" : "ລໍຖ້າ"}
+                </button>
+              </div>
+            </div>
 
-              <div className="pt-6 border-t flex flex-col gap-2">
-                <Button
-                  variant="destructive"
-                  onClick={() => setIsDeleteConfirmOpen(true)}
-                  className="w-full py-3 rounded-xl font-bold"
+            {/* Delivery Date & Status */}
+            <div className="bg-white p-3 rounded-2xl border border-slate-100 shadow-sm space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border ${selectedEvent.deliveryStatus === "success" ? "bg-green-50 text-green-600 border-green-100" : "bg-slate-50 text-slate-400 border-slate-100"}`}>
+                    <Truck size={18} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-slate-400 uppercase font-bold">
+                      ວັນທີຈັດສົ່ງ (Deliver Date)
+                    </p>
+                    {isEditingDeliveryDate ? (
+                      <div className="flex items-center gap-1 mt-1">
+                        <input
+                          type="date"
+                          className="border rounded-md px-1.5 py-0.5 text-xs font-bold text-slate-700 outline-blue-500"
+                          defaultValue={selectedEvent.delivery_date?.split("T")[0]}
+                          onChange={(e) => setTempDeliveryDate(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (tempDeliveryDate) handleUpdateDeliveryDate(tempDeliveryDate);
+                            setIsEditingDeliveryDate(false);
+                          }}
+                          className="px-2 py-0.5 text-xs font-bold text-white bg-blue-600 rounded"
+                        >
+                          ບັນທຶກ
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setIsEditingDeliveryDate(false)}
+                          className="text-xs text-slate-400 underline"
+                        >
+                          ຍົກເລີກ
+                        </button>
+                      </div>
+                    ) : (
+                      <div
+                        className="flex items-center gap-1.5 cursor-pointer group"
+                        onClick={() => {
+                          setTempDeliveryDate(selectedEvent.delivery_date?.split("T")[0] || "");
+                          setIsEditingDeliveryDate(true);
+                        }}
+                      >
+                        <p className="text-sm font-bold text-slate-800">
+                          {selectedEvent.delivery_date?.split("T")[0]}
+                        </p>
+                        <Edit3 size={12} className="text-slate-300 group-hover:text-blue-500" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <button
+                  onClick={() => updateStatus("deliveryStatus")}
+                  className={`flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-bold ${selectedEvent.deliveryStatus === "success" ? "bg-green-500 text-white" : "bg-slate-100 text-slate-500"}`}
                 >
-                  ລົບລາຍການນີ້
-                </Button>
-                <Button
-                  onClick={() => setIsDetailModalOpen(false)}
-                  className="w-full py-3 bg-slate-900 text-white rounded-xl font-bold"
-                >
-                  ປິດໜ້າຕ່າງ
-                </Button>
+                  {selectedEvent.deliveryStatus === "success" ? <CheckCircle2 size={12} /> : <Clock size={12} />}
+                  {selectedEvent.deliveryStatus === "success" ? "ສຳເລັດ" : "ລໍຖ້າ"}
+                </button>
               </div>
             </div>
           </div>
+
+          {/* PO Link Section */}
+          {selectedEvent.po_link && (
+            <div className="bg-blue-50/60 rounded-2xl p-3 border border-blue-100 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="bg-blue-500 p-1.5 rounded-lg text-white">
+                  <FileText size={16} />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[9px] text-blue-500 uppercase font-black">
+                    PO Document
+                  </p>
+                  <p className="text-xs font-bold text-slate-700 truncate max-w-[110px]">
+                    {selectedEvent.po_link}
+                  </p>
+                </div>
+              </div>
+              <a
+                href={selectedEvent.po_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-white border border-blue-200 text-blue-600 px-3 py-1 rounded-lg text-xs font-bold hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+              >
+                ເປີດເບິ່ງ
+              </a>
+            </div>
+          )}
+
+          {/* Description Box */}
+          <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-slate-600 font-bold text-xs">
+                <Info size={14} /> ໝາຍເຫດເພີ່ມເຕີມ:
+              </div>
+              {!isEditingDescription && (
+                <button
+                  type="button"
+                  onClick={() => setIsEditingDescription(true)}
+                  className="flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700 cursor-pointer"
+                >
+                  <Edit3 size={12} />
+                  {selectedEvent.description ? "ແກ້ໄຂ" : "ເພີ່ມໝາຍເຫດ"}
+                </button>
+              )}
+            </div>
+
+            {isEditingDescription ? (
+              <div className="space-y-2">
+                <textarea
+                  rows={3}
+                  className="w-full p-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-blue-500 font-medium text-slate-700 resize-none"
+                  defaultValue={selectedEvent.description || ""}
+                  placeholder="ປ້ອນໝາຍເຫດເພີ່ມເຕີມ..."
+                  onChange={(e) => setTempDescription(e.target.value)}
+                />
+                <div className="flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingDescription(false)}
+                    className="px-2.5 py-1 text-xs font-bold text-slate-400"
+                  >
+                    ຍົກເລີກ
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleUpdateDescription(tempDescription, selectedEvent.id)}
+                    className="px-2.5 py-1 text-xs font-bold bg-blue-600 text-white rounded-lg shadow-sm"
+                  >
+                    ບັນທຶກ
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p
+                onClick={() => setIsEditingDescription(true)}
+                className="text-slate-600 text-xs leading-relaxed break-words whitespace-pre-wrap cursor-pointer hover:text-slate-900"
+              >
+                {selectedEvent.description || (
+                  <span className="text-slate-400 italic">ບໍ່ມີໝາຍເຫດ...</span>
+                )}
+              </p>
+            )}
+          </div>
         </div>
-      )}
+
+        {/* Delete Button at Bottom Left */}
+        <div className="pt-4 border-t border-slate-200">
+          <Button
+            variant="destructive"
+            onClick={() => setIsDeleteConfirmOpen(true)}
+            className="w-full py-2.5 rounded-xl text-xs font-bold"
+          >
+            ລົບລາຍການນີ້
+          </Button>
+        </div>
+      </div>
+
+      {/* RIGHT COLUMN: Product List Details */}
+      <div className="md:w-7/12 p-6 flex flex-col justify-between overflow-y-auto bg-white">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <h4 className="font-bold text-slate-800 text-base">
+              ລາຍການສິນຄ້າ ({(selectedEvent.items || selectedEvent.products)?.length || 0})
+            </h4>
+            <button
+              onClick={() => setIsDetailModalOpen(false)}
+              className="p-1.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          {/* Product Cards Container */}
+          {((selectedEvent.items && selectedEvent.items.length > 0) ||
+            (selectedEvent.products && selectedEvent.products.length > 0)) ? (
+            <div className="space-y-2.5 max-h-[50vh] md:max-h-[60vh] overflow-y-auto pr-1">
+              {(selectedEvent.items || selectedEvent.products).map(
+                (item: any, index: number) => {
+                  const variant = item.material_variant || item.variant;
+                  const materialName =
+                    item.material_name ||
+                    variant?.material?.name ||
+                    item.name ||
+                    "ສິນຄ້າ";
+                  const variantName =
+                    variant?.variant_name || item.variant_name;
+                  const image =
+                    item.image ||
+                    variant?.image ||
+                    variant?.material?.image ||
+                    "/placeholder.png";
+
+                  const qty = item.qty ?? item.orderQuantity ?? item.quantity ?? 0;
+                  const baseQty = item.base_qty ?? item.baseQuantity;
+
+                  return (
+                    <div
+                      key={item.id || index}
+                      className="flex items-center gap-3.5 bg-slate-50 border border-slate-100 p-3 rounded-2xl hover:border-slate-200 transition-all"
+                    >
+                      {image ? (
+                        <img
+                          src={image}
+                          alt={materialName}
+                          className="w-12 h-12 object-cover rounded-xl border border-slate-200 bg-white shrink-0"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-xl bg-slate-200 shrink-0 flex items-center justify-center text-lg">
+                          📦
+                        </div>
+                      )}
+
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-slate-800 text-sm truncate">
+                          {materialName}
+                          {variantName && (
+                            <span className="text-slate-500 font-normal">
+                              {" "}
+                              - {variantName}
+                            </span>
+                          )}
+                        </p>
+                        <div className="flex items-center gap-3 mt-1 text-xs text-slate-500 font-medium">
+                          <span>
+                            ຈຳນວນ:{" "}
+                            <strong className="text-slate-800 font-bold">
+                              {qty}
+                            </strong>
+                          </span>
+                          {baseQty !== undefined && (
+                            <>
+                              <span>•</span>
+                              <span>
+                                ຈຳນວນທັງໝົດ:{" "}
+                                <strong className="text-blue-600 font-bold">
+                                  {baseQty}
+                                </strong>
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+              )}
+            </div>
+          ) : (
+            <div className="py-12 text-center text-slate-400 text-xs italic">
+              ບໍ່ມີລາຍການສິນຄ້າ
+            </div>
+          )}
+        </div>
+
+        {/* Modal Close Action Button */}
+        <div className="pt-4 border-t border-slate-100 mt-4">
+          <Button
+            onClick={() => setIsDetailModalOpen(false)}
+            className="w-full py-2.5 bg-slate-900 text-white rounded-xl font-bold text-xs"
+          >
+            ປິດໜ້າຕ່າງ
+          </Button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+)}
       {isDeleteConfirmOpen && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl w-full max-w-xs p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
