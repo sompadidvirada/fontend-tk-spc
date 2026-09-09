@@ -49,6 +49,8 @@ const EditUserForm = ({
   user: any;
   onSuccess: () => void;
 }) => {
+
+  console.log(user)
   const [loading, setLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     user.image || null,
@@ -63,7 +65,7 @@ const EditUserForm = ({
     defaultValues: {
       name: user.name || "",
       image: user.image || "",
-      birthdate: user.birthdate ? new Date(user.birthdate) : undefined,
+      birthdate: user.birth_date ? new Date(user.birth_date) : undefined,
     },
   });
 
@@ -208,7 +210,7 @@ const EditUserForm = ({
                         )}
                       >
                         {field.value ? (
-                          format(field.value, "dd/MM/yy")
+                          format(field.value, "dd/MM/yyyy")
                         ) : (
                           <span>ເລືອກວັນທີ</span>
                         )}
