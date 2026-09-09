@@ -6,6 +6,7 @@
 
 @theme {
   --font-lao: var(--font-noto-sans-lao), sans-serif;
+  --font-voucher: "Times New Roman", Times, "Phetsarath OT", Phetsarath, serif;
   /* --- CUSTOM CONFIG --- */
   --background-image-gradient-radial: radial-gradient(var(--tw-gradient-stops));
   --background-image-gradient-conic: conic-gradient(
@@ -187,7 +188,8 @@
 }
 
 /* globals.css */
-html, body {
+html,
+body {
   /* Prevent pinch-to-zoom */
   touch-action: pan-x pan-y;
   /* Prevent text size adjustment when rotating phone */
@@ -417,5 +419,22 @@ html, body {
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-voucher);
+  }
+}
+
+/* Ensure inputs, buttons, and print mode inherit the font family */
+@media print {
+  @page {
+    /* Controls the outer margins of the physical page */
+    margin: 10mm; /* e.g., 0, 5mm, 10mm, or 0.5in */
+  }
+  body,
+  input,
+  select,
+  textarea,
+  button,
+  table {
+    font-family: var(--font-voucher) !important;
   }
 }

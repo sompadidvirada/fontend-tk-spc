@@ -17,7 +17,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"; // Import Select components
-import { DiamondPlus, HousePlug, HousePlus, ImagePlus, Loader2, Upload, X } from "lucide-react";
+import {
+  DiamondPlus,
+  HousePlug,
+  HousePlus,
+  ImagePlus,
+  Loader2,
+  Upload,
+  X,
+} from "lucide-react";
 import React, { useRef, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
@@ -47,6 +55,9 @@ const AddSupplyer = ({ onRefresh }: { onRefresh?: () => void }) => {
     category: "", // State for category
     rating: "5",
     image: "",
+    bank_name:"",
+    account_number: "",
+    account_name: "",
   });
 
   const handleInputChange = (
@@ -76,6 +87,9 @@ const AddSupplyer = ({ onRefresh }: { onRefresh?: () => void }) => {
       category: "", // State for category
       rating: "5",
       image: "",
+      bank_name:"",
+      account_number: "",
+      account_name: "",
     });
     setImagePreview(null);
     setOpen(false);
@@ -92,7 +106,6 @@ const AddSupplyer = ({ onRefresh }: { onRefresh?: () => void }) => {
     const data = new FormData();
     Object.entries(formData).forEach(([key, value]) => data.append(key, value));
     if (file) data.append("image", file);
-    
 
     try {
       await createSupplyerSpc(data);
@@ -123,7 +136,7 @@ const AddSupplyer = ({ onRefresh }: { onRefresh?: () => void }) => {
 
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+            <div className="space-y-2 w-full">
               <Label>ຊື່ບໍລິສັດຜູ້ສະໜອງ *</Label>
               <Input
                 name="name"
@@ -180,6 +193,35 @@ const AddSupplyer = ({ onRefresh }: { onRefresh?: () => void }) => {
             <Textarea
               name="address"
               value={formData.address}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>ຊື່ທະນາຄານ</Label>
+            <Input
+              name="bank_name"
+              required
+              value={formData.bank_name}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>ເລກບັນຊີບໍລິສັດ</Label>
+            <Input
+              name="account_number"
+              required
+              value={formData.account_number}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>ຊື່ບັນຊີບໍລິສັດ</Label>
+            <Input
+              name="account_name"
+              required
+              value={formData.account_name}
               onChange={handleInputChange}
             />
           </div>

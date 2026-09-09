@@ -71,6 +71,9 @@ export type Supplyer_Spc = {
   rating: number;
   createdAt: string;
   updatedAt: string;
+  account_number: string;
+  account_name: string;
+  bank_name: string;
 };
 
 const DetailSupplyer = ({ supplyer_spc }: { supplyer_spc: Supplyer_Spc[] }) => {
@@ -113,6 +116,9 @@ const DetailSupplyer = ({ supplyer_spc }: { supplyer_spc: Supplyer_Spc[] }) => {
     data.append("phone", editingSupplier.phone);
     data.append("address", editingSupplier.address);
     data.append("category", editingSupplier.category);
+    data.append("account_number", editingSupplier.account_number);
+    data.append("account_name", editingSupplier.account_name);
+    data.append("bank_name", editingSupplier.bank_name);
 
     if (selectedFile) {
       data.append("image", selectedFile);
@@ -146,7 +152,6 @@ const DetailSupplyer = ({ supplyer_spc }: { supplyer_spc: Supplyer_Spc[] }) => {
     } finally {
     }
   };
-
   return (
     <>
       <Dialog>
@@ -159,7 +164,7 @@ const DetailSupplyer = ({ supplyer_spc }: { supplyer_spc: Supplyer_Spc[] }) => {
             <DiamondPlus className="mr-1 h-4 w-4" /> ລາຍລະອຽດບໍລິສັດຜູ້ສະໜອງ
           </Button>
         </DialogTrigger>
-        <DialogContent className="min-w-180 max-h-[80vh] overflow-y-auto font-lao">
+        <DialogContent className="min-w-250 max-h-[80vh] overflow-y-auto font-lao">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl">
               <Building2 className="text-blue-600" />{" "}
@@ -177,6 +182,8 @@ const DetailSupplyer = ({ supplyer_spc }: { supplyer_spc: Supplyer_Spc[] }) => {
                   <TableHead>ໝວດໝູ່</TableHead>
                   <TableHead>ຜູ້ຕິດຕໍ່</TableHead>
                   <TableHead>ເບີໂທລະສັບ</TableHead>
+                  <TableHead>ເລກບັນຊີ</TableHead>
+                  <TableHead>ຊື່ບັນຊີ</TableHead>
                   <TableHead className="text-right">ການຈັດການ</TableHead>
                 </TableRow>
               </TableHeader>
@@ -207,18 +214,42 @@ const DetailSupplyer = ({ supplyer_spc }: { supplyer_spc: Supplyer_Spc[] }) => {
                         variant="secondary"
                         className="font-normal text-blue-600 bg-blue-50 hover:bg-blue-100 border-none"
                       >
-                        {supplier.category}
+                        {supplier.category ? supplier.category :  <p className="text-red-500">ຍັງບໍ່ໄດ້ລະບຸ</p>}
                       </Badge>
                     </TableCell>
 
                     <TableCell className="text-slate-600">
-                      {supplier.contact_name}
+                      {supplier.contact_name ? supplier.contact_name :  <p className="text-red-500">ຍັງບໍ່ໄດ້ລະບຸ</p>}
                     </TableCell>
 
                     <TableCell>
                       <div className="flex items-center gap-1 text-xs font-medium text-slate-500">
-                        <Phone size={12} className="text-blue-500" />
-                        {supplier.phone}
+                        {supplier.phone ? (
+                          <>
+                            <Phone size={12} className="text-blue-500" />
+                            {supplier.phone}
+                          </>
+                        ) : (
+                          <p className="text-red-500">ຍັງບໍ່ໄດ້ລະບຸ</p>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1 text-xs font-medium text-slate-500">
+                        {supplier.account_number ? (
+                          supplier.account_number
+                        ) : (
+                          <p className="text-red-500">ຍັງບໍ່ໄດ້ລະບຸ</p>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1 text-xs font-medium text-slate-500">
+                        {supplier.account_name ? (
+                          supplier.account_name
+                        ) : (
+                          <p className="text-red-500">ຍັງບໍ່ໄດ້ລະບຸ</p>
+                        )}
                       </div>
                     </TableCell>
 
@@ -323,6 +354,49 @@ const DetailSupplyer = ({ supplyer_spc }: { supplyer_spc: Supplyer_Spc[] }) => {
                       setEditingSupplier({
                         ...editingSupplier,
                         phone: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols">
+                 <div className="space-y-2">
+                  <Label>ເລກບັນຊີ</Label>
+                  <Input
+                    value={editingSupplier.account_number}
+                    onChange={(e) =>
+                      setEditingSupplier({
+                        ...editingSupplier,
+                        account_number: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols">
+                 <div className="space-y-2">
+                  <Label>ຊື່ທະນາຄານ</Label>
+                  <Input
+                    value={editingSupplier.bank_name}
+                    onChange={(e) =>
+                      setEditingSupplier({
+                        ...editingSupplier,
+                        bank_name: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols">
+                 <div className="space-y-2">
+                  <Label>ຊື່ບັນຊີ</Label>
+                  <Input
+                    value={editingSupplier.account_name}
+                    onChange={(e) =>
+                      setEditingSupplier({
+                        ...editingSupplier,
+                        account_name: e.target.value,
                       })
                     }
                   />
