@@ -581,16 +581,20 @@ export const ExcelDoc: React.FC<DataProp> = ({ supplier }) => {
 
               <td
                 colSpan={3}
-                className="border flex p-1 text-[12px] bg-[repeating-linear-gradient(45deg,#f3f4f6,#f3f4f6_2px,#e5e7eb_2px,#e5e7eb_4px)]"
+                className="border border-gray-400 p-1 text-[12px] bg-[repeating-linear-gradient(45deg,#f3f4f6,#f3f4f6_2px,#e5e7eb_2px,#e5e7eb_4px)]"
               >
-                <p className="text-gray-500">ຂຽນເປັນຕົວໜັງສື:</p>{" "}
-                <input
-                  type="text"
-                  name="amountInWords"
-                  value={formData.amountInWords}
-                  onChange={handleChange}
-                  className="border-b font-bold border-dotted border-gray-600 focus:outline-none w-3/4 ml-2 bg-transparent"
-                />
+                <div className="flex items-center">
+                  <p className="text-gray-500 whitespace-nowrap">
+                    ຂຽນເປັນຕົວໜັງສື:
+                  </p>
+                  <input
+                    type="text"
+                    name="amountInWords"
+                    value={formData.amountInWords}
+                    onChange={handleChange}
+                    className="border-b font-bold border-dotted border-gray-600 focus:outline-none flex-1 ml-2 bg-transparent"
+                  />
+                </div>
               </td>
               <td className="border border-gray-400 p-1 text-right text-xs font-bold">
                 {totalAmount > 0 ? totalAmount.toLocaleString() : "0"}

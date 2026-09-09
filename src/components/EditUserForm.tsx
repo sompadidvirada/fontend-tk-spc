@@ -50,7 +50,6 @@ const EditUserForm = ({
   onSuccess: () => void;
 }) => {
 
-  console.log(user)
   const [loading, setLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     user.image || null,
