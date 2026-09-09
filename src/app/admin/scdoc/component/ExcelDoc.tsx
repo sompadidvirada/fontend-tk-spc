@@ -89,7 +89,44 @@ export const ExcelDoc: React.FC<DataProp> = ({ supplier }) => {
   }, [supplier]);
 
   // --- Dynamic Items Table State ---
-  const [items, setItems] = useState<VoucherItem[]>([]);
+  const [items, setItems] = useState<VoucherItem[]>([
+    {
+      numbers: "",
+      id: 1,
+      name: "",
+      qty: 0,
+      unitPrice: 0,
+      amount: 0,
+      remark: "",
+    },
+    {
+      numbers: "",
+      id: 2,
+      name: "",
+      qty: 0,
+      unitPrice: 0,
+      amount: 0,
+      remark: "",
+    },
+    {
+      numbers: "",
+      id: 3,
+      name: "",
+      qty: 0,
+      unitPrice: 0,
+      amount: 0,
+      remark: "",
+    },
+    {
+      numbers: "",
+      id: 4,
+      name: "",
+      qty: 0,
+      unitPrice: 0,
+      amount: 0,
+      remark: "",
+    },
+  ]);
 
   // --- Budget Summary State ---
   const [budget, setBudget] = useState<BudgetSummary>({
