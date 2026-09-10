@@ -223,26 +223,28 @@ export const ExcelDoc: React.FC<DataProp> = ({ supplier }) => {
           </div>
 
           {/* Document Info (Right side) */}
-          <div className="text-start text-xm space-y-1 border p-4 border-gray-300">
+          <div className="text-start text-xm space-y-1 border p-4 border-black">
             <div>
               <strong>ເລກທີ:</strong>{" "}
               <input
                 type="text"
                 name="docNo"
-                value={formData.docNo}
+                value={
+                  "........................................................................."
+                }
                 onChange={handleChange}
                 placeholder=""
-                className="font-voucher border-b border-gray-400 focus:outline-none w-28 text-center"
+                className="font-voucher  focus:outline-none w-38 text-center"
               />
             </div>
             <div>
               <strong>ວັນທີ:</strong>{" "}
               <input
-                type="date"
+                type="text"
                 name="date"
-                value={formData.date}
+                value={".........../......../..............................."}
                 onChange={handleChange}
-                className="font-voucher border-b border-gray-400 focus:outline-none"
+                className="font-voucher  focus:outline-none w-50"
               />
             </div>
             <div>
@@ -252,7 +254,7 @@ export const ExcelDoc: React.FC<DataProp> = ({ supplier }) => {
                 name="purchasePlanNo"
                 value={formData.purchasePlanNo}
                 onChange={handleChange}
-                className="font-voucher focus:outline-none w-28 text-center"
+                className="font-voucher focus:outline-none w-28 text-start uppercase"
               />
             </div>
             <div>
@@ -262,7 +264,7 @@ export const ExcelDoc: React.FC<DataProp> = ({ supplier }) => {
                 name="departmentNo"
                 value={formData.departmentNo}
                 onChange={handleChange}
-                className="font-voucher focus:outline-none w-28 text-center"
+                className="font-voucher focus:outline-none w-28 text-start uppercase"
               />
             </div>
           </div>
@@ -501,151 +503,160 @@ export const ExcelDoc: React.FC<DataProp> = ({ supplier }) => {
       </div>
 
       {/* Items Table */}
+
       <div className="mb-1">
         <h3 className="font-semibold mb-1 text-[12px]">
           ຈຸດປະສົງຂໍເບີກເງິນ ຄ່າໃຊ້ຈ່າຍ:
         </h3>
-        <table className="w-full border-collapse border border-gray-400 text-left text-[12px]">
-          <thead className="bg-gray-100 text-center font-bold print:bg-transparent">
-            <tr>
-              <th className="border border-gray-400 p-1 w-8">ລ/ດ</th>
-              <th className="border border-gray-400 p-1">ລາຍການ</th>
-              <th className="border border-gray-400 p-1 w-14">ຈຳນວນ</th>
-              <th className="border border-gray-400 p-1 w-24">
-                ລາຄາຕໍ່ຫົວຫນ່ວຍ
-              </th>
-              <th colSpan={2} className="border border-gray-400 p-1 w-32">
-                ຈຳນວນເງີນ
-              </th>
-              <th className="border border-gray-400 p-1 w-24">ຫມາຍເຫດ</th>
-              <th className="border border-gray-400 p-1 w-6 print:hidden"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item, idx) => (
-              <tr key={item.id}>
-                <td className="border border-gray-400 p-1 text-center">
-                  <input
-                    type="text"
-                    value={item.numbers}
-                    onChange={(e) =>
-                      handleItemChange(idx, "numbers", e.target.value)
-                    }
-                    className="w-full focus:outline-none text-center bg-transparent"
-                  />
-                </td>
-                <td className="border border-gray-400 p-1 align-top">
-                  <textarea
-                    value={item.name}
-                    onChange={(e) =>
-                      handleItemChange(idx, "name", e.target.value)
-                    }
-                    rows={1}
-                    className="w-full focus:outline-none px-1 bg-transparent resize-none overflow-hidden block break-words whitespace-pre-wrap"
-                    onInput={(e) => {
-                      const target = e.target as HTMLTextAreaElement;
-                      target.style.height = "auto";
-                      target.style.height = `${target.scrollHeight}px`;
-                    }}
-                  />
-                </td>
-                <td className="border border-gray-400 p-1 align-top">
-                  <input
-                    type="text"
-                    value={
-                      item.qty ? Number(item.qty).toLocaleString("en-US") : ""
-                    }
-                    onChange={(e) => {
-                      const rawValue = e.target.value.replace(/,/g, "");
-                      if (!isNaN(Number(rawValue))) {
-                        handleItemChange(idx, "qty", rawValue);
-                      }
-                    }}
-                    className="w-full text-center focus:outline-none bg-transparent"
-                    placeholder="0"
-                  />
-                </td>
-                <td className="border border-gray-400 p-1 align-top">
-                  <input
-                    type="text"
-                    value={
-                      item.unitPrice
-                        ? Number(item.unitPrice).toLocaleString("en-US")
-                        : ""
-                    }
-                    onChange={(e) => {
-                      const rawValue = e.target.value.replace(/,/g, "");
-                      if (!isNaN(Number(rawValue))) {
-                        handleItemChange(idx, "unitPrice", rawValue);
-                      }
-                    }}
-                    className="w-full text-right focus:outline-none px-1 bg-transparent"
-                    placeholder="0"
-                  />
-                </td>
-                <td className="border border-gray-400 p-1 text-right font-semibold align-top">
-                  {item.amount > 0 ? item.amount.toLocaleString() : ""}
-                </td>
-                <td className="border border-gray-400 p-1 text-center text-[12px] w-10 text-gray-900 align-top">
-                  {item.amount > 0 ? formData.currency : ""}
-                </td>
-                <td className="border border-gray-400 p-1 align-top">
-                  <input
-                    type="text"
-                    value={item.remark}
-                    onChange={(e) =>
-                      handleItemChange(idx, "remark", e.target.value)
-                    }
-                    className="w-full focus:outline-none px-1 bg-transparent"
-                  />
-                </td>
-                <td className="border border-gray-400 p-1 text-center print:hidden">
-                  <button
-                    onClick={() => removeRow(idx)}
-                    className="text-red-500 hover:text-red-700 font-bold"
-                  >
-                    ×
-                  </button>
-                </td>
+        <div className="border border-black p-0.5">
+          <table className="w-full border-collapse border border-black text-left text-[12px]">
+            <thead className="bg-gray-100 text-center font-bold print:bg-transparent">
+              <tr>
+                <th className="border border-black p-1 w-8">ລ/ດ</th>
+                <th className="border border-black p-1">ລາຍການ</th>
+                <th className="border border-black p-1 w-14">ຈຳນວນ</th>
+                <th className="border border-black p-1 w-24">
+                  ລາຄາຕໍ່ຫົວຫນ່ວຍ
+                </th>
+                <th colSpan={2} className="border border-black p-1 w-32">
+                  ຈຳນວນເງີນ
+                </th>
+                <th className="border border-black p-1 w-24">ຫມາຍເຫດ</th>
+                <th className="border border-black p-1 w-6 print:hidden"></th>
               </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr className="font-semibold bg-gray-50 print:bg-transparent">
-              <td colSpan={1} className="border border-gray-400 p-1 text-right">
-                ລວມ
-              </td>
+            </thead>
+            <tbody>
+              {items.map((item, idx) => (
+                <tr key={item.id}>
+                  <td className="border border-black p-1 text-center">
+                    <input
+                      type="text"
+                      value={item.numbers}
+                      onChange={(e) =>
+                        handleItemChange(idx, "numbers", e.target.value)
+                      }
+                      className="w-full focus:outline-none text-center bg-transparent"
+                    />
+                  </td>
+                  <td className="border border-black p-1 align-top">
+                    <textarea
+                      value={item.name}
+                      onChange={(e) =>
+                        handleItemChange(idx, "name", e.target.value)
+                      }
+                      rows={1}
+                      className="w-full focus:outline-none px-1 bg-transparent resize-none overflow-hidden block break-words whitespace-pre-wrap"
+                      onInput={(e) => {
+                        const target = e.target as HTMLTextAreaElement;
+                        target.style.height = "auto";
+                        target.style.height = `${target.scrollHeight}px`;
+                      }}
+                    />
+                  </td>
+                  <td className="border border-black p-1 align-top">
+                    <input
+                      type="text"
+                      value={
+                        item.qty == 0
+                          ? " "
+                          : item.qty
+                            ? Number(item.qty).toLocaleString("en-US")
+                            : ""
+                      }
+                      onChange={(e) => {
+                        const rawValue = e.target.value.replace(/,/g, "");
+                        if (!isNaN(Number(rawValue))) {
+                          handleItemChange(idx, "qty", rawValue);
+                        }
+                      }}
+                      className="w-full text-center focus:outline-none bg-transparent"
+                      placeholder="0"
+                    />
+                  </td>
+                  <td className="border border-black p-1 align-top">
+                    <input
+                      type="text"
+                      value={
+                        item.unitPrice == 0
+                          ? " "
+                          : item.unitPrice
+                            ? Number(item.unitPrice).toLocaleString("en-US")
+                            : ""
+                      }
+                      onChange={(e) => {
+                        const rawValue = e.target.value.replace(/,/g, "");
+                        if (!isNaN(Number(rawValue))) {
+                          handleItemChange(idx, "unitPrice", rawValue);
+                        }
+                      }}
+                      className="w-full text-right focus:outline-none px-1 bg-transparent"
+                      placeholder="0"
+                    />
+                  </td>
+                  <td className="border border-black p-1 text-right font-semibold align-top">
+                    {item.amount > 0 ? item.amount.toLocaleString() : ""}
+                  </td>
+                  <td className="border border-black p-1 text-center text-[12px] w-10 text-gray-900 align-top">
+                    {item.amount > 0 ? formData.currency : ""}
+                  </td>
+                  <td className="border border-black p-1 align-top">
+                    <input
+                      type="text"
+                      value={item.remark}
+                      onChange={(e) =>
+                        handleItemChange(idx, "remark", e.target.value)
+                      }
+                      className="w-full focus:outline-none px-1 bg-transparent"
+                    />
+                  </td>
+                  <td className="border border-black p-1 text-center print:hidden">
+                    <button
+                      onClick={() => removeRow(idx)}
+                      className="text-red-500 hover:text-red-700 font-bold"
+                    >
+                      ×
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="font-semibold bg-gray-50 print:bg-transparent">
+                <td colSpan={1} className="border border-black p-1 text-right">
+                  ລວມ
+                </td>
 
-              <td
-                colSpan={3}
-                className="border border-gray-400 p-1 text-[12px] bg-[repeating-linear-gradient(45deg,#f3f4f6,#f3f4f6_2px,#e5e7eb_2px,#e5e7eb_4px)]"
-              >
-                <div className="flex items-center">
-                  <p className="text-gray-500 whitespace-nowrap">
-                    ຂຽນເປັນຕົວໜັງສື:
-                  </p>
-                  <input
-                    type="text"
-                    name="amountInWords"
-                    value={formData.amountInWords}
-                    onChange={handleChange}
-                    className="border-b font-bold border-dotted border-gray-600 focus:outline-none flex-1 ml-2 bg-transparent"
-                  />
-                </div>
-              </td>
-              <td className="border border-gray-400 p-1 text-right text-xs font-bold">
-                {totalAmount > 0 ? totalAmount.toLocaleString() : "0"}
-              </td>
-              <td className="border border-gray-400 p-1 text-center text-[12px] font-bold">
-                {formData.currency}
-              </td>
-              <td
-                colSpan={2}
-                className="border border-gray-400 print:hidden"
-              ></td>
-            </tr>
-          </tfoot>
-        </table>
+                <td
+                  colSpan={3}
+                  className="border border-black p-1 text-[12px] bg-[repeating-linear-gradient(45deg,#f3f4f6,#f3f4f6_2px,#e5e7eb_2px,#e5e7eb_4px)]"
+                >
+                  <div className="flex items-center">
+                    <p className="text-gray-500 whitespace-nowrap">
+                      ຂຽນເປັນຕົວໜັງສື:
+                    </p>
+                    <input
+                      type="text"
+                      name="amountInWords"
+                      value={formData.amountInWords}
+                      onChange={handleChange}
+                      className="border-b font-bold border-dotted border-gray-600 focus:outline-none flex-1 ml-2 bg-transparent"
+                    />
+                  </div>
+                </td>
+                <td className="border border-black p-1 text-right text-xs font-bold">
+                  {totalAmount > 0 ? totalAmount.toLocaleString() : "0"}
+                </td>
+                <td className="border border-black p-1 text-center text-[12px] font-bold">
+                  {formData.currency}
+                </td>
+                <td
+                  colSpan={2}
+                  className="border border-black print:hidden"
+                ></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
 
         <button
           onClick={addRow}
@@ -656,142 +667,144 @@ export const ExcelDoc: React.FC<DataProp> = ({ supplier }) => {
       </div>
 
       {/* Budget Summary Table */}
-      <div className="mb-1">
+      <div className="mb-0.5">
         <h4 className="font-semibold mb-0.5 text-[12px]">
           ຕາຕະລາງ ງົບປະມານ (Budget Summary):
         </h4>
-        <table className="w-full border-collapse border border-gray-400 text-[12px] text-center">
+        <table className="w-full border-collapse border border-black text-[12px] text-center">
           <thead className="bg-[#d8e4bc]">
             <tr>
-              <th className="border border-gray-400 p-0.5">ລະຫັດ</th>
-              <th className="border border-gray-400 p-0.5">ງົບປະມານ</th>
-              <th className="border border-gray-400 p-0.5">ງົບປະມານທີ່ເບີກ</th>
-              <th className="border border-gray-400 p-0.5">
-                ງົບປະມານທີ່ຍັງເຫຼືອ
-              </th>
-              <th className="border border-gray-400 p-0.5">ສະກຸນເງິນ</th>
+              <th className="border border-black p-0.5">ລະຫັດ</th>
+              <th className="border border-black p-0.5">ງົບປະມານ</th>
+              <th className="border border-black p-0.5">ງົບປະມານທີ່ເບີກ</th>
+              <th className="border border-black p-0.5">ງົບປະມານທີ່ຍັງເຫຼືອ</th>
+              <th className="border border-black p-0.5">ສະກຸນເງິນ</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td className="border border-gray-400 p-0.5"></td>
-              <td className="border border-gray-400 p-0.5"></td>
-              <td className="border border-gray-400 p-0.5"></td>
-              <td className="border border-gray-400 p-0.5"></td>
-              <td className="border border-gray-400 p-0.5">ກີບ/LAK</td>
+              <td className="border border-black p-0.5"></td>
+              <td className="border border-black p-0.5"></td>
+              <td className="border border-black p-0.5"></td>
+              <td className="border border-black p-0.5"></td>
+              <td className="border border-black p-0.5">ກີບ/LAK</td>
             </tr>
             <tr>
-              <td className="border border-gray-400 p-0.5"></td>
-              <td className="border border-gray-400 p-0.5"></td>
-              <td className="border border-gray-400 p-0.5"></td>
-              <td className="border border-gray-400 p-0.5"></td>
-              <td className="border border-gray-400 p-0.5">ບາດ/THB</td>
+              <td className="border border-black p-0.5"></td>
+              <td className="border border-black p-0.5"></td>
+              <td className="border border-black p-0.5"></td>
+              <td className="border border-black p-0.5"></td>
+              <td className="border border-black p-0.5">ບາດ/THB</td>
             </tr>
             <tr>
-              <td className="border border-gray-400 p-0.5"></td>
-              <td className="border border-gray-400 p-0.5"></td>
-              <td className="border border-gray-400 p-0.5"></td>
-              <td className="border border-gray-400 p-0.5"></td>
-              <td className="border border-gray-400 p-0.5">ໂດລາ/USD</td>
+              <td className="border border-black p-0.5"></td>
+              <td className="border border-black p-0.5"></td>
+              <td className="border border-black p-0.5"></td>
+              <td className="border border-black p-0.5"></td>
+              <td className="border border-black p-0.5">ໂດລາ/USD</td>
             </tr>
           </tbody>
         </table>
       </div>
 
       {/* Signatures Section 1 (3 Columns) */}
-      <div className="mt-2 mb-1">
-        <table className="w-full border-collapse border border-black text-xs">
-          <thead>
-            <tr className="bg-[#d8e4bc]">
-              <th className="border border-black p-1 w-1/3 text-center font-bold">
-                ຜູ້ສະເໜີຂໍເບີກຄ່າໃຊ້ຈ່າຍ
-              </th>
-              <th className="border border-black p-1 w-1/3 text-center font-bold">
-                ຫົວໜ້າພະແນກ
-              </th>
-              <th className="border border-black p-1 w-1/3 text-center font-bold">
-                ຝ່າຍງົບປະມານ
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="border border-black p-2 h-30 align-top text-left">
-                <span className="text-gray-900">ລາຍເຊັນ:</span>
-              </td>
-              <td className="border border-black p-2 h-30 align-top text-left">
-                <span className="text-gray-900">ລາຍເຊັນ:</span>
-              </td>
-              <td className="border border-black p-2 h-30 align-top text-left">
-                <span className="text-gray-900">ລາຍເຊັນ:</span>
-              </td>
-            </tr>
-            <tr>
-              <td className="border border-black p-2 text-left">
-                ຊື່: ...........................................
-              </td>
-              <td className="border border-black p-2 text-left">
-                ຊື່: ...........................................
-              </td>
-              <td className="border border-black p-2 text-left">
-                ຊື່: ...........................................
-              </td>
-            </tr>
-            <tr>
-              <td className="border border-black p-2 text-left">
-                ວັນທີ່: ......./......./............
-              </td>
-              <td className="border border-black p-2 text-left">
-                ວັນທີ່: ......./......./............
-              </td>
-              <td className="border border-black p-2 text-left">
-                ວັນທີ່: ......./......./............
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div className="mt-1 mb-1">
+        <div className="border border-black p-0.5">
+          <table className="w-full border-collapse border border-black text-xs">
+            <thead>
+              <tr className="bg-[#d8e4bc]">
+                <th className="border border-black p-1 w-1/3 text-center font-bold">
+                  ຜູ້ສະເໜີຂໍເບີກຄ່າໃຊ້ຈ່າຍ
+                </th>
+                <th className="border border-black p-1 w-1/3 text-center font-bold">
+                  ຫົວໜ້າພະແນກ
+                </th>
+                <th className="border border-black p-1 w-1/3 text-center font-bold">
+                  ຝ່າຍງົບປະມານ
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="border border-black p-2 h-30 align-top text-left">
+                  <span className="text-gray-900">ລາຍເຊັນ:</span>
+                </td>
+                <td className="border border-black p-2 h-30 align-top text-left">
+                  <span className="text-gray-900">ລາຍເຊັນ:</span>
+                </td>
+                <td className="border border-black p-2 h-30 align-top text-left">
+                  <span className="text-gray-900">ລາຍເຊັນ:</span>
+                </td>
+              </tr>
+              <tr>
+                <td className="border border-black p-2 text-left">
+                  ຊື່: ...........................................
+                </td>
+                <td className="border border-black p-2 text-left">
+                  ຊື່: ...........................................
+                </td>
+                <td className="border border-black p-2 text-left">
+                  ຊື່: ...........................................
+                </td>
+              </tr>
+              <tr>
+                <td className="border border-black p-1.5 text-left">
+                  ວັນທີ່: ......./......./............
+                </td>
+                <td className="border border-black p-1.5 text-left">
+                  ວັນທີ່: ......./......./............
+                </td>
+                <td className="border border-black p-1.5 text-left">
+                  ວັນທີ່: ......./......./............
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Signatures Section 2 (2 Columns) */}
       <div className="mb-2">
-        <table className="w-129 border-collapse border border-black text-xs">
-          <thead>
-            <tr className="bg-[#d8e4bc]">
-              <th className="border border-black p-1 w-1/2 text-center font-bold">
-                ພະແນກບັນຊີ-ການເງິນ
-              </th>
-              <th className="border border-black p-1 w-1/2 text-center font-bold">
-                ຜູ້ຈັດການທົ່ວໄປ
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="border border-black p-2 h-30 align-top text-left">
-                <span className="text-gray-900">ລາຍເຊັນ:</span>
-              </td>
-              <td className="border border-black p-2 h-30 align-top text-left">
-                <span className="text-gray-900">ລາຍເຊັນ:</span>
-              </td>
-            </tr>
-            <tr>
-              <td className="border border-black p-2 text-left">
-                ຊື່: ...........................................
-              </td>
-              <td className="border border-black p-2 text-left">
-                ຊື່: ...........................................
-              </td>
-            </tr>
-            <tr>
-              <td className="border border-black p-2 text-left">
-                ວັນທີ່: ......./......./............
-              </td>
-              <td className="border border-black p-2 text-left">
-                ວັນທີ່: ......./......./............
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="border border-black p-0.5 w-130.5">
+          <table className="w-129 border-collapse border border-black text-xs">
+            <thead>
+              <tr className="bg-[#d8e4bc]">
+                <th className="border border-black p-1 w-1/2 text-center font-bold">
+                  ພະແນກບັນຊີ-ການເງິນ
+                </th>
+                <th className="border border-black p-1 w-1/2 text-center font-bold">
+                  ຜູ້ຈັດການທົ່ວໄປ
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="border border-black p-2 h-30 align-top text-left">
+                  <span className="text-gray-900">ລາຍເຊັນ:</span>
+                </td>
+                <td className="border border-black p-2 h-30 align-top text-left">
+                  <span className="text-gray-900">ລາຍເຊັນ:</span>
+                </td>
+              </tr>
+              <tr>
+                <td className="border border-black p-2 text-left">
+                  ຊື່: ...........................................
+                </td>
+                <td className="border border-black p-2 text-left">
+                  ຊື່: ...........................................
+                </td>
+              </tr>
+              <tr>
+                <td className="border border-black p-1.5 text-left">
+                  ວັນທີ່: ......./......./............
+                </td>
+                <td className="border border-black p-1.5 text-left">
+                  ວັນທີ່: ......./......./............
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Footer Address */}
