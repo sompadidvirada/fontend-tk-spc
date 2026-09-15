@@ -24,24 +24,25 @@ const UseOrderToSend = ({ date }: DataProp) => {
   const [open, setOpen] = useState(false);
 
   const isValidOrderDay = (date: string) => {
-  const selectedDate = new Date(`${date}T00:00:00`);
-  const day = selectedDate.getDay();
+    const selectedDate = new Date(`${date}T00:00:00`);
+    const day = selectedDate.getDay();
 
-  // 3 = Wednesday
-  // 6 = Saturday
-  return day === 3 || day === 6;
-};
+    // 3 = Wednesday
+    // 6 = Saturday
+    return day === 3 || day === 6;
+  };
+
 
   const handleRun = async () => {
     setLoading(true);
     try {
       const ress = await useOrderToTrackSend({ date: date });
       console.log(ress.data);
-      toast.success(ress.data.message)
+      toast.success(ress.data.message);
       setOpen(false);
     } catch (err) {
       console.log(err);
-      toast.error("ລອງໃຫ່ມພາຍຫລັງ")
+      toast.error("ລອງໃຫ່ມພາຍຫລັງ");
     } finally {
       setLoading(false);
     }
@@ -51,7 +52,7 @@ const UseOrderToSend = ({ date }: DataProp) => {
       <AlertDialogTrigger asChild>
         <Button
           variant="outline"
-          disabled={!date || !isValidOrderDay || loading}
+          disabled={!date || !isValidOrderDay(date) || loading}
           className="font-lao h-8 md:h-9 max-w-50 cursor-pointer self-center"
         >
           <CircuitBoard className="h-4 w-4" />
