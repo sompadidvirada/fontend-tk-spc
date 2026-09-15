@@ -23,6 +23,15 @@ const UseOrderToSend = ({ date }: DataProp) => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
+  const isValidOrderDay = (date: string) => {
+  const selectedDate = new Date(`${date}T00:00:00`);
+  const day = selectedDate.getDay();
+
+  // 3 = Wednesday
+  // 6 = Saturday
+  return day === 3 || day === 6;
+};
+
   const handleRun = async () => {
     setLoading(true);
     try {
@@ -42,7 +51,7 @@ const UseOrderToSend = ({ date }: DataProp) => {
       <AlertDialogTrigger asChild>
         <Button
           variant="outline"
-          disabled={!date || loading}
+          disabled={!date || !isValidOrderDay || loading}
           className="font-lao h-8 md:h-9 max-w-50 cursor-pointer self-center"
         >
           <CircuitBoard className="h-4 w-4" />
