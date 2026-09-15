@@ -182,3 +182,9 @@ export const getReportBakery = (form: {
     withCredentials: true,
   });
 };
+
+export const useOrderToTrackSend = (form: {date: string}) => {
+  return axios.post(`${URL}/managetracking/useorderbakerytotracksend`, form, {
+    withCredentials: true
+  })
+}

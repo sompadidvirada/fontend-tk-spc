@@ -48,6 +48,7 @@ const DeleteAllTrack = ({ date, value, setCheckBakery }: DeleteProps) => {
   return (
     <Button
       variant="outline"
+      disabled={date && value ? false : true}
       className="font-lao justify-start h-8 md:h-9 max-w-50"
       onClick={handleDeleteAllTrack}
     >

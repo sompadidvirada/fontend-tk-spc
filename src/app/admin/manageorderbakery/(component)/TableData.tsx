@@ -23,11 +23,9 @@ import {
   CalendarIcon,
   CheckCircle2,
   FileSpreadsheet,
-  Printer,
   Store,
   XCircle,
 } from "lucide-react";
-import { Branch_type } from "../../tracksell/(component)/ParentTable";
 import { toast } from "sonner";
 import {
   getOrderBakeryPrint,
@@ -45,6 +43,7 @@ import {
 import { Supplyer } from "../../bakerymanage/(component)/TableBakery";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import UseOrderToSend from "./UseOrderToSend";
 
 interface Track_Order_Branch {
   branchId: number;
@@ -279,7 +278,6 @@ const TableData = ({ supllyers }: { supllyers: Supplyer[] }) => {
             </SelectContent>
           </Select>
         </div>
-
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -303,7 +301,6 @@ const TableData = ({ supllyers }: { supllyers: Supplyer[] }) => {
           </PopoverContent>
         </Popover>
         <PrintBakery selecDate={selecDate} supplyerId={supplyerId} />
-
         {/* this is where i want my export excel button to be*/}
         <div>
           <Button
@@ -314,8 +311,10 @@ const TableData = ({ supllyers }: { supllyers: Supplyer[] }) => {
             <FileSpreadsheet className="h-4 w-4" />
             {isExporting ? "ກຳລັງ Export..." : "Export Excel"}
           </Button>
-        </div>
+        </div>{" "}
+        <UseOrderToSend date={selecDate} />
       </div>
+
       {/* --- EXCEPTION TABLE --- */}
       <Card className="border-none shadow-xl shadow-slate-200/60 overflow-hidden bg-white">
         <Table>

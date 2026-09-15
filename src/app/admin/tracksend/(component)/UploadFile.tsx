@@ -124,6 +124,7 @@ const UploadFile = ({
       <input
         type="file"
         id="file-upload"
+        disabled={selectedDate && value ? false : true}
         accept=".html"
         className="hidden"
         onChange={handleUploadFile}
@@ -132,6 +133,7 @@ const UploadFile = ({
       {/* 2. The Label is styled to look exactly like your Button */}
       <Button
         asChild // This allows the Button to behave like the Label inside it
+        disabled={selectedDate && value ? false : true}
         variant="outline"
         className="font-lao h-8 md:h-9 max-w-50 cursor-pointer"
       >
