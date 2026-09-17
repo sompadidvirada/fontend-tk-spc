@@ -141,19 +141,23 @@ const AddEventCalendar = ({
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.supplier_spcId) return toast.error("ກະລຸນາເລືອກບໍລິສັດກ່ອນ.");
+
+    if (!formData.supplier_spcId) {
+      return toast.error("ກະລຸນາເລືອກບໍລິສັດກ່ອນ.");
+    }
+
+    // Check PO ID contains numbers only
+    if (!/^\d+$/.test(String(formData.po_link).trim())) {
+      return toast.error("PO ID ຕ້ອງເປັນຕົວເລກເທົ່ານັ້ນ");
+    }
 
     const validItems = (formData.items || []).filter(
-      (item: OrderItem) =>
-        item.material_variantId !== ''
+      (item: OrderItem) => item.material_variantId !== "",
     );
 
-    // Optional: Check if at least one valid material item exists
     if (validItems.length === 0) {
       return toast.error("ກະລຸນາເລືອກສິນຄ້າຢ່າງໜ້ອຍ 1 ລາຍການ");
     }
-
-    console.log(validItems)
 
     const supplierName =
       supplyer_spc.find((s) => s.id === formData.supplier_spcId)?.name ||
@@ -163,7 +167,7 @@ const AddEventCalendar = ({
       title: supplierName,
       supplier_spcId: formData.supplier_spcId,
       description: formData.description,
-      po_link: formData.po_link,
+      po_link: `https://treekoff.com/bigtree_admin/__main_control_content_item_po_detail_accept.php?poID=${formData.po_link}&currency=THB`,
       plan_date: formData.plan_date,
       payment_date: formData.payment_date,
       delivery_date: formData.delivery_date,
@@ -188,7 +192,6 @@ const AddEventCalendar = ({
       toast.error("ບໍ່ສາມາດບັນທຶກໄດ້");
     }
   };
-
   const getSelectedVariantInfo = (variantId: string | number) => {
     for (const mat of filteredMaterials) {
       const variant = mat.material_variant?.find(
