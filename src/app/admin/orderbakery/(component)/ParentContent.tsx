@@ -24,7 +24,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Supplyer } from "../../bakerymanage/(component)/TableBakery";
-import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -139,25 +138,49 @@ export const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
     Data_Order_Bakery[]
   >([]);
   const [previousOrder, setPreviousOrder] = React.useState<Order_Bakery[]>([]);
-  const router = useRouter();
 
   const result = React.useMemo(() => {
-    const dayName = date?.toLocaleDateString("en-US", { weekday: "long" });
+    const dayName = date?.toLocaleDateString("en-US", {
+      weekday: "long",
+    });
+
+    // Find selected supplier
+    const selectedSupplier = supplyer?.find(
+      (item) => item.id.toString() === supplyerId,
+    );
+
+    const orderRange = selectedSupplier?.order_range;
 
     return (
       checkDataOrder?.map((item) => {
         const bake = bakerys.find((b) => b.id === item.bakery_detailId);
+
         if (!bake) return null;
 
         const totalSell = item.L1_Sell + item.L2_Sell + item.L3_Sell;
+
         const totalSend = item.L1_Send + item.L2_Send + item.L3_Send;
 
         let orderRec = 0;
         let highlight = false;
         let valueadd = 0;
 
-        const baseDivisor = dayName === "Saturday" ? 10 : 11;
-        const baseMultiplier = dayName === "Saturday" ? 3 : 4;
+        // -----------------------------
+        // Determine divisor/multiplier
+        // -----------------------------
+        let baseDivisor: number;
+        let baseMultiplier: number;
+
+        if (orderRange === 7) {
+          // Supplier order range = 7
+          baseDivisor = 21;
+          baseMultiplier = 7;
+        } else {
+          // Existing logic
+          baseDivisor = dayName === "Saturday" ? 10 : 11;
+          baseMultiplier = dayName === "Saturday" ? 3 : 4;
+        }
+
         orderRec = (totalSell / baseDivisor) * baseMultiplier;
         orderRec = Math.round(orderRec);
 
@@ -176,14 +199,24 @@ export const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
 
           orderRec += valueadd;
           highlight = true;
+
           const decimal = orderRec - Math.floor(orderRec);
-          if (decimal >= 0.5) orderRec = Math.floor(orderRec);
+
+          if (decimal >= 0.5) {
+            orderRec = Math.floor(orderRec);
+          }
         }
 
-        return { ...item, orderRec, highlight, valueadd, name: bake?.name };
+        return {
+          ...item,
+          orderRec,
+          highlight,
+          valueadd,
+          name: bake?.name,
+        };
       }) || []
     ).filter((item): item is any => item !== null);
-  }, [checkDataOrder, bakerys, date]);
+  }, [checkDataOrder, bakerys, date, supplyer, supplyerId]);
 
   const handleAutoSaveAll = async () => {
     const ordersToSave = result.map((item) => ({
