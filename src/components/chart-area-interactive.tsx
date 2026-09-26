@@ -102,9 +102,6 @@ export function ChartAreaInteractive({ branchs }: { branchs: Branch_type[] }) {
           <span className="hidden @[540px]/card:block">{t.description}</span>
           <span className="@[540px]/card:hidden">{t.last3Months}</span>
         </CardDescription>
-        <CardAction>
-          <DateRanges range={range} setRange={setRange} />
-        </CardAction>
         <CardAction className="flex gap-2">
           <BranchMultiSelect
             branches={branchs}

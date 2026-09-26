@@ -4,15 +4,15 @@ import { getAllBranch } from "@/app/api/server/branchs";
 import { getAllBakery } from "@/app/api/server/bakery";
 import LineChartBakery from "./(component)/LineChartBakery";
 import { cookies } from "next/headers";
+import { BarChartSale } from "./(component)/BarChartSale";
+import { getSupplyer } from "@/app/api/server/supplyer";
 
 
 export default async function Dashboard() {
     const branchs = await getAllBranch()
     const bakerys = await getAllBakery()
+    const supllyer = await getSupplyer()
 
-    const cookieStore = await cookies();
-    
-    const lang = cookieStore.get("lang")?.value || "LA"; 
   return (
     <div className="flex flex-1 flex-col relative">
       <div className="@container/main flex flex-1 flex-col gap-2 mb-8">
@@ -21,6 +21,9 @@ export default async function Dashboard() {
           <div className="px-4 lg:px-6">
             <ChartAreaInteractive branchs={branchs}/>
           </div>
+           <div className="px-4 lg:px-6">
+            <BarChartSale supllyer={supllyer}/>
+           </div>
           <div className="px-4 lg:px-6">
             <LineChartBakery bakerys={bakerys}/>
           </div>

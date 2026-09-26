@@ -30,3 +30,9 @@ export const getReportBakeryNew = (form:{start: string, end: string, supplyerId:
         withCredentials: true
     })
 }
+
+export const getSaleDataBarChart = (form:{start: string, end: string, supid: string}) => {
+    return axios.post(`${URL}/dashboard/getsaledatabarchart`, form, {
+        withCredentials: true
+    })
+}
