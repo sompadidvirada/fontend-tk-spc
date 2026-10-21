@@ -46,48 +46,56 @@ const UploadFile = ({
     // Use a Map to aggregate counts if a product appears multiple times
     const extractedMap = new Map<
       number,
-      { bakery_detailId: number; quantity: number, price: number, sell_price: number }
+      {
+        bakery_detailId: number;
+        quantity: number;
+        price: number;
+        sell_price: number;
+      }
     >();
 
-    rows.forEach((row) => {
-      const cells = row.querySelectorAll("td");
+    for (const row of rows) {
+      try {
+        const cells = row.querySelectorAll("td");
 
-      // Check if row has data and an image in the 3rd cell (index 2) as per your logic
-      if (cells.length >= 7 && cells[2].querySelector("img")) {
+        if (cells.length < 7 || !cells[2].querySelector("img")) {
+          continue;
+        }
+
         const name = cells[3].textContent?.trim() || "";
         const rawCount = cells[4].textContent?.trim() || "";
 
-        // Regex to find the number in strings like "10 pcs" or "10"
         const countMatch = rawCount.match(/\d+/);
-        const sendCount = countMatch ? parseInt(countMatch[0]) : 0;
+        const sendCount = countMatch ? parseInt(countMatch[0], 10) : 0;
 
-        // Find matching product from your 'bakerys' prop
         const product = bakerys.find(
           (p) => p.name.trim().toLowerCase() === name.toLowerCase(),
         );
 
         if (product && sendCount > 0) {
           const id = Number(product.id);
-          const unitPrice = Number(product.price)
-          const unitSellPrice = Number(product.sell_price)
+          const unitPrice = Number(product.price);
+          const unitSellPrice = Number(product.sell_price);
 
           if (!extractedMap.has(id)) {
             extractedMap.set(id, {
               bakery_detailId: id,
               quantity: sendCount,
               price: unitPrice,
-              sell_price: unitSellPrice
+              sell_price: unitSellPrice,
             });
           } else {
-            // If product exists in map, add to its quantity
             const existing = extractedMap.get(id)!;
             existing.quantity += sendCount;
           }
         } else if (!product && name) {
           console.warn(`Product not found: ${name}`);
         }
+      } catch (error) {
+        console.error("Error processing row:", error, row);
+        continue; // Skip this row and continue to the next one
       }
-    });
+    }
 
     // 3. Prepare Final Array
     const itemsToUpdate = Array.from(extractedMap.values());
@@ -109,8 +117,12 @@ const UploadFile = ({
       const ress = await uploadTrackingSend(finalPayload);
 
       const dataFromUploadRespone = ress.data;
-      setCheckBakery(dataFromUploadRespone);
-      toast.success(`ອັປໂຫລດເບເກີລີ້ຈຳນວນ ${itemsToUpdate.length} ລາຍການສຳເລັດ.`);
+
+      console.log(dataFromUploadRespone)
+      setCheckBakery((prev) => [...prev, ...dataFromUploadRespone]);
+      toast.success(
+        `ອັປໂຫລດເບເກີລີ້ຈຳນວນ ${itemsToUpdate.length} ລາຍການສຳເລັດ.`,
+      );
     } catch (err) {
       console.error(err);
       toast.error("ເກີດຂໍ້ຜິດພາດໃນການປະມວນຜົນ");
