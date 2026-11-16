@@ -9,7 +9,15 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, BadgeCheck, Check, Loader2, Trash2 } from "lucide-react";
+import {
+  ArrowUpDown,
+  BadgeCheck,
+  Check,
+  ChevronRight,
+  ChevronsUpDown,
+  Loader2,
+  Trash2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -33,7 +41,7 @@ import {
   Track_Bakery_Sell,
 } from "@/app/api/client/trackingbakery";
 import { toast } from "sonner";
-import { Data_Order_Bakery, Order_Bakery } from "./ParentContent";
+import { Order_Bakery } from "./ParentContent";
 import {
   deleteORderBakery,
   insertManyOrderBakery,
@@ -54,6 +62,144 @@ export type BakeryDetail = {
   image?: string;
   bakery_categoryId: number;
 };
+
+/* ------------------------------------------------------------------ */
+/* New data shape: one entry per day, for each of the 3 ranges         */
+/* ------------------------------------------------------------------ */
+
+export type DailyQty = {
+  date: string; // "2026-11-01"
+  sell: number;
+  send: number;
+  exp: number;
+};
+
+// Replace the old Data_Order_Bakery (L1_Sell, L1_Send, ...) with this one.
+// Go side json tags: `bakery_detailId`, `branchId`, `L1`, `L2`, `L3`.
+export type Data_Order_Bakery = {
+  bakery_detailId: number;
+  branchId: number;
+  L1: DailyQty[] | null;
+  L2: DailyQty[] | null;
+  L3: DailyQty[] | null;
+};
+
+type Level = "L1" | "L2" | "L3";
+type Metric = "sell" | "send" | "exp";
+type Totals = Record<Metric, number>;
+
+const LEVELS: Level[] = ["L1", "L2", "L3"];
+
+// Export this so ParentContent can reuse it when it calculates the
+// recommended order (it used to read L1_Sell etc. directly).
+export const sumRange = (days?: DailyQty[] | null): Totals =>
+  (days ?? []).reduce<Totals>(
+    (acc, d) => ({
+      sell: acc.sell + d.sell,
+      send: acc.send + d.send,
+      exp: acc.exp + d.exp,
+    }),
+    { sell: 0, send: 0, exp: 0 },
+  );
+
+const METRIC_STYLE: Record<Metric, { label: string; color: string }> = {
+  send: { label: "ສົ່ງ", color: "text-blue-600" },
+  sell: { label: "ຂາຍ", color: "text-green-600" },
+  exp: { label: "ໝົດອາຍຸ", color: "text-red-600" },
+};
+
+const formatDay = (iso: string) =>
+  new Date(`${iso}T00:00:00`).toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "2-digit",
+    month: "2-digit",
+  });
+
+/* ------------------------------------------------------------------ */
+/* Day-by-day panel for one range                                      */
+/* ------------------------------------------------------------------ */
+
+const RangePanel = ({
+  level,
+  days,
+}: {
+  level: Level;
+  days: DailyQty[] | null;
+}) => {
+  const list = days ?? [];
+  const total = sumRange(list);
+  const metrics: Metric[] = ["send", "sell", "exp"];
+
+  return (
+    <div className="overflow-hidden rounded-md border bg-white">
+      <div className="flex items-baseline justify-between gap-2 border-b px-3 py-2">
+        <span className="text-xs font-bold">{level}</span>
+        {list.length > 0 && (
+          <span className="text-[10px] text-muted-foreground">
+            {list[0].date} – {list[list.length - 1].date}
+          </span>
+        )}
+      </div>
+
+      {list.length === 0 ? (
+        <p className="px-3 py-4 text-center text-xs text-muted-foreground">
+          ບໍ່ມີຂໍ້ມູນ
+        </p>
+      ) : (
+        <table className="w-full text-xs tabular-nums">
+          <thead>
+            <tr className="text-muted-foreground">
+              <th className="px-3 py-1.5 text-left font-medium">ວັນທີ</th>
+              {metrics.map((m) => (
+                <th key={m} className="px-2 py-1.5 text-right font-medium">
+                  {METRIC_STYLE[m].label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {list.map((d) => (
+              <tr key={d.date} className="border-t">
+                <td className="px-3 py-1 text-left">{formatDay(d.date)}</td>
+                {metrics.map((m) => (
+                  <td
+                    key={m}
+                    className={cn(
+                      "px-2 py-1 text-right",
+                      d[m] === 0
+                        ? "text-muted-foreground/40"
+                        : cn("font-medium", METRIC_STYLE[m].color),
+                    )}
+                  >
+                    {d[m]}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="border-t bg-muted/50 font-bold">
+              <td className="px-3 py-1.5 text-left">ລວມ</td>
+              {metrics.map((m) => (
+                <td
+                  key={m}
+                  className={cn(
+                    "px-2 py-1.5 text-right",
+                    METRIC_STYLE[m].color,
+                  )}
+                >
+                  {total[m]}
+                </td>
+              ))}
+            </tr>
+          </tfoot>
+        </table>
+      )}
+    </div>
+  );
+};
+
+/* ------------------------------------------------------------------ */
 
 interface OrderBakeryProp {
   selectedDate: Date | undefined;
@@ -92,17 +238,29 @@ const TableBakeryOrder = ({
   const [isImageLoading, setIsImageLoading] = React.useState(true);
   const [isPending, startTransition] = React.useTransition();
   const [loadingId, setLoadingId] = React.useState<number | null>(null);
-  const dayName = selectedDate?.toLocaleDateString("en-US", {
-    weekday: "long",
-  });
+  const [expanded, setExpanded] = React.useState<Set<number>>(new Set());
 
+  // bakery_detailId -> raw daily data
   const historyMap = React.useMemo(() => {
-    const map: Record<number, any> = {};
+    const map: Record<number, Data_Order_Bakery> = {};
     checkDataOrder.forEach((item) => {
       map[item.bakery_detailId] = item;
     });
     return map;
   }, [checkDataOrder]);
+
+  const toggleRow = (id: number) =>
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
+  const allOpen = data.length > 0 && data.every((d) => expanded.has(d.id));
+
+  const toggleAll = () =>
+    setExpanded(allOpen ? new Set() : new Set(data.map((d) => d.id)));
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -154,7 +312,46 @@ const TableBakeryOrder = ({
       }
     });
   };
+
   const columns: ColumnDef<BakeryDetail>[] = [
+    {
+      id: "expand",
+      size: 44,
+      header: () => (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={toggleAll}
+          aria-label={allOpen ? "ຍຸບທັງໝົດ" : "ຂະຫຍາຍທັງໝົດ"}
+          title={allOpen ? "ຍຸບທັງໝົດ" : "ຂະຫຍາຍທັງໝົດ"}
+        >
+          <ChevronsUpDown className="h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const id = row.original.id;
+        const open = expanded.has(id);
+        return (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            disabled={!historyMap[id]}
+            onClick={() => toggleRow(id)}
+            aria-expanded={open}
+            aria-label="ເບິ່ງລາຍລະອຽດລາຍວັນ"
+          >
+            <ChevronRight
+              className={cn(
+                "h-4 w-4 transition-transform",
+                open && "rotate-90",
+              )}
+            />
+          </Button>
+        );
+      },
+    },
     {
       accessorKey: "image",
       size: 60,
@@ -284,8 +481,7 @@ const TableBakeryOrder = ({
               </Badge>
             ) : (
               <Badge className="bg-blue-50 text-blue-700">
-                <BadgeCheck data-icon="inline-start" />
-                -
+                <BadgeCheck data-icon="inline-start" />-
               </Badge>
             )}
           </div>
@@ -346,123 +542,6 @@ const TableBakeryOrder = ({
         );
       },
     },
-    {
-      accessorKey: "order_send_L1",
-      header: "ຍອດສົ່ງ L1",
-      size: 100,
-      cell: ({ row }) => {
-        const orderL = historyMap[row.original.id];
-        return (
-          <div className="font-medium text-blue-600 text-xs">
-            {orderL ? orderL.L1_Send : "-"}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "order_sell_L1",
-      header: "ຍອດຂາຍ L1",
-      size: 100,
-      cell: ({ row }) => {
-        const orderL = historyMap[row.original.id];
-        return (
-          <div className="font-medium text-green-600 text-xs">
-            {orderL ? orderL.L1_Sell : "-"}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "order_exp_L1",
-      header: "ຍອດໝົດອາຍຸ L1",
-      size: 100,
-      cell: ({ row }) => {
-        const orderL = historyMap[row.original.id];
-        return (
-          <div className="font-medium text-red-600 text-xs">
-            {orderL ? orderL.L1_Exp : "-"}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "order_send_L2",
-      header: "ຍອດສົ່ງ L2",
-      size: 100,
-      cell: ({ row }) => {
-        const orderL = historyMap[row.original.id];
-        return (
-          <div className="font-medium text-blue-600 text-xs">
-            {orderL ? orderL.L2_Send : "-"}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "order_sell_L2",
-      header: "ຍອດຂາຍ L2",
-      size: 100,
-      cell: ({ row }) => {
-        const orderL = historyMap[row.original.id];
-        return (
-          <div className="font-medium text-green-600 text-xs">
-            {orderL ? orderL.L2_Sell : "-"}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "order_exp_L2",
-      header: "ຍອດໝົດອາຍຸ L2",
-      size: 100,
-      cell: ({ row }) => {
-        const orderL = historyMap[row.original.id];
-        return (
-          <div className="font-medium text-red-600 text-xs">
-            {orderL ? orderL.L2_Exp : "-"}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "order_send_L3",
-      header: "ຍອດສົ່ງ L3",
-      size: 100,
-      cell: ({ row }) => {
-        const orderL = historyMap[row.original.id];
-        return (
-          <div className="font-medium text-blue-600 text-xs">
-            {orderL ? orderL.L3_Send : "-"}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "order_sell_L3",
-      header: "ຍອດຂາຍ L3",
-      size: 100,
-      cell: ({ row }) => {
-        const orderL = historyMap[row.original.id];
-        return (
-          <div className="font-medium text-green-600 text-xs">
-            {orderL ? orderL.L3_Sell : "-"}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "order_exp_L3",
-      header: "ຍອດໝົດອາຍຸ L3",
-      size: 100,
-      cell: ({ row }) => {
-        const orderL = historyMap[row.original.id];
-        return (
-          <div className="font-medium text-red-600 text-xs">
-            {orderL ? orderL.L3_Exp : "-"}
-          </div>
-        );
-      },
-    },
   ];
 
   const table = useReactTable({
@@ -508,16 +587,66 @@ const TableBakeryOrder = ({
               </TableRow>
             ))
           ) : table.getRowModel().rows?.length && value ? (
-            // 2. RENDER ACTUAL ROWS
-            table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="text-center">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
+            // 2. RENDER ACTUAL ROWS (+ expandable daily breakdown)
+            table.getRowModel().rows.map((row) => {
+              const id = row.original.id;
+              const detail = historyMap[id];
+              return (
+                <React.Fragment key={row.id}>
+                  <TableRow>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className="text-center">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+
+                  {detail && (
+                    <TableRow
+                      className={cn(
+                        "bg-muted/30 hover:bg-muted/30",
+                        !expanded.has(id) && "border-b-0",
+                      )}
+                    >
+                      <TableCell colSpan={columns.length} className="p-0">
+                        {/* sticky stays OUTSIDE the overflow-hidden element, otherwise it stops sticking */}
+                        <div className="sticky left-3 w-[calc(100vw-4rem)] max-w-5xl text-left">
+                          <div
+                            aria-hidden={!expanded.has(id)}
+                            className={cn(
+                              "grid transition-[grid-template-rows,opacity,visibility] duration-300 ease-out motion-reduce:transition-none",
+                              expanded.has(id)
+                                ? "grid-rows-[1fr] opacity-100 visible"
+                                : "grid-rows-[0fr] opacity-0 invisible",
+                            )}
+                          >
+                            <div className="overflow-hidden">
+                              <div className="p-3">
+                                <p className="mb-2 text-xs font-bold">
+                                  {row.original.name}
+                                </p>
+                                <div className="grid gap-3 md:grid-cols-3">
+                                  {LEVELS.map((lvl) => (
+                                    <RangePanel
+                                      key={lvl}
+                                      level={lvl}
+                                      days={detail[lvl]}
+                                    />
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
+              );
+            })
           ) : (
             // 3. RENDER EMPTY STATE
             <TableRow>

@@ -5,7 +5,10 @@ import CalendarCompo from "../../tracksell/(component)/Calendar";
 import SelectBranch from "../../tracksell/(component)/SelectBranch";
 import { Button } from "@/components/ui/button";
 import { Loader2, Maximize2, RotateCcw, Wand } from "lucide-react";
-import TableBakeryOrder, { BakeryDetail } from "./TableBakeryOrder";
+import TableBakeryOrder, {
+  BakeryDetail,
+  Data_Order_Bakery,
+} from "./TableBakeryOrder";
 import { Card } from "@/components/ui/card";
 import {
   deleteAllOrderBakery,
@@ -31,6 +34,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import Image from "next/image";
+import { sumRange } from "./TableBakeryOrder";
 
 export interface BakeryImageItem {
   id: string;
@@ -48,20 +52,6 @@ export type Branch_type = {
   phonenumber: string;
   province: string;
   available: boolean;
-};
-
-export type Data_Order_Bakery = {
-  bakery_detailId: number;
-  branchId: number;
-  L1_Send: number;
-  L1_Sell: number;
-  L1_Exp: number;
-  L2_Send: number;
-  L2_Sell: number;
-  L2_Exp: number;
-  L3_Send: number;
-  L3_Sell: number;
-  L3_Exp: number;
 };
 
 export type Order_Bakery = {
@@ -157,9 +147,12 @@ export const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
 
         if (!bake) return null;
 
-        const totalSell = item.L1_Sell + item.L2_Sell + item.L3_Sell;
+        const l1 = sumRange(item.L1);
+        const l2 = sumRange(item.L2);
+        const l3 = sumRange(item.L3);
 
-        const totalSend = item.L1_Send + item.L2_Send + item.L3_Send;
+        const totalSell = l1.sell + l2.sell + l3.sell;
+        const totalSend = l1.send + l2.send + l3.send;
 
         let orderRec = 0;
         let highlight = false;
@@ -188,11 +181,7 @@ export const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
         const isBStatus = bake?.status === "B";
         const isWednesday = dayName === "Wednesday";
 
-        if (
-          totalSell >= totalSend &&
-          item.L1_Sell >= item.L1_Send &&
-          item.L1_Exp <= 0
-        ) {
+        if (totalSell >= totalSend && l1.sell >= l1.send && l1.exp <= 0) {
           if (isAStatus) valueadd = isWednesday ? 3 : 2;
           else if (isBStatus) valueadd = isWednesday ? 2 : 1;
           else valueadd = 1;
@@ -282,6 +271,8 @@ export const ParentContent = ({ branchs, supplyer }: DataBranchProps) => {
       fetchData();
     }
   }, [date, value, supplyerId]);
+
+  console.log(checkDataOrder);
 
   const handleDelteALL = async () => {
     try {
