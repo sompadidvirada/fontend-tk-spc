@@ -82,6 +82,29 @@ const TableReport: React.FC<TableReportProps> = ({ data = [] }) => {
     return Object.values(grouped);
   }, [data]);
 
+  const zero = { send: 0, sell: 0, exp: 0 };
+
+  const { productTotals, grandTotal } = React.useMemo(() => {
+    const productTotals: Record<string, typeof zero> = {};
+    const grandTotal = { ...zero };
+
+    for (const row of rows) {
+      for (const p of uniqueProducts) {
+        const d = row.products[p.productId];
+        const pt = (productTotals[p.productId] ??= { ...zero });
+
+        pt.send += d?.send ?? 0;
+        pt.sell += d?.sell ?? 0;
+        pt.exp += d?.exp ?? 0;
+
+        grandTotal.send += d?.send ?? 0;
+        grandTotal.sell += d?.sell ?? 0;
+        grandTotal.exp += d?.exp ?? 0;
+      }
+    }
+    return { productTotals, grandTotal };
+  }, [rows, uniqueProducts]);
+
   if (!data || data.length === 0) {
     return (
       <div className="rounded-md border font-lao bg-white p-8 text-center text-sm text-muted-foreground">
@@ -168,58 +191,94 @@ const TableReport: React.FC<TableReportProps> = ({ data = [] }) => {
 
         <tbody>
           {rows.map((row) => {
-            // Calculate running branch totals across all dynamic product metrics
-            let totalSell = 0;
-            let totalSend = 0;
-            let totalExp = 0;
+            const rowTotal = uniqueProducts.reduce(
+              (acc, p) => {
+                const d = row.products[p.productId];
+                return {
+                  send: acc.send + (d?.send ?? 0),
+                  sell: acc.sell + (d?.sell ?? 0),
+                  exp: acc.exp + (d?.exp ?? 0),
+                };
+              },
+              { ...zero },
+            );
 
             return (
               <tr
                 key={row.branchId}
-                className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                className="group border-b border-gray-200 hover:bg-gray-50 transition-colors"
               >
                 <td className="p-3 text-xs font-medium text-gray-900 border-r border-gray-200 sticky left-0 z-10 bg-white group-hover:bg-gray-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
                   {row.branchName}
                 </td>
-                {/* Render normal product matrix data */}
+
                 {uniqueProducts.map((product) => {
-                  const productData = row.products[product.productId];
-
-                  // Accumulate values into totals safely
-                  totalSell += productData?.sell ?? 0;
-                  totalSend += productData?.send ?? 0;
-                  totalExp += productData?.exp ?? 0;
-
+                  const d = row.products[product.productId];
                   return (
                     <React.Fragment
                       key={`${row.branchId}-${product.productId}`}
                     >
-                      
                       <td className="p-2 text-center text-xs text-gray-600">
-                        {productData?.send.toLocaleString() ?? 0}
+                        {(d?.send ?? 0).toLocaleString()}
                       </td>
                       <td className="p-2 text-center text-xs text-gray-600">
-                        {productData?.sell.toLocaleString() ?? 0}
+                        {(d?.sell ?? 0).toLocaleString()}
                       </td>
-                      <td className="p-2 text-center text-xs text-gray-600 border-r border-gray-200 last:border-r-0">
-                        {productData?.exp.toLocaleString() ?? 0}
+                      <td className="p-2 text-center text-xs text-gray-600 border-r border-gray-200">
+                        {(d?.exp ?? 0).toLocaleString()}
                       </td>
                     </React.Fragment>
                   );
                 })}
-                <td className="p-2 text-center text-xs font-bold text-gray-900 bg-blue-50/20  border-r border-gray-300">
-                  {totalSend.toLocaleString()}
-                </td>{" "}
-                <td className="p-2 text-center text-xs font-bold text-gray-900 bg-blue-50/20  border-r border-gray-300">
-                  {totalSell.toLocaleString()}
+
+                <td className="p-2 text-center text-xs font-bold text-gray-900 bg-blue-50/20 border-r border-gray-300">
+                  {rowTotal.send.toLocaleString()}
+                </td>
+                <td className="p-2 text-center text-xs font-bold text-gray-900 bg-blue-50/20 border-r border-gray-300">
+                  {rowTotal.sell.toLocaleString()}
                 </td>
                 <td className="p-2 text-center text-xs font-bold text-gray-900 bg-blue-50/20">
-                  {totalExp.toLocaleString()}
+                  {rowTotal.exp.toLocaleString()}
                 </td>
               </tr>
             );
           })}
         </tbody>
+
+        <tfoot>
+          <tr className="border-t-2 border-gray-300 bg-gray-100">
+            <td className="p-3 text-xs font-bold text-gray-900 border-r border-gray-300 sticky left-0 z-10 bg-gray-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+              {t.total} {/* or your own label, e.g. t.allBranches */}
+            </td>
+
+            {uniqueProducts.map((product) => {
+              const pt = productTotals[product.productId] ?? zero;
+              return (
+                <React.Fragment key={`total-${product.productId}`}>
+                  <td className="p-2 text-center text-xs font-bold text-blue-700">
+                    {pt.send.toLocaleString()}
+                  </td>
+                  <td className="p-2 text-center text-xs font-bold text-green-700">
+                    {pt.sell.toLocaleString()}
+                  </td>
+                  <td className="p-2 text-center text-xs font-bold text-red-700 border-r border-gray-300">
+                    {pt.exp.toLocaleString()}
+                  </td>
+                </React.Fragment>
+              );
+            })}
+
+            <td className="p-2 text-center text-xs font-bold text-gray-900 bg-blue-100/60 border-r border-gray-300">
+              {grandTotal.send.toLocaleString()}
+            </td>
+            <td className="p-2 text-center text-xs font-bold text-gray-900 bg-blue-100/60 border-r border-gray-300">
+              {grandTotal.sell.toLocaleString()}
+            </td>
+            <td className="p-2 text-center text-xs font-bold text-gray-900 bg-blue-100/60">
+              {grandTotal.exp.toLocaleString()}
+            </td>
+          </tr>
+        </tfoot>
       </table>
     </div>
   );
