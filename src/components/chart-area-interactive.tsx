@@ -43,7 +43,6 @@ export function ChartAreaInteractive({ branchs }: { branchs: Branch_type[] }) {
     setSelectedBranchIds(branchs.map((branch) => branch.id));
   }, [branchs]);
 
-  console.log(dataLineChart);
 
   const dynamicConfig = React.useMemo(() => {
     const config: ChartConfig = {
@@ -97,7 +96,7 @@ export function ChartAreaInteractive({ branchs }: { branchs: Branch_type[] }) {
   return (
     <Card className="@container/card">
       <CardHeader className="font-lao">
-        <CardTitle>{t.title}</CardTitle>
+        <CardTitle className="text-[12px] md:text-xm">{t.title}</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">{t.description}</span>
           <span className="@[540px]/card:hidden">{t.last3Months}</span>

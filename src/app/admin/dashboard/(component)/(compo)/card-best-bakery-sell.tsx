@@ -1,0 +1,237 @@
+"use client";
+import { IconBread, IconChevronRight, IconCrown } from "@tabler/icons-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useState } from "react";
+import { TopBakeryItem } from "../BakeryDetailModal";
+import { Calendar } from "lucide-react";
+
+interface DataPrp {
+  setSelectedBakery: any;
+  setIsDetailOpen: any;
+  isLoading: boolean;
+  t: any;
+  bestBakerys: TopBakeryItem[];
+  start_date: string
+  end_date: string
+}
+
+const CardBestBakerySell = ({
+  setSelectedBakery,
+  setIsDetailOpen,
+  isLoading,
+  t,
+  bestBakerys,
+  start_date,
+  end_date
+}: DataPrp) => {
+  //state
+  const [isScrollUnlocked, setIsScrollUnlocked] = useState(false);
+  const handleCardClickCapture = () => {
+    if (!isScrollUnlocked) {
+      setIsScrollUnlocked(true);
+    }
+  };
+  //function
+  const handleSelectBakery = (item: TopBakeryItem) => {
+    setSelectedBakery(item);
+    setIsDetailOpen(true);
+  };
+
+  const maxBakeryRevenue = Math.max(
+    1,
+    ...bestBakerys.slice(0, 5).map((b) => b.total_sell),
+  );
+  const rankBadgeStyle = (idx: number) => {
+    if (idx === 0) {
+      return "bg-green-500/15 text-green-700 dark:text-green-400 border border-green-500/30 font-bold";
+    }
+    if (idx === 1) {
+      return "bg-blue-400/15 text-blue-700 dark:text-blue-300 border border-blue-400/30 font-semibold";
+    }
+    if (idx === 2) {
+      return "bg-orange-500/15 text-orange-700 dark:text-orange-400 border border-orange-500/30 font-semibold";
+    }
+    return "bg-muted text-muted-foreground font-medium";
+  };
+  return (
+    <Card
+      onClickCapture={handleCardClickCapture}
+      onMouseLeave={() => setIsScrollUnlocked(false)}
+      className="font-lao flex flex-col overflow-hidden border-border/70 shadow-xs"
+    >
+      <CardHeader className="border-b bg-muted/20">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border bg-background text-primary shadow-2xs">
+              <IconBread className="size-5" />
+            </div>
+            <div>
+              <CardTitle className="text-base font-semibold tracking-tight">
+                {t.top5BakeryTitle}
+              </CardTitle>
+              <CardDescription className="text-xs mt-0.5">
+                {t.top5BakeryDesc}
+              </CardDescription>
+            </div>
+          </div>
+
+          {(start_date || end_date) && (
+            <div className="inline-flex items-center gap-1.5 rounded-full border bg-background px-2.5 py-1 text-[11px] text-muted-foreground shadow-2xs shrink-0">
+              <Calendar className="size-3.5 text-muted-foreground/80" />
+              <span className="font-medium text-foreground tabular-nums">
+                {start_date}
+                {start_date && end_date ? ` – ${end_date}` : ""}
+              </span>
+            </div>
+          )}
+        </div>
+      </CardHeader>
+
+      <CardContent className="p-0 flex-1 flex flex-col">
+        {isLoading ? (
+          <div className="p-4 space-y-3">
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} className="h-11 w-full rounded-md" />
+            ))}
+          </div>
+        ) : (
+          <div
+            className={`relative flex-1 transition-all duration-300 ${
+              isScrollUnlocked
+                ? "max-h-[410px] overflow-y-auto"
+                : "max-h-[350px] overflow-y-hidden"
+            }`}
+          >
+            <Table className="table-fixed w-full">
+              <TableHeader className="bg-muted/30">
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="w-12 pl-4 text-xs">#</TableHead>
+                  <TableHead className="w-[180px] text-xs">
+                    {t.bakeryName}
+                  </TableHead>
+                  <TableHead className="text-xs">{t.topBranch}</TableHead>
+                  <TableHead className="text-right pr-4 text-xs">
+                    {t.totalSales}
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="overflow-x-auto">
+                {bestBakerys.map((item, idx) => {
+                  const sharePct = Math.round(
+                    (item.total_sell / maxBakeryRevenue) * 100,
+                  );
+                  return (
+                    <TableRow
+                      key={item.bakery_id}
+                      onClick={() => handleSelectBakery(item)}
+                      className="group cursor-pointer transition-colors hover:bg-muted/50"
+                    >
+                      <TableCell className="pl-4 py-2.5 align-middle">
+                        <span
+                          className={`inline-flex size-6 items-center justify-center rounded-md text-xs tabular-nums ${rankBadgeStyle(
+                            idx,
+                          )}`}
+                        >
+                          {idx + 1}
+                        </span>
+                      </TableCell>
+
+                      {/* Bakery Image + Name */}
+                      <TableCell className="py-2.5 align-middle">
+                        <div className="flex items-center gap-2.5">
+                          <div className="relative size-9 shrink-0 overflow-hidden rounded-lg border bg-muted flex items-center justify-center">
+                            {item.image ? (
+                              <img
+                                src={item.image}
+                                alt={item.bakery_name}
+                                className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = "none";
+                                }}
+                              />
+                            ) : (
+                              <IconBread className="size-4 text-muted-foreground" />
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-1.5 font-medium text-sm group-hover:text-primary transition-colors min-w-0">
+                            {idx === 0 && (
+                              <IconCrown className="size-3.5 text-amber-500 shrink-0" />
+                            )}
+                            <span className="line-clamp-1">
+                              {item.bakery_name}
+                            </span>
+                          </div>
+                        </div>
+                      </TableCell>
+
+                      <TableCell className="py-2.5 align-middle">
+                        <Badge
+                          variant="secondary"
+                          className="font-normal text-xs whitespace-nowrap"
+                        >
+                          {item.best_branch_name}
+                        </Badge>
+                      </TableCell>
+
+                      <TableCell className="pr-4 py-2.5 text-right align-middle">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <span className="font-semibold text-sm tabular-nums">
+                            {item.total_sell.toLocaleString()} {t.currency}
+                          </span>
+                          <IconChevronRight className="size-4 text-muted-foreground/50 transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
+                        </div>
+                        <div className="mt-1 ml-auto h-1.5 w-24 overflow-hidden rounded-full bg-muted">
+                          <div
+                            className="h-full rounded-full bg-primary/75 transition-all duration-300"
+                            style={{ width: `${sharePct}%` }}
+                          />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </CardContent>
+      <CardFooter
+        className={`p-0 transition-all duration-300 overflow-hidden ${
+          isScrollUnlocked
+            ? "opacity-0 max-h-0 pointer-events-none"
+            : "opacity-100 max-h-14 py-2 px-4"
+        }`}
+      >
+        <button
+          type="button"
+          disabled={isScrollUnlocked}
+          onClick={() => setIsScrollUnlocked(true)}
+          className="w-full py-1.5 text-center text-xs text-muted-foreground bg-gradient-to-t from-background via-background/90 to-transparent hover:text-foreground transition-colors"
+        >
+          Click card to enable table scrolling
+        </button>
+      </CardFooter>
+    </Card>
+  );
+};
+
+export default CardBestBakerySell;

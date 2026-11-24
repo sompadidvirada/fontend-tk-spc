@@ -36,3 +36,39 @@ export const getSaleDataBarChart = (form:{start: string, end: string, supid: str
         withCredentials: true
     })
 }
+
+export const getBestBakeryAPI = (form:{start: string, end: string}) => {
+    return axios.post(`${URL}/dashboard/getbestbakery`, form, {
+        withCredentials: true
+    })
+}
+
+export const getDetailBestBakeryAPI = (form:{start: string, end: string, bakery_id: number}) => {
+    return axios.post(`${URL}/dashboard/detailbestbakery`, form, {
+        withCredentials: true
+    })
+}
+
+export const getBestBranchSellAPI = (form: {start: string, end: string}) => {
+    return axios.post(`${URL}/dashboard/getbestbranchsell`, form, {
+        withCredentials: true
+    })
+}
+
+export const getBestBakeryInBranchAPI = (form:{start: string, end: string, branch_id: number}) => {
+    return axios.post(`${URL}/dashboard/getbestbakeryinbranch`, form, {
+        withCredentials: true
+    })
+}
+
+export const getBestBranchPerformAPI = (form:{start: string, end: string}) => {
+    return axios.post(`${URL}/dashboard/getbestbranchperformance`, form, {
+        withCredentials: true
+    })
+}
+
+export const getBranchLowPerformAPI = (form: {start: string, end: string}) => {
+    return axios.post(`${URL}/dashboard/getbranchlowperform`, form, {
+        withCredentials: true
+    })
+}
